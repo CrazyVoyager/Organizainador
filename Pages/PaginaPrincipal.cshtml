@@ -1,0 +1,98 @@
+﻿@page
+@model Organizainador.Pages.PaginaPrincipalModel
+@{
+    ViewData["Title"] = "Panel Principal";
+}
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Panel Principal</h1>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Usuarios Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Usuarios
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalUsuarios">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clases Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Total Clases
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalClases">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-book fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Acciones Rápidas</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <a href="/Usuarios/Crear" class="btn btn-primary btn-block">
+                                <i class="fas fa-user-plus me-1"></i> Nuevo Usuario
+                            </a>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <a href="/Clases/Crear" class="btn btn-success btn-block">
+                                <i class="fas fa-plus me-1"></i> Nueva Clase
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Información del Sistema</h6>
+                </div>
+                <div class="card-body">
+                    <p>Bienvenido al sistema <strong>Organizainador</strong></p>
+                    <p class="mb-0">Usuario: <strong>@Model.Usuario</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Aquí puedes agregar llamadas AJAX para obtener estadísticas reales
+        document.getElementById('totalUsuarios').textContent = '5'; // Ejemplo
+        document.getElementById('totalClases').textContent = '3'; // Ejemplo
+    </script>
+}

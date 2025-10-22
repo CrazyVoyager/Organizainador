@@ -19,10 +19,12 @@ app.UseRouting();
 app.UseAuthorization();
 
 // Rutas
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-
+app.MapGet("/", context =>
+{
+    context.Response.Redirect("/Login");
+    return Task.CompletedTask;
+});
+app.MapDefaultControllerRoute();
 app.MapRazorPages();
 
 app.Run();
