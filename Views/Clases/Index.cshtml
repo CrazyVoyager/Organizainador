@@ -26,26 +26,26 @@
                                 <th>Nombre</th>
                                 <th>Descripción</th>
                                 <th>Horas/Día</th>
-                                <th>Usuario</th>
+                                <th>Usuario ID</th> <!-- Temporalmente mostrar solo el ID -->
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in ViewBag.ClasesConUsuario)
+                            @foreach (var clase in Model)
                             {
                                 <tr>
-                                    <td>@item.Clase.Id</td>
-                                    <td>@item.Clase.Nombre</td>
-                                    <td>@item.Clase.Descripcion</td>
-                                    <td>@item.Clase.CantidadHorasDia</td>
-                                    <td>@(item.Usuario?.Nombre ?? "N/A")</td>
+                                    <td>@clase.Id</td>
+                                    <td>@clase.Nombre</td>
+                                    <td>@clase.Descripcion</td>
+                                    <td>@clase.CantidadHorasDia</td>
+                                    <td>@clase.UsuarioId</td> <!-- Mostrar el ID del usuario -->
                                     <td>
                                         <div class="btn-group" role="group">
-                                            <a asp-action="Modificar" asp-route-id="@item.Clase.Id"
+                                            <a asp-action="Modificar" asp-route-id="@clase.Id"
                                                class="btn btn-warning btn-sm">
                                                 <i class="fas fa-edit"></i> Editar
                                             </a>
-                                            <a asp-action="Eliminar" asp-route-id="@item.Clase.Id"
+                                            <a asp-action="Eliminar" asp-route-id="@clase.Id"
                                                class="btn btn-danger btn-sm">
                                                 <i class="fas fa-trash"></i> Eliminar
                                             </a>

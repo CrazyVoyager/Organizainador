@@ -1,12 +1,19 @@
+using Microsoft.EntityFrameworkCore;
+using Organizainador.Data; 
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Agregar servicios antes de Build
+// Agregar servicios al contenedor de dependencias
 builder.Services.AddRazorPages();
-builder.Services.AddControllersWithViews(); // ✅ Mover aquí
+builder.Services.AddControllersWithViews(); 
+
+// Configurar PostgreSQL
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
-// Middleware
+// Configurar el pipeline de HTTP
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
@@ -18,13 +25,17 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 
-// Rutas
+// Configurar endpoints
 app.MapGet("/", context =>
 {
     context.Response.Redirect("/Login");
     return Task.CompletedTask;
 });
-app.MapDefaultControllerRoute();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
 app.MapRazorPages();
 
 app.Run();

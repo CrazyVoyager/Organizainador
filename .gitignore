@@ -1,0 +1,35 @@
+# Binarios y builds
+bin/
+obj/
+[Bb]uild/
+[Dd]ebug/
+[Rr]elease/
+*.exe
+*.dll
+*.pdb
+
+# Archivos de usuario
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS Code
+.vscode/
+
+# VS
+.vs/
+
+# NuGet
+.nuget/
+*.nupkg
+packages/
+
+# Azure
+PublishProfiles/
+*.azurePubxml
+
+# Archivos temporales
+_ReSharper.*
+*.tmp
+*.temp

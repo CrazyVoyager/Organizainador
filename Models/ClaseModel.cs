@@ -1,30 +1,36 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Organizainador.Models
 {
+    [Table("tab_clas")]
     public class ClaseModel
     {
+        [Key]
+        [Column("tcl_id_clas")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "El ID de usuario es obligatorio")]
+                [Required(ErrorMessage = "El usuario es obligatorio")]
+        [Column("tus_id_usr")] // ✅ CORREGIDO: Nombre real de la columna FK
         [Display(Name = "Usuario")]
         public int UsuarioId { get; set; }
 
-        [Required(ErrorMessage = "El nombre de la clase es obligatorio")]
-        [StringLength(100, ErrorMessage = "El nombre no puede exceder 100 caracteres")]
-        [Display(Name = "Nombre de la Clase")]
+        [Required(ErrorMessage = "El nombre es obligatorio")]
+        [Column("tcl_nom_clas")]
+        [Display(Name = "Nombre de la clase")]
+        [StringLength(100)]
         public string Nombre { get; set; }
 
-        [StringLength(255, ErrorMessage = "La descripción no puede exceder 255 caracteres")]
+        [Column("tcl_desc")]
         [Display(Name = "Descripción")]
-        public string? Descripcion { get; set; }
+        [StringLength(500)]
+        public string Descripcion { get; set; }
 
         [Required(ErrorMessage = "La cantidad de horas es obligatoria")]
-        [Range(0.01, 99.99, ErrorMessage = "La cantidad debe estar entre 0.01 y 99.99")]
-        [Display(Name = "Horas por Día")]
-        public decimal CantidadHorasDia { get; set; }
-
-        // Propiedad de navegación (para mostrar el nombre del usuario)
-        public UsuarioModel? Usuario { get; set; }
+        [Column("tcl_cant_h_d")]
+        [Display(Name = "Cantidad de horas por día")]
+        [Range(1, 24, ErrorMessage = "La cantidad debe estar entre 1 y 24 horas")]
+        public int CantidadHorasDia { get; set; } = 1;
     }
 }

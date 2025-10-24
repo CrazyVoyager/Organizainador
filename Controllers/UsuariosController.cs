@@ -1,22 +1,25 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Organizainador.Models;
+using Organizainador.Data; // Asegúrate de tener este using para el DbContext
 
 namespace Organizainador.Controllers
 {
     public class UsuariosController : Controller
     {
-        private static List<UsuarioModel> usuarios = new();
-        private static int nextUsuarioId = 1;
+        private readonly AppDbContext _context;
 
-        public static List<UsuarioModel> GetUsuariosStatic()
+        // Inyectamos el DbContext en el constructor
+        public UsuariosController(AppDbContext context)
         {
-            return usuarios;
+            _context = context;
         }
 
         // ======================== LISTADO PRINCIPAL ========================
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            var usuarios = await _context.Tab_usr.ToListAsync();
             return View(usuarios);
         }
 
@@ -28,21 +31,23 @@ namespace Organizainador.Controllers
         }
 
         [HttpPost]
-        public IActionResult Crear(UsuarioModel usuario)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Crear(UsuarioModel usuario)
         {
             if (ModelState.IsValid)
             {
-                // Verificar si el email ya existe
-                if (usuarios.Any(u => u.Email == usuario.Email))
+                // Verificar si el email ya existe en la base de datos
+                if (await _context.Tab_usr.AnyAsync(u => u.Email == usuario.Email))
                 {
                     ModelState.AddModelError("Email", "Este email ya está registrado");
                     return View(usuario);
                 }
 
-                usuario.Id = nextUsuarioId++;
-                usuario.CEst = "ACTIVO"; // Valor por defecto
-                usuario.Est = "ACTIVO";  // Valor por defecto
-                usuarios.Add(usuario);
+                // Los valores por defecto se asignan automáticamente en el modelo
+                _context.Tab_usr.Add(usuario);
+                await _context.SaveChangesAsync();
+                
+                TempData["SuccessMessage"] = "Usuario creado exitosamente";
                 return RedirectToAction("Index");
             }
             return View(usuario);
@@ -50,34 +55,52 @@ namespace Organizainador.Controllers
 
         // ======================== MODIFICAR USUARIO ========================
         [HttpGet]
-        public IActionResult Modificar(int id)
+        public async Task<IActionResult> Modificar(int id)
         {
-            var usuario = usuarios.FirstOrDefault(u => u.Id == id);
-            if (usuario == null) return NotFound();
+            var usuario = await _context.Tab_usr.FindAsync(id);
+            if (usuario == null) 
+            {
+                return NotFound();
+            }
             return View(usuario);
         }
 
         [HttpPost]
-        public IActionResult Modificar(int id, UsuarioModel usuario)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Modificar(int id, UsuarioModel usuario)
         {
+            if (id != usuario.Id)
+            {
+                return NotFound();
+            }
+
             if (ModelState.IsValid)
             {
-                var usuarioExistente = usuarios.FirstOrDefault(u => u.Id == id);
-                if (usuarioExistente == null) return NotFound();
-
                 // Verificar si el email ya existe (excluyendo el usuario actual)
-                if (usuarios.Any(u => u.Email == usuario.Email && u.Id != id))
+                if (await _context.Tab_usr.AnyAsync(u => u.Email == usuario.Email && u.Id != id))
                 {
                     ModelState.AddModelError("Email", "Este email ya está registrado");
                     return View(usuario);
                 }
 
-                usuarioExistente.Nombre = usuario.Nombre;
-                usuarioExistente.Email = usuario.Email;
-                usuarioExistente.Contrasena = usuario.Contrasena;
-                usuarioExistente.CEst = usuario.CEst;
-                usuarioExistente.Est = usuario.Est;
-
+                try
+                {
+                    _context.Update(usuario);
+                    await _context.SaveChangesAsync();
+                    
+                    TempData["SuccessMessage"] = "Usuario modificado exitosamente";
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!UsuarioExists(usuario.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
                 return RedirectToAction("Index");
             }
             return View(usuario);
@@ -85,23 +108,37 @@ namespace Organizainador.Controllers
 
         // ======================== ELIMINAR USUARIO ========================
         [HttpGet]
-        public IActionResult Eliminar(int id)
+        public async Task<IActionResult> Eliminar(int id)
         {
-            var usuario = usuarios.FirstOrDefault(u => u.Id == id);
-            if (usuario == null) return NotFound();
+            var usuario = await _context.Tab_usr
+                .FirstOrDefaultAsync(u => u.Id == id);
+                
+            if (usuario == null) 
+            {
+                return NotFound();
+            }
             return View(usuario);
         }
 
         [HttpPost]
         [ActionName("Eliminar")]
-        public IActionResult EliminarConfirmado(int id)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EliminarConfirmado(int id)
         {
-            var usuario = usuarios.FirstOrDefault(u => u.Id == id);
+            var usuario = await _context.Tab_usr.FindAsync(id);
             if (usuario != null)
             {
-                usuarios.Remove(usuario);
+                _context.Tab_usr.Remove(usuario);
+                await _context.SaveChangesAsync();
+                
+                TempData["SuccessMessage"] = "Usuario eliminado exitosamente";
             }
             return RedirectToAction("Index");
+        }
+
+        private bool UsuarioExists(int id)
+        {
+            return _context.Tab_usr.Any(e => e.Id == id);
         }
     }
 }
