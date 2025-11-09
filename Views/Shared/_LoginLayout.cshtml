@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Organizainador</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Estilo para centrar el contenido (la tarjeta de login) en la pantalla */
+        body {
+            /* Flexbox es la clave para centrar vertical y horizontalmente */
+            display: flex;
+            align-items: center; /* Centrado vertical */
+            justify-content: center; /* Centrado horizontal */
+            min-height: 100vh;
+            margin: 0; /* Eliminar margen por defecto del body */
+            background-color: #f8f9fa; /* Fondo claro */
+        }
+
+        /* Estilos de la tarjeta (opcional, pero mejora la apariencia) */
+        .card {
+            border: none;
+            box-shadow: 0 0.2rem 1rem rgba(0, 0, 0, 0.1);
+            border-radius: 0.5rem;
+        }
+
+        /* El main debe ser el contenedor directo de la vista para ser centrado */
+        main {
+            width: 100%;
+            /* Limita el ancho máximo para que el login no se estire demasiado */
+            max-width: 420px;
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- El RenderBody (tu vista Login.cshtml) se renderiza dentro del main,
+         y el CSS ya se encarga de centrar el body que contiene al main. -->
+    <main role="main">
+        @RenderBody()
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

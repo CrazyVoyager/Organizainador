@@ -1,43 +1,94 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Organizainador.Services;
+using Microsoft.AspNetCore.Authorization;
+using Organizainador.Pages; // Asegúrate de tener este using si tu modelo está fuera del namespace principal
 
 namespace Organizainador.Pages
 {
+    // CLAVE: Indica que esta PageModel acepta solicitudes JSON en el cuerpo.
+    [Consumes("application/json")]
+    [AllowAnonymous]
     public class LoginModel : PageModel
     {
-        [BindProperty]
-        [Required(ErrorMessage = "El usuario es obligatorio")]
-        public string Usuario { get; set; }
+        private readonly UserService _userService;
 
-        [BindProperty]
-        [Required(ErrorMessage = "La contrase�a es obligatoria")]
-        [DataType(DataType.Password)]
-        public string Contrasena { get; set; }
+        // La propiedad Input ahora es opcional para que la vista pueda renderizar
+        public LoginInputModel? Input { get; set; }
 
-        public string MensajeError { get; set; }
+        public LoginModel(UserService userService)
+        {
+            _userService = userService;
+        }
+
+        // Modelo para deserializar el JSON que viene del JavaScript
+        public class LoginInputModel
+        {
+            // Las propiedades se mantienen como cadenas no nulas
+            public string Email { get; set; } = string.Empty;
+            public string Contrasena { get; set; } = string.Empty;
+        }
 
         public void OnGet()
         {
-            // inicializaciones si las necesitas
+            // El operador ! es seguro aquí porque Identity solo puede ser null 
+            // si el usuario no está autenticado, y en ese caso, IsAuthenticated sería false.
+            if (User.Identity!.IsAuthenticated)
+            {
+                Response.Redirect("/PaginaPrincipal");
+            }
         }
 
-        public IActionResult OnPost()
+        // POST /Login?handler=Auth
+        // 🔑 CLAVE 1: AÑADIR [ValidateAntiForgeryToken] para que el middleware valide el token
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> OnPostAuth([FromBody] LoginInputModel? data)
         {
-            if (!ModelState.IsValid)
+            // 1. Verificar si el Model Binding falló (si data es null)
+            if (data == null || string.IsNullOrEmpty(data.Email) || string.IsNullOrEmpty(data.Contrasena))
             {
-                return Page();
+                // Devolver BadRequest si el JSON no se pudo mapear
+                return new BadRequestResult();
             }
 
-            // EJEMPLO de validaci�n simple (reemplaza por tu l�gica real)
-            if (Usuario == "admin" && Contrasena == "1234")
-            {
-                // Redirigir a la misma Razor Page PaginaPrincipal
-                return RedirectToPage("/PaginaPrincipal", new { usuario = Usuario });
-            }
+            // 2. Llamar al UserService y obtener el UserDto completo.
+            var user = await _userService.ValidateCredentialsAsync(data.Email, data.Contrasena);
 
-            MensajeError = "Usuario o contrase�a incorrectos";
-            return Page();
+            if (user != null)
+            {
+                // AUTENTICACIÓN EXITOSA
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.UserId),
+                    new Claim(ClaimTypes.Name, user.Email),
+                    // CLAVE 2: Usar el rol dinámico obtenido de la base de datos
+                    new Claim(ClaimTypes.Role, user.Role),
+                };
+
+                var claimsIdentity = new ClaimsIdentity(
+                    claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                var authProperties = new AuthenticationProperties
+                {
+                    IsPersistent = false,
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30)
+                };
+
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity),
+                    authProperties);
+
+                return new OkResult(); // 200 OK
+            }
+            else
+            {
+                // 401 Unauthorized: Credenciales incorrectas (no se encontró en la BD)
+                return new UnauthorizedResult();
+            }
         }
     }
 }
