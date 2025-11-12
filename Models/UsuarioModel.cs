@@ -24,10 +24,18 @@ namespace Organizainador.Models
 
         [Column("tus_c_est")]
         [Display(Name = "Casa de estudios")]
-        public string CEst { get; set; } = "ACTIVO";
+        public string CEst { get; set; }
 
         [Column("tus_est")]
-        [Display(Name = "Estado")]
-        public string Est { get; set; } = "ACTIVO";
+        [Display(Name = "Especialidad/Carrera")]
+        public string Est { get; set; }
+
+        [Column("tus_rol")]
+        [Display(Name = "Rol de Usuario")]
+        public string Rol { get; set; }
+
+        [Column("tus_cont")]
+        [Display(Name = "Contraseña")]
+        public string Contrasena { get; set; }
     }
 }

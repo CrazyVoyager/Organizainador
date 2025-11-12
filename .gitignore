@@ -1,35 +1,90 @@
-# Binarios y builds
-bin/
-obj/
-[Bb]uild/
+## Build Artifacts
+###########################
 [Dd]ebug/
 [Rr]elease/
-*.exe
-*.dll
-*.pdb
+[Bb]in/
+[Oo]bj/
+[Tt]est[Rr]esults/
+[Bb]uild/
+[Dd]ist/
+out/
+_ReSharper.*/
+*.[Ss]uppress[Ss]harper[Ww]arnings.txt
+*.resharper
+*.dotSettings
+*.userprefs
 
-# Archivos de usuario
-*.user
+## Visual Studio
+###########################
 *.suo
+*.user
 *.userosscache
 *.sln.docstates
+*.vshost.*
+*.vspscc
+*.vssscc
+*.bak
+*.trw
+*.log
+*.ncb
+*.orig
+*.opensdf
+*.sdf
+ipch/
+*.aps
+*.pch
+*.idb
+*.obj
+*.pdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tlh
+*.tmp
+*.vs[0-9][0-9][0-9][0-9]/
+*.intellisense.cpc
+.vs/
+*.sln.ide/
+
+## NuGet
+###########################
+packages/
+*.nupkg
+[Pp]ackages/
+*.nuget.g.props
+*.nuget.g.targets
+
+## CONFIGURACIÓN ESPECÍFICA DE WEB Y SECRETS (.NET CORE/9.0)
+############################################################
+# Archivos que contienen settings locales o secretos (¡IMPORTANTE IGNORAR!)
+appsettings.Development.json
+local.settings.json
+**/secrets.json
+
+# Archivos de publicación/despliegue
+[Pp]ublish/
+wwwroot/
+
+# Docker (archivo de anulación de desarrollo local)
+**/docker-compose.override.yml
+
+## Other Tools
+###########################
+# Rider / JetBrains IDE files
+.idea/
+
+# Windows-specific files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+[Dd]esktop.ini
 
 # VS Code
 .vscode/
 
-# VS
-.vs/
-
-# NuGet
-.nuget/
-*.nupkg
-packages/
-
-# Azure
-PublishProfiles/
-*.azurePubxml
-
-# Archivos temporales
-_ReSharper.*
-*.tmp
-*.temp
+# Node.js (si usas herramientas de frontend)
+/node_modules
+npm-debug.log
+yarn-error.log
