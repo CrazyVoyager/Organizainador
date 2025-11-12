@@ -1,0 +1,62 @@
+﻿@model Organizainador.Models.HorarioModel
+@{
+    ViewData["Title"] = "Eliminar Horario";
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-xl-6 col-lg-8">
+            <div class="card border-left-danger shadow">
+                <div class="card-header py-3 bg-danger text-white">
+                    <h6 class="m-0 font-weight-bold">
+                        <i class="fas fa-exclamation-triangle me-1"></i> Confirmar Eliminación
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-trash-alt fa-3x text-danger mb-3"></i>
+                        <h4 class="text-gray-800">¿Está seguro de eliminar este Horario?</h4>
+                        <p class="text-gray-600">Esta acción no se puede deshacer. Se eliminará el horario para la clase **@Model.Clase?.Nombre**.</p>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <h6 class="alert-heading">Información del Horario a Eliminar:</h6>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-4"><strong>Clase:</strong></div>
+                            <div class="col-sm-8">@Model.Clase?.Nombre</div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-sm-4"><strong>Día:</strong></div>
+                            <div class="col-sm-8">@Model.DiaSemana</div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-sm-4"><strong>Hora Inicio:</strong></div>
+                            <div class="col-sm-8">@Model.HoraInicio.ToString(@"hh\:mm")</div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-sm-4"><strong>Hora Fin:</strong></div>
+                            <div class="col-sm-8">@Model.HoraFin.ToString(@"hh\:mm")</div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-sm-4"><strong>Duración:</strong></div>
+                            <div class="col-sm-8">@((Model.HoraFin - Model.HoraInicio).TotalHours):00 Hrs</div>
+                        </div>
+                    </div>
+
+                    <form asp-action="Eliminar" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-success">
+                                <i class="fas fa-arrow-left me-1"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-1"></i> Confirmar Eliminación
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

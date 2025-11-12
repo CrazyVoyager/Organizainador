@@ -11,8 +11,8 @@ namespace Organizainador.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-                [Required(ErrorMessage = "El usuario es obligatorio")]
-        [Column("tus_id_usr")] // ✅ CORREGIDO: Nombre real de la columna FK
+        [Required(ErrorMessage = "El usuario es obligatorio")]
+        [Column("tus_id_usr")] 
         [Display(Name = "Usuario")]
         public int UsuarioId { get; set; }
 
@@ -32,5 +32,7 @@ namespace Organizainador.Models
         [Display(Name = "Cantidad de horas por día")]
         [Range(1, 24, ErrorMessage = "La cantidad debe estar entre 1 y 24 horas")]
         public int CantidadHorasDia { get; set; } = 1;
+
+        public ICollection<HorarioModel>? Horarios { get; set; }
     }
 }

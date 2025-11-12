@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Organizainador.Data; 
 using Organizainador.Models;
-using Organizainador.Data; // Asegúrate de tener este using para el DbContext
 
 namespace Organizainador.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class UsuariosController : Controller
     {
         private readonly AppDbContext _context;
@@ -19,7 +21,7 @@ namespace Organizainador.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var usuarios = await _context.Tab_usr.ToListAsync();
+            var usuarios = await _context.Usuarios.ToListAsync();
             return View(usuarios);
         }
 
@@ -37,14 +39,14 @@ namespace Organizainador.Controllers
             if (ModelState.IsValid)
             {
                 // Verificar si el email ya existe en la base de datos
-                if (await _context.Tab_usr.AnyAsync(u => u.Email == usuario.Email))
+                if (await _context.Usuarios.AnyAsync(u => u.Email == usuario.Email))
                 {
                     ModelState.AddModelError("Email", "Este email ya está registrado");
                     return View(usuario);
                 }
 
                 // Los valores por defecto se asignan automáticamente en el modelo
-                _context.Tab_usr.Add(usuario);
+                _context.Usuarios.Add(usuario);
                 await _context.SaveChangesAsync();
                 
                 TempData["SuccessMessage"] = "Usuario creado exitosamente";
@@ -57,7 +59,7 @@ namespace Organizainador.Controllers
         [HttpGet]
         public async Task<IActionResult> Modificar(int id)
         {
-            var usuario = await _context.Tab_usr.FindAsync(id);
+            var usuario = await _context.Usuarios.FindAsync(id);
             if (usuario == null) 
             {
                 return NotFound();
@@ -77,7 +79,7 @@ namespace Organizainador.Controllers
             if (ModelState.IsValid)
             {
                 // Verificar si el email ya existe (excluyendo el usuario actual)
-                if (await _context.Tab_usr.AnyAsync(u => u.Email == usuario.Email && u.Id != id))
+                if (await _context.Usuarios.AnyAsync(u => u.Email == usuario.Email && u.Id != id))
                 {
                     ModelState.AddModelError("Email", "Este email ya está registrado");
                     return View(usuario);
@@ -110,7 +112,7 @@ namespace Organizainador.Controllers
         [HttpGet]
         public async Task<IActionResult> Eliminar(int id)
         {
-            var usuario = await _context.Tab_usr
+            var usuario = await _context.Usuarios
                 .FirstOrDefaultAsync(u => u.Id == id);
                 
             if (usuario == null) 
@@ -125,10 +127,10 @@ namespace Organizainador.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EliminarConfirmado(int id)
         {
-            var usuario = await _context.Tab_usr.FindAsync(id);
+            var usuario = await _context.Usuarios.FindAsync(id);
             if (usuario != null)
             {
-                _context.Tab_usr.Remove(usuario);
+                _context.Usuarios.Remove(usuario);
                 await _context.SaveChangesAsync();
                 
                 TempData["SuccessMessage"] = "Usuario eliminado exitosamente";
@@ -138,7 +140,7 @@ namespace Organizainador.Controllers
 
         private bool UsuarioExists(int id)
         {
-            return _context.Tab_usr.Any(e => e.Id == id);
+            return _context.Usuarios.Any(e => e.Id == id);
         }
     }
 }
