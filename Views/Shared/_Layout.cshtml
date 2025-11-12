@@ -4,13 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Organizainador</title>
-    
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
     <style>
         .navbar-brand {
             font-weight: 600;
@@ -38,35 +33,56 @@
             color: #6e707e;
         }
 
-        .sidebar {
-            min-height: 100vh;
+        /* 1. Aplicamos tu degradado al componente Offcanvas */
+        .sidebar.offcanvas {
             background: linear-gradient(180deg, #4e73df 0%, #224abe 100%);
         }
 
-            .sidebar .nav-link {
-                color: rgba(255, 255, 255, 0.8);
-                padding: 0.75rem 1rem;
+        /* 2. Estilo para el header del menú (nuevo) */
+        .sidebar .offcanvas-header {
+            padding-top: 1.15rem;
+            padding-bottom: 1.1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* 3. Estilo para el botón hamburguesa */
+        #sidebarToggle {
+            cursor: pointer;
+            color: #6c757d;
+        }
+
+            #sidebarToggle:hover {
+                color: #2a2b2e;
             }
 
-                .sidebar .nav-link:hover {
-                    color: #fff;
-                    background-color: rgba(255, 255, 255, 0.1);
-                }
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 0.75rem 1rem;
+        }
 
-                .sidebar .nav-link i {
-                    margin-right: 0.5rem;
-                }
+            .sidebar .nav-link:hover {
+                color: #fff;
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+
+            .sidebar .nav-link i {
+                margin-right: 0.5rem;
+            }
     </style>
 </head>
 <body>
     <div class="container-fluid">
         <div class="row">
-            <!-- Sidebar -->
-            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-                <div class="position-sticky pt-3">
-                    <div class="text-center mb-4">
-                        <h4 class="text-white"><i class="fas fa-calendar-alt"></i> Organizainador</h4>
-                    </div>
+            <!-- === NUEVO MENÚ DESLIZANTE (OFFCANVAS) === -->
+            <div class="offcanvas offcanvas-start sidebar" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
+
+                <div class="offcanvas-header">
+                    <h4 class="text-white" id="sidebarOffcanvasLabel"><i class="fas fa-calendar-alt"></i> Organizainador</h4>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+
+                <div class="offcanvas-body p-0">
+                    <!-- Aquí pongo los links de navegación que tenías -->
                     <ul class="nav flex-column">
                         <li class="nav-item">
                             <a class="nav-link" href="/PaginaPrincipal">
@@ -84,40 +100,44 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="/Calendario">
+                                <i class="fas fa-calendar-days"></i> Calendario
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="/Login">
                                 <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
                             </a>
                         </li>
                     </ul>
                 </div>
-            </nav>
+            </div>
 
-            <!-- Main content -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <!-- === CONTENIDO PRINCIPAL MODIFICADO === -->
+            <main id="main-content" class="col-md-12 px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">@ViewData["Title"]</h1>
-                </div>
-                
-                <!-- Mensajes globales -->
-                @if (TempData["SuccessMessage"] != null)
-                {
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+
+                    <div class="d-flex align-items-center">
+
+                        <!-- Este botón ahora activa el offcanvas -->
+                        <button id="sidebarToggle" class="btn btn-link me-2 p-0" type="button"
+                                data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas"
+                                aria-controls="sidebarOffcanvas">
+                            <i class="fas fa-bars fs-4"></i>
+                        </button>
+
+                        <h1 class="h2">@ViewData["Title"]</h1>
                     </div>
-                }
-                
+
+                </div>
                 @RenderBody()
             </main>
         </div>
     </div>
 
-    <!-- jQuery (REQUERIDO para la validación) -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    
-    <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>

@@ -1,0 +1,83 @@
+﻿/* Contenedor principal de la página */
+.calendar-page-container {
+    display: flex;
+    flex-wrap: wrap; /* Para que se ajuste en móviles */
+    gap: 20px;
+    padding: 20px;
+    background-color: #f4f3f8; /* Un fondo suave */
+    border-radius: 15px;
+}
+
+/* Barra lateral */
+.calendar-sidebar {
+    flex: 1; /* Ocupa 1 parte */
+    min-width: 250px; /* Ancho mínimo */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+    .calendar-sidebar h3, .calendar-sidebar p {
+        margin: 0;
+        padding: 10px;
+        background-color: #e0e0ff;
+        border-radius: 8px;
+        text-align: center;
+    }
+
+.event-list .event-item {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 5px solid #ccc; /* Color por defecto */
+    margin-bottom: 10px;
+}
+
+.ver-mas-btn {
+    padding: 12px;
+    background-color: #aab4d3;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 16px;
+}
+
+    .ver-mas-btn:hover {
+        background-color: #8c96c0;
+    }
+
+
+/* Calendario principal */
+.calendar-main {
+    flex: 3; /* Ocupa 3 partes (más grande) */
+    min-width: 400px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Ajustes para que FullCalendar se vea bien */
+:root {
+    --fc-border-color: #eee;
+    --fc-today-bg-color: #f0f7ff; /* Fondo para el día de hoy */
+}
+
+.fc-button { /* Estilo para los botones (prev, next, today) */
+    background-color: #6a6afb !important;
+    border: none !important;
+    opacity: 0.9;
+}
+
+    .fc-button:hover {
+        opacity: 1;
+    }
+
+.fc-daygrid-event { /* Estilo para los eventos */
+    border-radius: 4px;
+    padding: 2px 4px;
+    font-weight: 600;
+    cursor: pointer; /* Hace que los eventos parezcan clickeables */
+}

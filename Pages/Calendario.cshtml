@@ -1,0 +1,36 @@
+﻿@page
+@model Organizainador.Pages.CalendarioModel
+@{
+    ViewData["Title"] = "Mi Calendario";
+}
+
+<link rel="stylesheet" href="~/css/Calendario.css" />
+
+@Html.AntiForgeryToken()
+
+<div class="calendar-page-container">
+
+    <div class="calendar-sidebar">
+        <h3>@DateTime.Now.ToString("dd MMMM, yyyy")</h3>
+        <p>@DateTime.Now.ToString("HH:mm")</p>
+
+        <div class="event-list">
+            <div class="event-item" style="border-left-color: #0d6efd;">
+                <strong>Próximamente:</strong> Cargar eventos aquí
+            </div>
+        </div>
+
+        <button class="ver-mas-btn">Ver más</button>
+    </div>
+
+    <div class="calendar-main">
+        <div id="calendar"></div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
+
+    <script src="~/js/Calendario.js"></script>
+}
