@@ -1,7 +1,9 @@
-﻿@{
+﻿@* ORGANIZAINADOR/Views/Usuarios/Crear.cshtml *@
+@using Organizainador.Models
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@model Organizainador.Models.UsuarioModel
+@model UsuarioModel
 @{
     ViewData["Title"] = "Crear Usuario";
 }
@@ -31,20 +33,32 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label asp-for="Est" class="form-label">Estado</label>
-                            <select asp-for="Est" class="form-select" required>
-                                <option value="">Seleccionar estado</option>
-                                <option value="ACTIVO">ACTIVO</option>
-                                <option value="INACTIVO">INACTIVO</option>
-                            </select>
+                            <label asp-for="CEst" class="form-label">Casa de Estudios</label>
+                            <input asp-for="CEst" class="form-control" placeholder="Ej: Universidad de Chile" required>
+                            <span asp-validation-for="CEst" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Est" class="form-label">Especialidad/Carrera</label>
+                            <input asp-for="Est" class="form-control" placeholder="Ej: Ingeniería Civil" required>
                             <span asp-validation-for="Est" class="text-danger small"></span>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label asp-for="CEst" class="form-label">Estado Personalizado (Opcional)</label>
-                        <input asp-for="CEst" class="form-control" placeholder="Estado personalizado">
-                        <span asp-validation-for="CEst" class="text-danger small"></span>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Contrasena" class="form-label">Contraseña</label>
+                            <input asp-for="Contrasena" type="password" class="form-control" placeholder="Contraseña de acceso" required>
+                            <span asp-validation-for="Contrasena" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Rol" class="form-label">Rol de Usuario</label>
+                            <select asp-for="Rol" class="form-select" required>
+                                <option value="">Seleccionar Rol</option>
+                                <option value="User">Usuario Estándar</option>
+                                <option value="Admin">Administrador</option>
+                            </select>
+                            <span asp-validation-for="Rol" class="text-danger small"></span>
+                        </div>
                     </div>
 
                     <div class="d-flex justify-content-between mt-4">
@@ -65,21 +79,4 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-    <script>
-        // Validación del formulario
-        (function () {
-            'use strict'
-            var forms = document.querySelectorAll('.needs-validation')
-            Array.prototype.slice.call(forms)
-                .forEach(function (form) {
-                    form.addEventListener('submit', function (event) {
-                        if (!form.checkValidity()) {
-                            event.preventDefault()
-                            event.stopPropagation()
-                        }
-                        form.classList.add('was-validated')
-                    }, false)
-                })
-        })()
-    </script>
 }

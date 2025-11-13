@@ -1,4 +1,6 @@
-﻿@{
+﻿@* ORGANIZAINADOR/Views/Usuarios/Index.cshtml *@
+
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @model List<Organizainador.Models.UsuarioModel>
@@ -19,7 +21,7 @@
             <h6 class="m-0 font-weight-bold text-primary">Lista de Usuarios</h6>
         </div>
         <div class="card-body">
-            @if (Model.Any())
+            @if (Model != null && Model.Any())
             {
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover" width="100%" cellspacing="0">
@@ -28,7 +30,9 @@
                                 <th>ID</th>
                                 <th>Nombre</th>
                                 <th>Email</th>
-                                <th>Estado</th>
+                                <th>Casa de Estudios</th> 
+                                <th>Especialidad</th> 
+                                <th>Rol</th> 
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -39,11 +43,9 @@
                                     <td>@usuario.Id</td>
                                     <td>@usuario.Nombre</td>
                                     <td>@usuario.Email</td>
-                                    <td>
-                                        <span class="badge bg-@(usuario.Est == "ACTIVO" ? "success" : "secondary")">
-                                            @usuario.Est
-                                        </span>
-                                    </td>
+                                    <td>@usuario.CEst</td>
+                                    <td>@usuario.Est</td> 
+                                    <td>@usuario.Rol</td> 
                                     <td>
                                         <div class="btn-group" role="group">
                                             <a asp-action="Modificar" asp-route-id="@usuario.Id"

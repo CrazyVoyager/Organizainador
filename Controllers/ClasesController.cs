@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿// ClasesController.cs (VERSION CORREGIDA Y SEGURA)
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Organizainador.Models;
 using Organizainador.Data;
+using System.Linq;
+using System.Security.Claims; // Necesario para FindFirstValue
+using System.Threading.Tasks;
 
 namespace Organizainador.Controllers
 {
@@ -14,176 +18,122 @@ namespace Organizainador.Controllers
             _context = context;
         }
 
-        // ======================== LISTADO PRINCIPAL ========================
-[HttpGet]
-public async Task<IActionResult> Index()
-{
-    try
-    {
-        // Obtener usuarios y clases desde la base de datos
-        var usuarios = await _context.Tab_usr.ToListAsync();
-        
-        // ✅ CORREGIDO: Quitar el .Include() incorrecto
-        var clases = await _context.Tab_clas.ToListAsync();
+        // Función Auxiliar para obtener el ID del usuario logueado.
+        // Asume que tu UsuarioId en ClaseModel es INT, pero Identity lo maneja como STRING.
+        private string GetCurrentUserIdString() => User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+        private int GetCurrentUserIdInt() => int.TryParse(GetCurrentUserIdString(), out int id) ? id : 0;
 
-        // ✅ DEBUG: Verificar datos
-        Console.WriteLine($"=== DEBUG INDEX ===");
-        Console.WriteLine($"Usuarios: {usuarios.Count}");
-        Console.WriteLine($"Clases: {clases.Count}");
-        
-        foreach (var clase in clases)
+        // ======================== LISTADO PRINCIPAL (Index) ========================
+        [HttpGet]
+        public async Task<IActionResult> Index()
         {
-            Console.WriteLine($"Clase ID: {clase.Id}, Nombre: {clase.Nombre}, UsuarioId: {clase.UsuarioId}");
+            int userId = GetCurrentUserIdInt();
+            if (userId == 0) return Forbid(); // Redirigir si no está logueado o el ID no es válido
+
+            // 1. Filtrar SOLO las clases del usuario logueado
+            var clases = await _context.Clases
+                                       .Where(c => c.UsuarioId == userId)
+                                       .ToListAsync();
+
+            // Ya no es necesario cargar ViewBag.Usuarios
+            return View(clases);
         }
 
-        ViewBag.Usuarios = usuarios;
-        return View(clases);
-    }
-    catch (Exception ex)
-    {
-        // ✅ DEBUG del error
-        Console.WriteLine($"=== ERROR EN INDEX: {ex.Message} ===");
-        Console.WriteLine($"Stack: {ex.StackTrace}");
-        
-        TempData["ErrorMessage"] = $"Error al cargar las clases: {ex.Message}";
-        return View(new List<ClaseModel>());
-    }
-}
-        // ======================== CREAR CLASE ========================
+        // ======================== CREAR CLASE (Crear) ========================
         [HttpGet]
-        public async Task<IActionResult> Crear()
+        public IActionResult Crear()
         {
-            ViewBag.Usuarios = await _context.Tab_usr.ToListAsync();
+            // Ya no necesitas cargar el ViewBag.Usuarios
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Crear(ClaseModel clase)
+        public async Task<IActionResult> Crear(
+            [Bind("Nombre,Descripcion,CantidadHorasDia")] ClaseModel clase)
         {
-            try
+            int userId = GetCurrentUserIdInt();
+            if (userId == 0) return Forbid();
+
+            // 1. ASIGNAR EL ID del usuario logueado (Ignorando lo que venga del formulario)
+            clase.UsuarioId = userId;
+
+            if (ModelState.IsValid)
             {
-                Console.WriteLine("=== INICIANDO CREACIÓN DE CLASE ===");
-                Console.WriteLine($"ModelState.IsValid: {ModelState.IsValid}");
-
-                if (ModelState.IsValid)
-                {
-                    Console.WriteLine("Modelo válido, verificando usuario...");
-
-                    // Verificar que el usuario existe
-                    var usuario = await _context.Tab_usr.FindAsync(clase.UsuarioId);
-                    if (usuario == null)
-                    {
-                        ModelState.AddModelError("UsuarioId", "El usuario seleccionado no existe");
-                        ViewBag.Usuarios = await _context.Tab_usr.ToListAsync();
-                        return View(clase);
-                    }
-
-                    Console.WriteLine($"Usuario encontrado: {usuario.Nombre}");
-
-                    // Asignar valores por defecto si es necesario
-                    if (clase.CantidadHorasDia <= 0)
-                        clase.CantidadHorasDia = 1;
-
-                    _context.Tab_clas.Add(clase);
-                    await _context.SaveChangesAsync();
-                    
-                    Console.WriteLine("Clase guardada exitosamente en la BD");
-                    
-                    TempData["SuccessMessage"] = "Clase creada exitosamente";
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    Console.WriteLine("=== ERRORES DE VALIDACIÓN ===");
-                    foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-                    {
-                        Console.WriteLine($"Error: {error.ErrorMessage}");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"=== EXCEPCIÓN: {ex.Message} ===");
-                Console.WriteLine($"Stack: {ex.StackTrace}");
-                
-                TempData["ErrorMessage"] = $"Error al crear la clase: {ex.Message}";
+                _context.Clases.Add(clase);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Index");
             }
 
-            // Si llegamos aquí, algo salió mal
-            ViewBag.Usuarios = await _context.Tab_usr.ToListAsync();
+            // Si la validación falla, regresa la vista. Ya no necesita el ViewBag.
             return View(clase);
         }
 
-        // Los métodos Modificar y Eliminar se mantienen igual...
-        // ======================== MODIFICAR CLASE ========================
+        // ======================== MODIFICAR CLASE (Modificar) ========================
         [HttpGet]
         public async Task<IActionResult> Modificar(int id)
         {
-            var clase = await _context.Tab_clas.FindAsync(id);
-            if (clase == null) return NotFound();
+            int userId = GetCurrentUserIdInt();
+            if (userId == 0) return Forbid();
 
-            ViewBag.Usuarios = await _context.Tab_usr.ToListAsync();
+            var clase = await _context.Clases.FindAsync(id);
+
+            // 1. Validar que la clase existe Y pertenece al usuario logueado
+            if (clase == null || clase.UsuarioId != userId) return NotFound();
+
+            // Ya no es necesario cargar el ViewBag.Usuarios
             return View(clase);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Modificar(int id, ClaseModel clase)
+        public async Task<IActionResult> Modificar(int id, [Bind("Id,Nombre,Descripcion,CantidadHorasDia")] ClaseModel clase)
         {
-            if (id != clase.Id)
-            {
-                return NotFound();
-            }
+            int userId = GetCurrentUserIdInt();
+            if (userId == 0) return Forbid();
+
+            if (id != clase.Id) return NotFound();
+
+            // 1. Re-asignar la FK de seguridad. Esto previene que un atacante cambie el UsuarioId.
+            clase.UsuarioId = userId;
 
             if (ModelState.IsValid)
             {
-                // Verificar que el usuario existe
-                var usuario = await _context.Tab_usr.FindAsync(clase.UsuarioId);
-                if (usuario == null)
-                {
-                    ModelState.AddModelError("UsuarioId", "El usuario seleccionado no existe");
-                    ViewBag.Usuarios = await _context.Tab_usr.ToListAsync();
-                    return View(clase);
-                }
-
                 try
                 {
                     _context.Update(clase);
+                    // 2. Marcar la propiedad UsuarioId como NO modificada, por si acaso
+                    _context.Entry(clase).Property(c => c.UsuarioId).IsModified = false;
+
                     await _context.SaveChangesAsync();
-                    
-                    TempData["SuccessMessage"] = "Clase modificada exitosamente";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ClaseExists(clase.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!_context.Clases.Any(e => e.Id == clase.Id)) return NotFound();
+                    throw;
                 }
                 return RedirectToAction("Index");
             }
 
-            ViewBag.Usuarios = await _context.Tab_usr.ToListAsync();
+            // Si falla la validación, regresa la vista.
             return View(clase);
         }
 
-        // ======================== ELIMINAR CLASE ========================
+        // ======================== ELIMINAR CLASE (Eliminar) ========================
         [HttpGet]
         public async Task<IActionResult> Eliminar(int id)
         {
-            var clase = await _context.Tab_clas
-                .FirstOrDefaultAsync(c => c.Id == id);
-                
+            int userId = GetCurrentUserIdInt();
+            if (userId == 0) return Forbid();
+
+            var clase = await _context.Clases
+                .FirstOrDefaultAsync(c => c.Id == id && c.UsuarioId == userId); // Filtrar por ID de clase Y de usuario
+
             if (clase == null) return NotFound();
 
-            // Obtener información del usuario para mostrar
-            var usuario = await _context.Tab_usr.FindAsync(clase.UsuarioId);
-            ViewBag.UsuarioNombre = usuario?.Nombre;
+            // Opcional: Si quieres mostrar el nombre del usuario en la vista de eliminación
+            var usuario = await _context.Usuarios.FindAsync(clase.UsuarioId);
+            ViewBag.UsuarioNombre = usuario?.Nombre; // Asume que Tab_usr es tu DbSet<UsuarioModel>
 
             return View(clase);
         }
@@ -193,20 +143,20 @@ public async Task<IActionResult> Index()
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EliminarConfirmado(int id)
         {
-            var clase = await _context.Tab_clas.FindAsync(id);
-            if (clase != null)
+            int userId = GetCurrentUserIdInt();
+            if (userId == 0) return Forbid();
+
+            var clase = await _context.Clases.FindAsync(id);
+
+            // Validar existencia y propiedad antes de eliminar
+            if (clase != null && clase.UsuarioId == userId)
             {
-                _context.Tab_clas.Remove(clase);
+                _context.Clases.Remove(clase);
                 await _context.SaveChangesAsync();
-                
+
                 TempData["SuccessMessage"] = "Clase eliminada exitosamente";
             }
             return RedirectToAction("Index");
-        }
-
-        private bool ClaseExists(int id)
-        {
-            return _context.Tab_clas.Any(e => e.Id == id);
         }
     }
 }

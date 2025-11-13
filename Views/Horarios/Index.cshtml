@@ -1,0 +1,107 @@
+﻿@model List<Organizainador.Models.HorarioModel>
+@using System.Globalization;
+
+@{
+    ViewData["Title"] = "Gestión de Horarios";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-clock me-2"></i>Horarios</h1>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i> Nuevo Horario
+        </a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Lista de Horarios Registrados</h6>
+        </div>
+        <div class="card-body">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["InfoMessage"] != null)
+            {
+                <div class="alert alert-info" role="alert">
+                    @TempData["InfoMessage"]
+                </div>
+            }
+
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Clase</th>
+                                <th>Día</th>
+                                <th>Hora Inicio</th>
+                                <th>Hora Fin</th>
+                                <th>Duración</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var horario in Model.OrderBy(h => h.DiaSemana).ThenBy(h => h.HoraInicio))
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-primary">@horario.Clase?.Nombre</span>
+                                    </td>
+                                    <td>@horario.DiaSemana</td>
+                                    <td>@horario.HoraInicio.ToString(@"hh\:mm")</td>
+                                    <td>@horario.HoraFin.ToString(@"hh\:mm")</td>
+                                    <td>
+                                        @{
+                                            var duracion = horario.HoraFin - horario.HoraInicio;
+                                            <span class="badge bg-secondary">@duracion.TotalHours:00 Hrs</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a asp-action="Details" asp-route-id="@horario.Id"
+                                               class="btn btn-info btn-sm">
+                                                <i class="fas fa-info-circle"></i> Ver
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@horario.Id"
+                                               class="btn btn-warning btn-sm">
+                                                <i class="fas fa-edit"></i> Editar
+                                            </a>
+                                            <a asp-action="Eliminar" asp-route-id="@horario.Id"
+                                               class="btn btn-danger btn-sm">
+                                                <i class="fas fa-trash"></i> Eliminar
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else if (TempData["InfoMessage"] == null)
+            {
+                <div class="text-center py-4">
+                    <i class="fas fa-clock fa-3x text-gray-300 mb-3"></i>
+                    <h5 class="text-gray-500">No hay horarios registrados</h5>
+                    <p class="text-gray-500">Comienza agregando el primer horario a una de tus clases.</p>
+                    <a asp-action="Create" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> Crear Primer Horario
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
