@@ -1,53 +1,79 @@
 ﻿@model Organizainador.Models.ActividadModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Crear Actividad";
 }
 
-<h1>Create</h1>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-xl-8 col-lg-10">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-tasks me-1"></i> Crear Nueva Actividad
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post" class="needs-validation" novalidate>
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-<h4>ActividadModel</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="UsuarioId" class="control-label"></label>
-                <input asp-for="UsuarioId" class="form-control" />
-                <span asp-validation-for="UsuarioId" class="text-danger"></span>
+                        <div class="mb-3">
+                            <label asp-for="UsuarioId" class="form-label">Usuario</label>
+                            <select asp-for="UsuarioId" class="form-select" required>
+                                <option value="">Seleccionar Usuario</option>
+                                @if (ViewBag.Usuarios != null)
+                                {
+                                    @foreach (var usuario in ViewBag.Usuarios)
+                                    {
+                                        <option value="@usuario.Id">@usuario.Nombre - @usuario.Email</option>
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="UsuarioId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Nombre" class="form-label">Nombre de la Actividad</label>
+                            <input asp-for="Nombre" class="form-control" placeholder="Ingrese el nombre de la actividad" required>
+                            <span asp-validation-for="Nombre" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Descripcion" class="form-label">Descripción</label>
+                            <textarea asp-for="Descripcion" class="form-control" placeholder="Ingrese una descripción"></textarea>
+                            <span asp-validation-for="Descripcion" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Etiqueta" class="form-label">Etiqueta</label>
+                            <input asp-for="Etiqueta" class="form-control" placeholder="Ej: Trabajo, Estudio, Personal">
+                            <span asp-validation-for="Etiqueta" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="CreatedAt" class="form-label">Fecha de Creación</label>
+                            <input asp-for="CreatedAt" type="datetime-local" class="form-control" required>
+                            <span asp-validation-for="CreatedAt" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> Volver al Listado
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-1"></i> Guardar Actividad
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Nombre" class="control-label"></label>
-                <input asp-for="Nombre" class="form-control" />
-                <span asp-validation-for="Nombre" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Descripcion" class="control-label"></label>
-                <input asp-for="Descripcion" class="form-control" />
-                <span asp-validation-for="Descripcion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Etiqueta" class="control-label"></label>
-                <input asp-for="Etiqueta" class="form-control" />
-                <span asp-validation-for="Etiqueta" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedAt" class="control-label"></label>
-                <input asp-for="CreatedAt" class="form-control" />
-                <span asp-validation-for="CreatedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
