@@ -1,102 +1,118 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\benja\\source\\repos\\Organizainador\\",
+  "WorkspaceRootPath": "C:\\Users\\HP\\source\\repos\\Organizainador\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\benja\\source\\repos\\organizainador\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\benja\\source\\repos\\organizainador\\pages\\login.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:pages\\login.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\benja\\source\\repos\\organizainador\\services\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:services\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\benja\\source\\repos\\organizainador\\models\\usuariomodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:models\\usuariomodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\benja\\source\\repos\\organizainador\\wwwroot\\js\\login.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:wwwroot\\js\\login.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\benja\\source\\repos\\organizainador\\pages\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:pages\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\benja\\source\\repos\\organizainador\\controllers\\usuarioscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:controllers\\usuarioscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\benja\\source\\repos\\organizainador\\controllers\\pruebacontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:controllers\\pruebacontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\benja\\source\\repos\\organizainador\\controllers\\organizainadorcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:controllers\\organizainadorcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\benja\\source\\repos\\organizainador\\pages\\shared\\_loginlayout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:pages\\shared\\_loginlayout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\benja\\source\\repos\\organizainador\\pages\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:pages\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\benja\\source\\repos\\organizainador\\pages\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:pages\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\benja\\source\\repos\\organizainador\\views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\benja\\source\\repos\\organizainador\\views\\usuarios\\crear.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:views\\usuarios\\crear.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\benja\\source\\repos\\organizainador\\views\\clases\\eliminar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:views\\clases\\eliminar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\benja\\source\\repos\\organizainador\\views\\clases\\modificar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:views\\clases\\modificar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\benja\\source\\repos\\organizainador\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\benja\\source\\repos\\organizainador\\views\\usuarios\\modificar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:views\\usuarios\\modificar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\pages\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:pages\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\benja\\source\\repos\\organizainador\\views\\clases\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:views\\clases\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\controllers\\usuarioscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:controllers\\usuarioscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\benja\\source\\repos\\organizainador\\models\\pruebamodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:models\\pruebamodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\pages\\calendario.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:pages\\calendario.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\benja\\source\\repos\\organizainador\\pages\\_viewstart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\wwwroot\\js\\calendario.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:wwwroot\\js\\calendario.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\wwwroot\\css\\calendario.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:wwwroot\\css\\calendario.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\pages\\calendario.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:pages\\calendario.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\pages\\_viewstart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:pages\\_viewstart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\benja\\source\\repos\\organizainador\\views\\usuarios\\eliminar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:views\\usuarios\\eliminar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\benja\\source\\repos\\organizainador\\pages\\paginaprincipal.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\pages\\paginaprincipal.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:pages\\paginaprincipal.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\benja\\source\\repos\\organizainador\\pages\\paginaprincipal.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\pages\\shared\\_loginlayout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:pages\\shared\\_loginlayout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\pages\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:pages\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\services\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:services\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\wwwroot\\js\\login.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:wwwroot\\js\\login.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\pages\\login.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:pages\\login.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\controllers\\pruebacontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:controllers\\pruebacontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\controllers\\organizainadorcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:controllers\\organizainadorcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\models\\usuariomodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:models\\usuariomodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\pages\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:pages\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\views\\clases\\eliminar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:views\\clases\\eliminar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\views\\clases\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:views\\clases\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\views\\usuarios\\crear.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:views\\usuarios\\crear.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\views\\clases\\modificar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:views\\clases\\modificar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\pages\\paginaprincipal.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:pages\\paginaprincipal.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\views\\usuarios\\modificar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:views\\usuarios\\modificar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\views\\usuarios\\eliminar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:views\\usuarios\\eliminar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|c:\\users\\hp\\source\\repos\\organizainador\\models\\pruebamodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{87C90A37-1A4B-4F22-BA60-F4E9F5859694}|Organizainador.csproj|solutionrelative:models\\pruebamodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -106,7 +122,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Bookmark",
@@ -114,280 +130,135 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "Login.cshtml",
-              "DocumentMoniker": "C:\\Users\\benja\\source\\repos\\Organizainador\\Pages\\Login.cshtml",
-              "RelativeDocumentMoniker": "Pages\\Login.cshtml",
-              "ToolTip": "C:\\Users\\benja\\source\\repos\\Organizainador\\Pages\\Login.cshtml",
-              "RelativeToolTip": "Pages\\Login.cshtml",
-              "ViewState": "AgIAABQAAAAAAAAAAAAAACYAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-10-19T20:48:16.261Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "_LoginLayout.cshtml",
-              "DocumentMoniker": "C:\\Users\\benja\\source\\repos\\Organizainador\\Pages\\Shared\\_LoginLayout.cshtml",
-              "RelativeDocumentMoniker": "Pages\\Shared\\_LoginLayout.cshtml",
-              "ToolTip": "C:\\Users\\benja\\source\\repos\\Organizainador\\Pages\\Shared\\_LoginLayout.cshtml",
-              "RelativeToolTip": "Pages\\Shared\\_LoginLayout.cshtml",
-              "ViewState": "AgIAAB8AAAAAAAAAAADwvzQAAAAHAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-05T15:02:02.365Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "UserService.cs",
-              "DocumentMoniker": "C:\\Users\\benja\\source\\repos\\Organizainador\\Services\\UserService.cs",
-              "RelativeDocumentMoniker": "Services\\UserService.cs",
-              "ToolTip": "C:\\Users\\benja\\source\\repos\\Organizainador\\Services\\UserService.cs",
-              "RelativeToolTip": "Services\\UserService.cs",
-              "ViewState": "AgIAAAsAAAAAAAAAAAAxwA8AAAAsAAAAAAAAAA==",
+              "DocumentIndex": 14,
+              "Title": "Login.cshtml.cs",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\Pages\\Login.cshtml.cs",
+              "RelativeDocumentMoniker": "Pages\\Login.cshtml.cs",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\Pages\\Login.cshtml.cs",
+              "RelativeToolTip": "Pages\\Login.cshtml.cs",
+              "ViewState": "AgIAAD8AAAAAAAAAAAAQwEsAAAAoAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-05T16:50:42.543Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "login.js",
-              "DocumentMoniker": "C:\\Users\\benja\\source\\repos\\Organizainador\\wwwroot\\js\\login.js",
-              "RelativeDocumentMoniker": "wwwroot\\js\\login.js",
-              "ToolTip": "C:\\Users\\benja\\source\\repos\\Organizainador\\wwwroot\\js\\login.js",
-              "RelativeToolTip": "wwwroot\\js\\login.js",
-              "ViewState": "AgIAABYAAAAAAAAAAADwv2QAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2025-11-05T14:55:55.262Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\benja\\source\\repos\\Organizainador\\Program.cs",
-              "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "C:\\Users\\benja\\source\\repos\\Organizainador\\Program.cs",
-              "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAwAAAAAAAAAAAAAABUAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-09T03:09:49.521Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-09T01:51:12.184Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "Login.cshtml.cs",
-              "DocumentMoniker": "C:\\Users\\benja\\source\\repos\\Organizainador\\Pages\\Login.cshtml.cs",
-              "RelativeDocumentMoniker": "Pages\\Login.cshtml.cs",
-              "ToolTip": "C:\\Users\\benja\\source\\repos\\Organizainador\\Pages\\Login.cshtml.cs",
-              "RelativeToolTip": "Pages\\Login.cshtml.cs",
-              "ViewState": "AgIAAD8AAAAAAAAAAAAQwEsAAAAoAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-09T01:51:12.184Z",
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\Pages\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "Pages\\Shared\\_Layout.cshtml",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\Pages\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "Pages\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAAHkAAAAAAAAAAAAuwI0AAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-10-19T21:18:29.349Z",
               "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "PruebaController.cs",
-              "DocumentMoniker": "C:\\Users\\benja\\source\\repos\\Organizainador\\Controllers\\PruebaController.cs",
-              "RelativeDocumentMoniker": "Controllers\\PruebaController.cs",
-              "ToolTip": "C:\\Users\\benja\\source\\repos\\Organizainador\\Controllers\\PruebaController.cs",
-              "RelativeToolTip": "Controllers\\PruebaController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAMAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-19T20:30:05.109Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 8,
-              "Title": "OrganizainadorController.cs",
-              "DocumentMoniker": "C:\\Users\\benja\\source\\repos\\Organizainador\\Controllers\\OrganizainadorController.cs",
-              "RelativeDocumentMoniker": "Controllers\\OrganizainadorController.cs",
-              "ToolTip": "C:\\Users\\benja\\source\\repos\\Organizainador\\Controllers\\OrganizainadorController.cs",
-              "RelativeToolTip": "Controllers\\OrganizainadorController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-19T20:26:42.29Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "UsuarioModel.cs",
-              "DocumentMoniker": "C:\\Users\\benja\\source\\repos\\Organizainador\\Models\\UsuarioModel.cs",
-              "RelativeDocumentMoniker": "Models\\UsuarioModel.cs",
-              "ToolTip": "C:\\Users\\benja\\source\\repos\\Organizainador\\Models\\UsuarioModel.cs",
-              "RelativeToolTip": "Models\\UsuarioModel.cs",
-              "ViewState": "AgIAAA4AAAAAAAAAAAAUwCAAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-19T21:52:37.886Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "_ViewImports.cshtml",
-              "DocumentMoniker": "C:\\Users\\benja\\source\\repos\\Organizainador\\Views\\_ViewImports.cshtml",
-              "RelativeDocumentMoniker": "Views\\_ViewImports.cshtml",
-              "ToolTip": "C:\\Users\\benja\\source\\repos\\Organizainador\\Views\\_ViewImports.cshtml",
-              "RelativeToolTip": "Views\\_ViewImports.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-04T11:47:11.252Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "UsuariosController.cs",
-              "DocumentMoniker": "C:\\Users\\benja\\source\\repos\\Organizainador\\Controllers\\UsuariosController.cs",
-              "RelativeDocumentMoniker": "Controllers\\UsuariosController.cs",
-              "ToolTip": "C:\\Users\\benja\\source\\repos\\Organizainador\\Controllers\\UsuariosController.cs",
-              "RelativeToolTip": "Controllers\\UsuariosController.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAAQwBIAAAANAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-19T21:32:58.06Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "_ViewImports.cshtml",
-              "DocumentMoniker": "C:\\Users\\benja\\source\\repos\\Organizainador\\Pages\\_ViewImports.cshtml",
-              "RelativeDocumentMoniker": "Pages\\_ViewImports.cshtml",
-              "ToolTip": "C:\\Users\\benja\\source\\repos\\Organizainador\\Pages\\_ViewImports.cshtml",
-              "RelativeToolTip": "Pages\\_ViewImports.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-10-19T21:18:33.202Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "_Layout.cshtml",
-              "DocumentMoniker": "C:\\Users\\benja\\source\\repos\\Organizainador\\Pages\\Shared\\_Layout.cshtml",
-              "RelativeDocumentMoniker": "Pages\\Shared\\_Layout.cshtml",
-              "ToolTip": "C:\\Users\\benja\\source\\repos\\Organizainador\\Pages\\Shared\\_Layout.cshtml",
-              "RelativeToolTip": "Pages\\Shared\\_Layout.cshtml",
-              "ViewState": "AgIAAE4AAAAAAAAAAAAowFQAAAAdAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-10-19T21:18:29.349Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "Eliminar.cshtml",
-              "DocumentMoniker": "C:\\Users\\benja\\source\\repos\\Organizainador\\Views\\Clases\\Eliminar.cshtml",
-              "RelativeDocumentMoniker": "Views\\Clases\\Eliminar.cshtml",
-              "ToolTip": "C:\\Users\\benja\\source\\repos\\Organizainador\\Views\\Clases\\Eliminar.cshtml",
-              "RelativeToolTip": "Views\\Clases\\Eliminar.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAcAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-10-22T23:20:36.506Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 18,
-              "Title": "Index.cshtml",
-              "DocumentMoniker": "C:\\Users\\benja\\source\\repos\\Organizainador\\Views\\Clases\\Index.cshtml",
-              "RelativeDocumentMoniker": "Views\\Clases\\Index.cshtml",
-              "ToolTip": "C:\\Users\\benja\\source\\repos\\Organizainador\\Views\\Clases\\Index.cshtml",
-              "RelativeToolTip": "Views\\Clases\\Index.cshtml",
-              "ViewState": "AgIAACYAAAAAAAAAAAAowDUAAAAlAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-10-22T23:19:55.988Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "Crear.cshtml",
-              "DocumentMoniker": "C:\\Users\\benja\\source\\repos\\Organizainador\\Views\\Usuarios\\Crear.cshtml",
-              "RelativeDocumentMoniker": "Views\\Usuarios\\Crear.cshtml",
-              "ToolTip": "C:\\Users\\benja\\source\\repos\\Organizainador\\Views\\Usuarios\\Crear.cshtml",
-              "RelativeToolTip": "Views\\Usuarios\\Crear.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAWAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-10-19T21:43:19.559Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "Modificar.cshtml",
-              "DocumentMoniker": "C:\\Users\\benja\\source\\repos\\Organizainador\\Views\\Clases\\Modificar.cshtml",
-              "RelativeDocumentMoniker": "Views\\Clases\\Modificar.cshtml",
-              "ToolTip": "C:\\Users\\benja\\source\\repos\\Organizainador\\Views\\Clases\\Modificar.cshtml",
-              "RelativeToolTip": "Views\\Clases\\Modificar.cshtml",
-              "ViewState": "AgIAAB0AAAAAAAAAAAAuwD4AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-10-22T23:21:06.327Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
-              "Title": "_Layout.cshtml",
-              "DocumentMoniker": "C:\\Users\\benja\\source\\repos\\Organizainador\\Views\\Shared\\_Layout.cshtml",
-              "RelativeDocumentMoniker": "Views\\Shared\\_Layout.cshtml",
-              "ToolTip": "C:\\Users\\benja\\source\\repos\\Organizainador\\Views\\Shared\\_Layout.cshtml",
-              "RelativeToolTip": "Views\\Shared\\_Layout.cshtml",
-              "ViewState": "AgIAADsAAAAAAAAAAAAowGYAAAAHAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-10-22T23:21:47.37Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 23,
-              "Title": "PaginaPrincipal.cshtml.cs",
-              "DocumentMoniker": "C:\\Users\\benja\\source\\repos\\Organizainador\\Pages\\PaginaPrincipal.cshtml.cs",
-              "RelativeDocumentMoniker": "Pages\\PaginaPrincipal.cshtml.cs",
-              "ToolTip": "C:\\Users\\benja\\source\\repos\\Organizainador\\Pages\\PaginaPrincipal.cshtml.cs",
-              "RelativeToolTip": "Pages\\PaginaPrincipal.cshtml.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-19T22:58:10.111Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 22,
               "Title": "PaginaPrincipal.cshtml",
-              "DocumentMoniker": "C:\\Users\\benja\\source\\repos\\Organizainador\\Pages\\PaginaPrincipal.cshtml",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\Pages\\PaginaPrincipal.cshtml",
               "RelativeDocumentMoniker": "Pages\\PaginaPrincipal.cshtml",
-              "ToolTip": "C:\\Users\\benja\\source\\repos\\Organizainador\\Pages\\PaginaPrincipal.cshtml",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\Pages\\PaginaPrincipal.cshtml",
               "RelativeToolTip": "Pages\\PaginaPrincipal.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAGEAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAGEAAAAAAAAAAAAAAGEAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-10-19T22:58:01.944Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
-              "Title": "Modificar.cshtml",
-              "DocumentMoniker": "C:\\Users\\benja\\source\\repos\\Organizainador\\Views\\Usuarios\\Modificar.cshtml",
-              "RelativeDocumentMoniker": "Views\\Usuarios\\Modificar.cshtml",
-              "ToolTip": "C:\\Users\\benja\\source\\repos\\Organizainador\\Views\\Usuarios\\Modificar.cshtml",
-              "RelativeToolTip": "Views\\Usuarios\\Modificar.cshtml",
-              "ViewState": "AgIAACcAAAAAAAAAAAAIwEIAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-10-19T21:43:51.214Z"
+              "DocumentIndex": 2,
+              "Title": "UsuariosController.cs",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\Controllers\\UsuariosController.cs",
+              "RelativeDocumentMoniker": "Controllers\\UsuariosController.cs",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\Controllers\\UsuariosController.cs",
+              "RelativeToolTip": "Controllers\\UsuariosController.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAIAxwBUAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-19T21:32:58.06Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
-              "Title": "Eliminar.cshtml",
-              "DocumentMoniker": "C:\\Users\\benja\\source\\repos\\Organizainador\\Views\\Usuarios\\Eliminar.cshtml",
-              "RelativeDocumentMoniker": "Views\\Usuarios\\Eliminar.cshtml",
-              "ToolTip": "C:\\Users\\benja\\source\\repos\\Organizainador\\Views\\Usuarios\\Eliminar.cshtml",
-              "RelativeToolTip": "Views\\Usuarios\\Eliminar.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAADsAAAAGAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-10-19T21:43:34.958Z"
+              "DocumentIndex": 6,
+              "Title": "Calendario.cshtml.cs",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\Pages\\Calendario.cshtml.cs",
+              "RelativeDocumentMoniker": "Pages\\Calendario.cshtml.cs",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\Pages\\Calendario.cshtml.cs",
+              "RelativeToolTip": "Pages\\Calendario.cshtml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-12T12:51:00.803Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 0,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAAHoAAAAAAAAAAAAuwI4AAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-10-22T23:21:47.37Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAE8AAAAAAAAAAAAAABUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-09T03:09:49.521Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Calendario.cshtml",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\Pages\\Calendario.cshtml",
+              "RelativeDocumentMoniker": "Pages\\Calendario.cshtml",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\Pages\\Calendario.cshtml",
+              "RelativeToolTip": "Pages\\Calendario.cshtml",
+              "ViewState": "AgIAABcAAAAAAAAAAAAAACAAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-12T12:50:31.922Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Calendario.js",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\wwwroot\\js\\Calendario.js",
+              "RelativeDocumentMoniker": "wwwroot\\js\\Calendario.js",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\wwwroot\\js\\Calendario.js",
+              "RelativeToolTip": "wwwroot\\js\\Calendario.js",
+              "ViewState": "AgIAAEkAAAAAAAAAAAAuwF0AAAADAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-11-12T13:20:20.933Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Calendario.css",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\wwwroot\\css\\Calendario.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\Calendario.css",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\wwwroot\\css\\Calendario.css",
+              "RelativeToolTip": "wwwroot\\css\\Calendario.css",
+              "ViewState": "AgIAAD4AAAAAAAAAAAAkwFIAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-11-12T13:22:17.127Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
               "Title": "_ViewStart.cshtml",
-              "DocumentMoniker": "C:\\Users\\benja\\source\\repos\\Organizainador\\Pages\\_ViewStart.cshtml",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\Pages\\_ViewStart.cshtml",
               "RelativeDocumentMoniker": "Pages\\_ViewStart.cshtml",
-              "ToolTip": "C:\\Users\\benja\\source\\repos\\Organizainador\\Pages\\_ViewStart.cshtml",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\Pages\\_ViewStart.cshtml",
               "RelativeToolTip": "Pages\\_ViewStart.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
@@ -395,11 +266,203 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "login.js",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\wwwroot\\js\\login.js",
+              "RelativeDocumentMoniker": "wwwroot\\js\\login.js",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\wwwroot\\js\\login.js",
+              "RelativeToolTip": "wwwroot\\js\\login.js",
+              "ViewState": "AgIAABYAAAAAAAAAAADwv2QAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-11-05T14:55:55.262Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "_LoginLayout.cshtml",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\Pages\\Shared\\_LoginLayout.cshtml",
+              "RelativeDocumentMoniker": "Pages\\Shared\\_LoginLayout.cshtml",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\Pages\\Shared\\_LoginLayout.cshtml",
+              "RelativeToolTip": "Pages\\Shared\\_LoginLayout.cshtml",
+              "ViewState": "AgIAAB8AAAAAAAAAAAAUwDQAAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-05T15:02:02.365Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "PruebaController.cs",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\Controllers\\PruebaController.cs",
+              "RelativeDocumentMoniker": "Controllers\\PruebaController.cs",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\Controllers\\PruebaController.cs",
+              "RelativeToolTip": "Controllers\\PruebaController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-19T20:30:05.109Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Login.cshtml",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\Pages\\Login.cshtml",
+              "RelativeDocumentMoniker": "Pages\\Login.cshtml",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\Pages\\Login.cshtml",
+              "RelativeToolTip": "Pages\\Login.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACYAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-10-19T20:48:16.261Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "UserService.cs",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\Services\\UserService.cs",
+              "RelativeDocumentMoniker": "Services\\UserService.cs",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\Services\\UserService.cs",
+              "RelativeToolTip": "Services\\UserService.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAxwA8AAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-05T16:50:42.543Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "OrganizainadorController.cs",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\Controllers\\OrganizainadorController.cs",
+              "RelativeDocumentMoniker": "Controllers\\OrganizainadorController.cs",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\Controllers\\OrganizainadorController.cs",
+              "RelativeToolTip": "Controllers\\OrganizainadorController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-19T20:26:42.29Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "UsuarioModel.cs",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\Models\\UsuarioModel.cs",
+              "RelativeDocumentMoniker": "Models\\UsuarioModel.cs",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\Models\\UsuarioModel.cs",
+              "RelativeToolTip": "Models\\UsuarioModel.cs",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAUwCAAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-19T21:52:37.886Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "_ViewImports.cshtml",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\Views\\_ViewImports.cshtml",
+              "RelativeDocumentMoniker": "Views\\_ViewImports.cshtml",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\Views\\_ViewImports.cshtml",
+              "RelativeToolTip": "Views\\_ViewImports.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-04T11:47:11.252Z"
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 19,
+              "Title": "_ViewImports.cshtml",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\Pages\\_ViewImports.cshtml",
+              "RelativeDocumentMoniker": "Pages\\_ViewImports.cshtml",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\Pages\\_ViewImports.cshtml",
+              "RelativeToolTip": "Pages\\_ViewImports.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-10-19T21:18:33.202Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "Eliminar.cshtml",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\Views\\Clases\\Eliminar.cshtml",
+              "RelativeDocumentMoniker": "Views\\Clases\\Eliminar.cshtml",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\Views\\Clases\\Eliminar.cshtml",
+              "RelativeToolTip": "Views\\Clases\\Eliminar.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-10-22T23:20:36.506Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\Views\\Clases\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\Clases\\Index.cshtml",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\Views\\Clases\\Index.cshtml",
+              "RelativeToolTip": "Views\\Clases\\Index.cshtml",
+              "ViewState": "AgIAACYAAAAAAAAAAAAowDUAAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-10-22T23:19:55.988Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "Crear.cshtml",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\Views\\Usuarios\\Crear.cshtml",
+              "RelativeDocumentMoniker": "Views\\Usuarios\\Crear.cshtml",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\Views\\Usuarios\\Crear.cshtml",
+              "RelativeToolTip": "Views\\Usuarios\\Crear.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-10-19T21:43:19.559Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "Modificar.cshtml",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\Views\\Clases\\Modificar.cshtml",
+              "RelativeDocumentMoniker": "Views\\Clases\\Modificar.cshtml",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\Views\\Clases\\Modificar.cshtml",
+              "RelativeToolTip": "Views\\Clases\\Modificar.cshtml",
+              "ViewState": "AgIAAB0AAAAAAAAAAAAuwD4AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-10-22T23:21:06.327Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "PaginaPrincipal.cshtml.cs",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\Pages\\PaginaPrincipal.cshtml.cs",
+              "RelativeDocumentMoniker": "Pages\\PaginaPrincipal.cshtml.cs",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\Pages\\PaginaPrincipal.cshtml.cs",
+              "RelativeToolTip": "Pages\\PaginaPrincipal.cshtml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-19T22:58:10.111Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "Modificar.cshtml",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\Views\\Usuarios\\Modificar.cshtml",
+              "RelativeDocumentMoniker": "Views\\Usuarios\\Modificar.cshtml",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\Views\\Usuarios\\Modificar.cshtml",
+              "RelativeToolTip": "Views\\Usuarios\\Modificar.cshtml",
+              "ViewState": "AgIAACcAAAAAAAAAAAAIwEIAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-10-19T21:43:51.214Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "Eliminar.cshtml",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\Views\\Usuarios\\Eliminar.cshtml",
+              "RelativeDocumentMoniker": "Views\\Usuarios\\Eliminar.cshtml",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\Views\\Usuarios\\Eliminar.cshtml",
+              "RelativeToolTip": "Views\\Usuarios\\Eliminar.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADsAAAAGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-10-19T21:43:34.958Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
               "Title": "PruebaModel.cs",
-              "DocumentMoniker": "C:\\Users\\benja\\source\\repos\\Organizainador\\Models\\PruebaModel.cs",
+              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\Organizainador\\Models\\PruebaModel.cs",
               "RelativeDocumentMoniker": "Models\\PruebaModel.cs",
-              "ToolTip": "C:\\Users\\benja\\source\\repos\\Organizainador\\Models\\PruebaModel.cs",
+              "ToolTip": "C:\\Users\\HP\\source\\repos\\Organizainador\\Models\\PruebaModel.cs",
               "RelativeToolTip": "Models\\PruebaModel.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
