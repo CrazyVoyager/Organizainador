@@ -17,21 +17,6 @@
                         @Html.AntiForgeryToken()
 
                         <div class="mb-3">
-                            <label asp-for="UsuarioId" class="form-label">Usuario</label>
-                            <select asp-for="UsuarioId" class="form-control" required>
-                                <option value="">Seleccionar Usuario</option>
-                                @if (ViewBag.Usuarios != null)
-                                {
-                                    @foreach (var usuario in ViewBag.Usuarios)
-                                    {
-                                        <option value="@usuario.Id">@usuario.Nombre - @usuario.Email</option>
-                                    }
-                                }
-                            </select>
-                            <span asp-validation-for="UsuarioId" class="text-danger small"></span>
-                        </div>
-
-                        <div class="mb-3">
                             <label asp-for="Nombre" class="form-label">Nombre de la Clase</label>
                             <input asp-for="Nombre" class="form-control" placeholder="Ingrese el nombre de la clase" required>
                             <span asp-validation-for="Nombre" class="text-danger small"></span>
