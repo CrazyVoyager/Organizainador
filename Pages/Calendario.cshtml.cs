@@ -20,74 +20,83 @@ namespace Organizainador.Pages
         public DateTime? End { get; set; }
         public string Color { get; set; }
         public string Description { get; set; } // Añadido para la barra lateral
-        public string EventType { get; set; } // 'Clase' o 'Actividad'
+        public string EventType { get; set; }   // 'Clase' o 'Actividad'
     }
 
     public class CalendarioModel : PageModel
     {
-        // 1. Reemplaza 'ApplicationDbContext' con el nombre de tu contexto de BD real
+        // Asegúrate de que 'AppDbContext' coincida con el nombre real de tu contexto
         private readonly AppDbContext _dbContext;
 
-        public CalendarioModel(AppDbContext dbContext) // Inyección de dependencia
+        public CalendarioModel(AppDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        // Propiedad para cargar la lista de eventos del día actual en la barra lateral
+        // Propiedad para cargar la lista de eventos del día en la barra lateral (Vista Razor)
         public List<AppEvent> DailyEvents { get; set; } = new List<AppEvent>();
 
-        // --- OnGet (Carga Inicial) ---
+        // --- 1. OnGet: Carga Inicial de la Página ---
         public async Task OnGetAsync()
         {
-            // Cargar los eventos para la fecha actual en la barra lateral al cargar la página
+            // Al entrar a la página, cargamos los eventos de HOY para la barra lateral
             await LoadDailyEvents(DateTime.Today);
         }
 
-        // Función auxiliar para obtener el ID del usuario logeado
+        // --- 2. Método Auxiliar: Cargar eventos de un día específico en DailyEvents ---
+        private async Task LoadDailyEvents(DateTime date)
+        {
+            int userId = GetCurrentUserId();
+
+            DailyEvents = (await GetEventsForUser(userId))
+                .Where(e => e.Start.Date == date.Date) // Filtra solo los eventos de esa fecha
+                .OrderBy(e => e.Start)                 // Ordena por hora de inicio
+                .ToList();
+        }
+
+        // --- 3. Método Auxiliar: Obtener ID del usuario actual ---
         private int GetCurrentUserId()
         {
-            // ASUME que el ID del usuario se guarda como ClaimTypes.NameIdentifier
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
             {
                 return userId;
             }
-            // Retorna 0 si no está logeado o si el ID no es válido (manejo de error)
             return 0;
         }
 
-        // Función principal que obtiene TODAS las actividades y clases recurrentes del usuario
+        // --- 4. Lógica Principal: Obtener TODAS las actividades y clases (incluyendo recurrencia) ---
         private async Task<List<AppEvent>> GetEventsForUser(int userId)
         {
             if (userId == 0) return new List<AppEvent>();
 
             var events = new List<AppEvent>();
 
-            // A. Obtener Actividades (ActividadModel)
-            var actividades = await _dbContext.Actividades.Where(a => a.UsuarioId == userId).ToListAsync();
+            // A. Obtener Actividades
+            var actividades = await _dbContext.Actividades
+                .Where(a => a.UsuarioId == userId)
+                .ToListAsync();
 
             foreach (var act in actividades)
             {
-                // Asumimos que created_at es la fecha del evento y dura 1 hora.
                 events.Add(new AppEvent
                 {
                     Id = act.Id,
                     Title = act.Nombre,
                     Start = act.CreatedAt ?? DateTime.MinValue,
                     End = (act.CreatedAt ?? DateTime.MinValue).AddHours(1),
-                    Color = "#dc3545", // Rojo para Actividades
+                    Color = "#dc3545", // Rojo
                     Description = act.Descripcion,
                     EventType = "Actividad"
                 });
             }
 
-            // B. Obtener Horarios de Clases (ClaseModel + HorarioModel)
+            // B. Obtener Horarios de Clases
             var horarios = await _dbContext.Horarios
-                .Include(h => h.Clase) // Necesitas cargar la clase asociada
+                .Include(h => h.Clase)
                 .Where(h => h.Clase.UsuarioId == userId)
                 .ToListAsync();
 
-            // Mapeo de días de la semana (ajustar si usas otro formato en tu BD)
             var dayMap = new Dictionary<string, DayOfWeek>
             {
                 { "Lunes", DayOfWeek.Monday },
@@ -99,9 +108,8 @@ namespace Organizainador.Pages
                 { "Domingo", DayOfWeek.Sunday }
             };
 
-            // Proyectamos los horarios recurrentes en un rango de fechas (ej: un año)
-            // Esto es necesario porque FullCalendar pide fechas concretas.
-            for (int i = -30; i <= 365; i++) // 30 días pasados y 1 año futuro
+            // Proyectamos horarios recurrentes (30 días atrás, 1 año adelante)
+            for (int i = -30; i <= 365; i++)
             {
                 DateTime day = DateTime.Today.AddDays(i);
 
@@ -112,7 +120,6 @@ namespace Organizainador.Pages
                         DateTime start = day.Date.Add(h.HoraInicio);
                         DateTime end = day.Date.Add(h.HoraFin);
 
-                        // Si la hora de fin es anterior a la de inicio, asume que termina el día siguiente
                         if (end <= start) end = end.AddDays(1);
 
                         events.Add(new AppEvent
@@ -121,7 +128,7 @@ namespace Organizainador.Pages
                             Title = h.Clase.Nombre + " (" + h.DiaSemana + ")",
                             Start = start,
                             End = end,
-                            Color = "#0d6efd", // Azul para Clases
+                            Color = "#0d6efd", // Azul
                             Description = h.Clase.Descripcion,
                             EventType = "Clase"
                         });
@@ -132,18 +139,7 @@ namespace Organizainador.Pages
             return events;
         }
 
-        // Lógica de carga para la barra lateral (usada en OnGet y LoadDailyEvents)
-        private async Task LoadDailyEvents(DateTime date)
-        {
-            int userId = GetCurrentUserId();
-
-            DailyEvents = (await GetEventsForUser(userId))
-                .Where(e => e.Start.Date == date.Date) // Filtra solo los eventos del día
-                .OrderBy(e => e.Start)
-                .ToList();
-        }
-
-        // --- OnGetEvents (Handler AJAX para FullCalendar) ---
+        // --- 5. Handler AJAX: OnGetEvents (Para llenar el calendario principal) ---
         public async Task<JsonResult> OnGetEvents()
         {
             int userId = GetCurrentUserId();
@@ -159,7 +155,6 @@ namespace Organizainador.Pages
                 end = e.End?.ToString("yyyy-MM-ddTHH:mm:ss"),
                 backgroundColor = e.Color,
                 borderColor = e.Color,
-                // Propiedades extendidas para usarse en JavaScript (p.ej. al hacer clic)
                 extendedProps = new
                 {
                     description = e.Description,
@@ -170,8 +165,7 @@ namespace Organizainador.Pages
             return new JsonResult(calendarEvents);
         }
 
-        // --- OnGetDailyEvents (NUEVO Handler AJAX para la barra lateral) ---
-        // Se llama desde JavaScript al hacer clic en una fecha
+        // --- 6. Handler AJAX: OnGetDailyEvents (Para actualizar la barra lateral al hacer click) ---
         public async Task<JsonResult> OnGetDailyEvents(string date)
         {
             if (!DateTime.TryParse(date, out DateTime selectedDate))
@@ -182,6 +176,7 @@ namespace Organizainador.Pages
             int userId = GetCurrentUserId();
             if (userId == 0) return new JsonResult(new { success = false, message = "Usuario no autenticado." });
 
+            // Obtenemos todos y filtramos en memoria (se podría optimizar, pero reutiliza tu lógica actual)
             var allEvents = await GetEventsForUser(userId);
 
             var dailyEvents = allEvents

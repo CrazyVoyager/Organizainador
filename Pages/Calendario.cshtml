@@ -14,10 +14,30 @@
         <h3>@DateTime.Now.ToString("dd MMMM, yyyy")</h3>
         <p>@DateTime.Now.ToString("HH:mm")</p>
 
-        <div class="event-list">
-            <div class="event-item" style="border-left-color: #0d6efd;">
-                <strong>Próximamente:</strong> Cargar eventos aquí
-            </div>
+        <div id="daily-events-list" class="event-list">
+
+            @if (Model.DailyEvents != null && Model.DailyEvents.Any())
+            {
+                @foreach (var evento in Model.DailyEvents)
+                {
+                    <div class="event-item" style="border-left-color: @evento.Color;">
+                        <strong>@evento.Title</strong>
+                        <p>
+                            @evento.Start.ToString("HH:mm")
+                            @(evento.End.HasValue ? " - " + evento.End.Value.ToString("HH:mm") : "")
+                        </p>
+                        <p>@evento.Description</p>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="event-item" style="border-left-color: #6c757d;">
+                    <strong>No hay eventos</strong>
+                    <p>No tienes actividades programadas para hoy.</p>
+                </div>
+            }
+
         </div>
 
         <button class="ver-mas-btn">Ver más</button>
