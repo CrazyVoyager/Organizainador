@@ -6,11 +6,11 @@ namespace Organizainador.Pages
     public class PaginaPrincipalModel : PageModel
     {
         [BindProperty(SupportsGet = true)]
-        public string Usuario { get; set; }
+        public string Usuario { get; set; } = string.Empty;
 
         public void OnGet()
         {
-            // Si no viene por parámetro, establecer un valor por defecto
+            // Si no viene por parï¿½metro, establecer un valor por defecto
             if (string.IsNullOrEmpty(Usuario))
             {
                 Usuario = "Usuario";

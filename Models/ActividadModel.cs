@@ -26,15 +26,15 @@ namespace Organizainador.Models
         [Required(ErrorMessage = "El nombre de la actividad es obligatorio")]
         [Column("tac_nom_act")]
         [Display(Name = "Nombre de la Actividad")]
-        public string Nombre { get; set; }
+        public string Nombre { get; set; } = string.Empty;
 
         [Column("tac_desc")]
         [Display(Name = "Descripción")]
-        public string Descripcion { get; set; }
+        public string Descripcion { get; set; } = string.Empty;
 
         [Column("tac_t_act")]
         [Display(Name = "Tipo/Etiqueta")]
-        public string Etiqueta { get; set; }
+        public string Etiqueta { get; set; } = string.Empty;
 
         [Column("created_at")]
         [Display(Name = "Fecha de Creación")]

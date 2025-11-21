@@ -56,18 +56,18 @@ packages/
 *.nuget.g.props
 *.nuget.g.targets
 
-## CONFIGURACI”N ESPECÕFICA DE WEB Y SECRETS (.NET CORE/9.0)
+## CONFIGURACI√ìN ESPEC√çFICA DE WEB Y SECRETS (.NET CORE/9.0)
 ############################################################
-# Archivos que contienen settings locales o secretos (°IMPORTANTE IGNORAR!)
+# Archivos que contienen settings locales o secretos (¬°IMPORTANTE IGNORAR!)
 appsettings.Development.json
 local.settings.json
 **/secrets.json
+.env
 
-# Archivos de publicaciÛn/despliegue
+# Archivos de publicaci√≥n/despliegue
 [Pp]ublish/
-wwwroot/
 
-# Docker (archivo de anulaciÛn de desarrollo local)
+# Docker (archivo de anulaci√≥n de desarrollo local)
 **/docker-compose.override.yml
 
 ## Other Tools

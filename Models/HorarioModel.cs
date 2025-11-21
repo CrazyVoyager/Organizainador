@@ -18,7 +18,7 @@ namespace Organizainador.Models
 
         [Required(ErrorMessage = "El día de la semana es obligatorio")]
         [Column("tho_d_sem")]
-        public string DiaSemana { get; set; } 
+        public string DiaSemana { get; set; } = string.Empty; 
 
         [Required(ErrorMessage = "La hora de inicio es obligatoria")]
         [Column("tho_h_ini")]

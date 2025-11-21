@@ -20,12 +20,12 @@ namespace Organizainador.Models
         [Column("tcl_nom_clas")]
         [Display(Name = "Nombre de la clase")]
         [StringLength(100)]
-        public string Nombre { get; set; }
+        public string Nombre { get; set; } = string.Empty;
 
         [Column("tcl_desc")]
         [Display(Name = "Descripción")]
         [StringLength(500)]
-        public string Descripcion { get; set; }
+        public string Descripcion { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "La cantidad de horas es obligatoria")]
         [Column("tcl_cant_h_d")]
