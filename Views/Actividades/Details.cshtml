@@ -49,6 +49,29 @@
                         <dd class="col-sm-9">
                             @Html.DisplayFor(model => model.CreatedAt)
                         </dd>
+
+                        <dt class="col-sm-3">
+                            Horarios
+                        </dt>
+                        <dd class="col-sm-9">
+                            @if (Model?.Horarios != null && Model.Horarios.Any())
+                            {
+                                <ul class="list-unstyled">
+                                    @foreach (var horario in Model.Horarios)
+                                    {
+                                        <li class="mb-2">
+                                            <span class="badge bg-primary">
+                                                @horario.DiaSemana: @horario.HoraInicio.ToString(@"hh\:mm") - @horario.HoraFin.ToString(@"hh\:mm")
+                                            </span>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <span class="text-muted">No hay horarios asignados</span>
+                            }
+                        </dd>
                     </dl>
                 </div>
                 <div class="card-footer d-flex justify-content-between">
