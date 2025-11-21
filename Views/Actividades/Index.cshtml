@@ -33,10 +33,7 @@
                                     @Html.DisplayNameFor(model => model.Etiqueta)
                                 </th>
                                 <th>
-                                    @Html.DisplayNameFor(model => model.UsuarioId)
-                                </th>
-                                <th>
-                                    @Html.DisplayNameFor(model => model.CreatedAt)
+                                    Horarios
                                 </th>
                                 <th>Acciones</th>
                             </tr>
@@ -55,10 +52,20 @@
                                         @Html.DisplayFor(modelItem => item.Etiqueta)
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.UsuarioId)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.CreatedAt)
+                                        @if (item.Horarios != null && item.Horarios.Any())
+                                        {
+                                            @foreach (var horario in item.Horarios)
+                                            {
+                                                <span class="badge bg-primary me-1">
+                                                    @horario.DiaSemana @horario.HoraInicio.ToString(@"hh\:mm") - @horario.HoraFin.ToString(@"hh\:mm")
+                                                </span>
+                                                <br />
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Sin horarios</span>
+                                        }
                                     </td>
                                     <td>
                                         <div class="btn-group" role="group">

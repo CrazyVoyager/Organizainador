@@ -64,8 +64,7 @@ namespace Organizainador.Controllers
         // POST: Actividades/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("Nombre,Descripcion,Etiqueta,FechaInicio,FechaFin")] ActividadModel actividadModel)
+        public async Task<IActionResult> Create(ActividadModel actividadModel, List<HorarioModel>? horarios)
         {
             int userId = GetCurrentUserIdInt();
             if (userId == 0) return Forbid();
@@ -74,10 +73,33 @@ namespace Organizainador.Controllers
             actividadModel.UsuarioId = userId;
             actividadModel.CreatedAt = DateTime.UtcNow; // Asignar la fecha de creación automáticamente
 
+            // Remove validation errors for properties we're not using from the form
+            ModelState.Remove("Horarios");
+            ModelState.Remove("CreatedAt");
+
             if (ModelState.IsValid)
             {
                 _context.Actividades.Add(actividadModel);
                 await _context.SaveChangesAsync();
+
+                // Guardar los horarios si se proporcionaron
+                if (horarios != null && horarios.Any())
+                {
+                    foreach (var horario in horarios)
+                    {
+                        // Solo agregar horarios con datos completos
+                        if (!string.IsNullOrEmpty(horario.DiaSemana) && 
+                            horario.HoraInicio != default && 
+                            horario.HoraFin != default)
+                        {
+                            horario.ActividadId = actividadModel.Id;
+                            horario.ClaseId = null; // Asegurar que no tiene ClaseId
+                            _context.Horarios.Add(horario);
+                        }
+                    }
+                    await _context.SaveChangesAsync();
+                }
+
                 return RedirectToAction(nameof(Index));
             }
             return View(actividadModel);
@@ -103,8 +125,7 @@ namespace Organizainador.Controllers
         // POST: Actividades/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,
-            [Bind("Id,Nombre,Descripcion,Etiqueta,FechaInicio,FechaFin")] ActividadModel actividadModel)
+        public async Task<IActionResult> Edit(int id, ActividadModel actividadModel, List<HorarioModel>? horarios)
         {
             int userId = GetCurrentUserIdInt();
             if (userId == 0) return Forbid();
@@ -113,6 +134,10 @@ namespace Organizainador.Controllers
 
             // 1. Re-asignar la FK y CreatedAt para seguridad
             actividadModel.UsuarioId = userId;
+
+            // Remove validation errors for properties we're not using from the form
+            ModelState.Remove("Horarios");
+            ModelState.Remove("CreatedAt");
 
             if (ModelState.IsValid)
             {
@@ -124,6 +149,32 @@ namespace Organizainador.Controllers
                     _context.Entry(actividadModel).Property(a => a.CreatedAt).IsModified = false;
 
                     await _context.SaveChangesAsync();
+
+                    // Actualizar los horarios
+                    // 1. Eliminar los horarios existentes de esta actividad
+                    var horariosExistentes = await _context.Horarios
+                        .Where(h => h.ActividadId == id)
+                        .ToListAsync();
+                    _context.Horarios.RemoveRange(horariosExistentes);
+
+                    // 2. Agregar los nuevos horarios
+                    if (horarios != null && horarios.Any())
+                    {
+                        foreach (var horario in horarios)
+                        {
+                            // Solo agregar horarios con datos completos
+                            if (!string.IsNullOrEmpty(horario.DiaSemana) && 
+                                horario.HoraInicio != default && 
+                                horario.HoraFin != default)
+                            {
+                                horario.ActividadId = actividadModel.Id;
+                                horario.ClaseId = null; // Asegurar que no tiene ClaseId
+                                _context.Horarios.Add(horario);
+                            }
+                        }
+                    }
+
+                    await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -132,7 +183,13 @@ namespace Organizainador.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(actividadModel);
+            
+            // If validation fails, reload the actividad with horarios
+            var reloadedActividad = await _context.Actividades
+                .Include(a => a.Horarios)
+                .FirstOrDefaultAsync(a => a.Id == id);
+            
+            return View(reloadedActividad ?? actividadModel);
         }
 
         // ======================== ELIMINAR ACTIVIDAD (Delete) ========================

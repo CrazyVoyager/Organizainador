@@ -38,10 +38,86 @@
                             <span asp-validation-for="Etiqueta" class="text-danger small"></span>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="CreatedAt" class="form-label">Fecha de Creación</label>
-                            <input asp-for="CreatedAt" type="datetime-local" class="form-control" required>
-                            <span asp-validation-for="CreatedAt" class="text-danger small"></span>
+                        <!-- Sección de Horarios -->
+                        <div class="mb-4">
+                            <h5 class="mb-3">Horarios</h5>
+                            <div id="horarios-container">
+                                @if (Model.Horarios != null && Model.Horarios.Any())
+                                {
+                                    int index = 0;
+                                    foreach (var horario in Model.Horarios)
+                                    {
+                                        <div class="horario-item card mb-3 p-3" data-horario-id="@horario.Id">
+                                            <input type="hidden" name="Horarios[@index].Id" value="@horario.Id" />
+                                            <div class="row">
+                                                <div class="col-md-4 mb-2">
+                                                    <label class="form-label">Día de la Semana</label>
+                                                    <select name="Horarios[@index].DiaSemana" class="form-select">
+                                                        <option value="">Selecciona el Día</option>
+                                                        <option value="Lunes" selected="@(horario.DiaSemana == "Lunes")">Lunes</option>
+                                                        <option value="Martes" selected="@(horario.DiaSemana == "Martes")">Martes</option>
+                                                        <option value="Miércoles" selected="@(horario.DiaSemana == "Miércoles")">Miércoles</option>
+                                                        <option value="Jueves" selected="@(horario.DiaSemana == "Jueves")">Jueves</option>
+                                                        <option value="Viernes" selected="@(horario.DiaSemana == "Viernes")">Viernes</option>
+                                                        <option value="Sábado" selected="@(horario.DiaSemana == "Sábado")">Sábado</option>
+                                                        <option value="Domingo" selected="@(horario.DiaSemana == "Domingo")">Domingo</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3 mb-2">
+                                                    <label class="form-label">Hora de Inicio</label>
+                                                    <input type="time" name="Horarios[@index].HoraInicio" value="@horario.HoraInicio.ToString(@"hh\:mm")" class="form-control">
+                                                </div>
+                                                <div class="col-md-3 mb-2">
+                                                    <label class="form-label">Hora de Fin</label>
+                                                    <input type="time" name="Horarios[@index].HoraFin" value="@horario.HoraFin.ToString(@"hh\:mm")" class="form-control">
+                                                </div>
+                                                <div class="col-md-2 mb-2 d-flex align-items-end">
+                                                    <button type="button" class="btn btn-danger btn-sm remove-horario">
+                                                        <i class="fas fa-trash"></i> Eliminar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        index++;
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="horario-item card mb-3 p-3">
+                                        <div class="row">
+                                            <div class="col-md-4 mb-2">
+                                                <label class="form-label">Día de la Semana</label>
+                                                <select name="Horarios[0].DiaSemana" class="form-select">
+                                                    <option value="">Selecciona el Día</option>
+                                                    <option value="Lunes">Lunes</option>
+                                                    <option value="Martes">Martes</option>
+                                                    <option value="Miércoles">Miércoles</option>
+                                                    <option value="Jueves">Jueves</option>
+                                                    <option value="Viernes">Viernes</option>
+                                                    <option value="Sábado">Sábado</option>
+                                                    <option value="Domingo">Domingo</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3 mb-2">
+                                                <label class="form-label">Hora de Inicio</label>
+                                                <input type="time" name="Horarios[0].HoraInicio" class="form-control">
+                                            </div>
+                                            <div class="col-md-3 mb-2">
+                                                <label class="form-label">Hora de Fin</label>
+                                                <input type="time" name="Horarios[0].HoraFin" class="form-control">
+                                            </div>
+                                            <div class="col-md-2 mb-2 d-flex align-items-end">
+                                                <button type="button" class="btn btn-danger btn-sm remove-horario" disabled>
+                                                    <i class="fas fa-trash"></i> Eliminar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <button type="button" id="add-horario" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus"></i> Agregar Horario
+                            </button>
                         </div>
 
                         <div class="d-flex justify-content-between">
@@ -63,4 +139,67 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    
+    <script>
+        let horarioIndex = @(Model.Horarios?.Count ?? 1);
+
+        document.getElementById('add-horario').addEventListener('click', function() {
+            const container = document.getElementById('horarios-container');
+            const newHorario = document.createElement('div');
+            newHorario.className = 'horario-item card mb-3 p-3';
+            newHorario.innerHTML = `
+                <div class="row">
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label">Día de la Semana</label>
+                        <select name="Horarios[${horarioIndex}].DiaSemana" class="form-select">
+                            <option value="">Selecciona el Día</option>
+                            <option value="Lunes">Lunes</option>
+                            <option value="Martes">Martes</option>
+                            <option value="Miércoles">Miércoles</option>
+                            <option value="Jueves">Jueves</option>
+                            <option value="Viernes">Viernes</option>
+                            <option value="Sábado">Sábado</option>
+                            <option value="Domingo">Domingo</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Hora de Inicio</label>
+                        <input type="time" name="Horarios[${horarioIndex}].HoraInicio" class="form-control">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Hora de Fin</label>
+                        <input type="time" name="Horarios[${horarioIndex}].HoraFin" class="form-control">
+                    </div>
+                    <div class="col-md-2 mb-2 d-flex align-items-end">
+                        <button type="button" class="btn btn-danger btn-sm remove-horario">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(newHorario);
+            horarioIndex++;
+            updateRemoveButtons();
+        });
+
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('remove-horario')) {
+                e.target.closest('.horario-item').remove();
+                updateRemoveButtons();
+            }
+        });
+
+        function updateRemoveButtons() {
+            const horarios = document.querySelectorAll('.horario-item');
+            horarios.forEach((horario, index) => {
+                const removeBtn = horario.querySelector('.remove-horario');
+                if (removeBtn) {
+                    removeBtn.disabled = horarios.length === 1;
+                }
+            });
+        }
+
+        // Initialize on load
+        updateRemoveButtons();
+    </script>
 }
