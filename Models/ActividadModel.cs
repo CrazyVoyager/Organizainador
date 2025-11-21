@@ -39,5 +39,8 @@ namespace Organizainador.Models
         [Column("created_at")]
         [Display(Name = "Fecha de Creación")]
         public DateTime? CreatedAt { get; set; }
+
+        // Propiedad de navegación para horarios
+        public ICollection<HorarioModel>? Horarios { get; set; }
     }
 }

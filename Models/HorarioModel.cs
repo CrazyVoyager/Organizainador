@@ -12,9 +12,11 @@ namespace Organizainador.Models
         [Column("tho_id_hor")]
         public int Id { get; set; }
 
-        [Required]
         [Column("tcl_id_clas")]
-        public int ClaseId { get; set; }
+        public int? ClaseId { get; set; }
+
+        [Column("tac_id_act")]
+        public int? ActividadId { get; set; }
 
         [Required(ErrorMessage = "El día de la semana es obligatorio")]
         [Column("tho_d_sem")]
@@ -28,9 +30,13 @@ namespace Organizainador.Models
         [Column("tho_h_fin")]
         public TimeSpan HoraFin { get; set; } 
 
-        // Propiedad de navegación
+        // Propiedades de navegación
         // Permite cargar el objeto ClaseModel asociado sin hacer JOIN manual
         [ForeignKey("ClaseId")]
         public ClaseModel? Clase { get; set; }
+
+        // Permite cargar el objeto ActividadModel asociado sin hacer JOIN manual
+        [ForeignKey("ActividadId")]
+        public ActividadModel? Actividad { get; set; }
     }
 }

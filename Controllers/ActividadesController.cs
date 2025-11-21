@@ -30,8 +30,9 @@ namespace Organizainador.Controllers
             int userId = GetCurrentUserIdInt();
             if (userId == 0) return Forbid();
 
-            // 1. Filtrar SOLO las actividades del usuario logueado
+            // 1. Filtrar SOLO las actividades del usuario logueado e incluir horarios
             var actividades = await _context.Actividades
+                                            .Include(a => a.Horarios)
                                             .Where(a => a.UsuarioId == userId)
                                             .ToListAsync();
             return View(actividades);
@@ -45,6 +46,7 @@ namespace Organizainador.Controllers
             if (userId == 0 || id == null) return NotFound();
 
             var actividadModel = await _context.Actividades
+                .Include(a => a.Horarios)
                 .FirstOrDefaultAsync(m => m.Id == id && m.UsuarioId == userId);
 
             if (actividadModel == null) return NotFound();
@@ -88,7 +90,9 @@ namespace Organizainador.Controllers
             int userId = GetCurrentUserIdInt();
             if (userId == 0 || id == null) return NotFound();
 
-            var actividadModel = await _context.Actividades.FindAsync(id);
+            var actividadModel = await _context.Actividades
+                .Include(a => a.Horarios)
+                .FirstOrDefaultAsync(a => a.Id == id);
 
             // 1. Validar que la actividad existe Y pertenece al usuario logueado
             if (actividadModel == null || actividadModel.UsuarioId != userId) return NotFound();

@@ -38,10 +38,18 @@ public class HorariosController : Controller
             .Select(c => c.Id)
             .ToListAsync();
 
-        // 2. Obtener los horarios cuyas Clases pertenecen al usuario actual
+        // 2. Obtener los IDs de todas las actividades que pertenecen al usuario actual
+        var userActividadesIds = await _context.Actividades
+            .Where(a => a.UsuarioId == userId)
+            .Select(a => a.Id)
+            .ToListAsync();
+
+        // 3. Obtener los horarios cuyas Clases o Actividades pertenecen al usuario actual
         var horarios = await _context.Horarios
             .Include(h => h.Clase) // Incluir el objeto Clase para mostrar su nombre
-            .Where(h => userClasesIds.Contains(h.ClaseId))
+            .Include(h => h.Actividad) // Incluir el objeto Actividad para mostrar su nombre
+            .Where(h => (h.ClaseId.HasValue && userClasesIds.Contains(h.ClaseId.Value)) ||
+                        (h.ActividadId.HasValue && userActividadesIds.Contains(h.ActividadId.Value)))
             .ToListAsync();
 
         // Si no hay clases registradas para el usuario, tampoco hay horarios.
