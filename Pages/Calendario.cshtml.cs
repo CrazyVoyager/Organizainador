@@ -83,7 +83,9 @@ namespace Organizainador.Pages
                 var horario = act.Horarios?.FirstOrDefault();
                 if (horario?.Fecha != null)
                 {
-                    var fecha = horario.Fecha.Value.Date;
+                    // Ensure the DateTime is treated as UTC
+                    var fechaUtc = DateTime.SpecifyKind(horario.Fecha.Value, DateTimeKind.Utc);
+                    var fecha = fechaUtc.Date;
                     var inicio = fecha.Add(horario.HoraInicio);
                     var fin = fecha.Add(horario.HoraFin);
 

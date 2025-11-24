@@ -88,7 +88,7 @@ namespace Organizainador.Controllers
                     var horario = new HorarioModel
                     {
                         ActividadId = actividadModel.Id,
-                        Fecha = fecha.Value,
+                        Fecha = DateTime.SpecifyKind(fecha.Value, DateTimeKind.Utc),
                         HoraInicio = horaInicio,
                         HoraFin = horaFin
                     };
@@ -154,7 +154,7 @@ namespace Organizainador.Controllers
                         if (horarioExistente != null)
                         {
                             // Actualizar horario existente
-                            horarioExistente.Fecha = fecha.Value;
+                            horarioExistente.Fecha = DateTime.SpecifyKind(fecha.Value, DateTimeKind.Utc);
                             horarioExistente.HoraInicio = horaInicio;
                             horarioExistente.HoraFin = horaFin;
                             _context.Update(horarioExistente);
@@ -165,7 +165,7 @@ namespace Organizainador.Controllers
                             var nuevoHorario = new HorarioModel
                             {
                                 ActividadId = id,
-                                Fecha = fecha.Value,
+                                Fecha = DateTime.SpecifyKind(fecha.Value, DateTimeKind.Utc),
                                 HoraInicio = horaInicio,
                                 HoraFin = horaFin
                             };

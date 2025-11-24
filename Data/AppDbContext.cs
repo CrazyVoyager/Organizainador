@@ -43,7 +43,9 @@ namespace Organizainador.Data
                 entity.Property(e => e.ClaseId).HasColumnName("tcl_id_clas");
                 entity.Property(e => e.ActividadId).HasColumnName("tac_id_act");
                 entity.Property(e => e.DiaSemana).HasColumnName("tho_d_sem");
-                entity.Property(e => e.Fecha).HasColumnName("tho_fecha");
+                entity.Property(e => e.Fecha)
+                      .HasColumnName("tho_fecha")
+                      .HasColumnType("timestamp with time zone"); // Especificar tipo PostgreSQL
                 entity.Property(e => e.HoraInicio).HasColumnName("tho_h_ini");
                 entity.Property(e => e.HoraFin).HasColumnName("tho_h_fin");
 
