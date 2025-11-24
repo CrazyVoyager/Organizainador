@@ -45,8 +45,8 @@ public class HorariosController : Controller
         var conflictingHorarios = await _context.Horarios
             .Where(h => h.DiaSemana == diaSemana && 
                        (excludeHorarioId == null || h.Id != excludeHorarioId) &&
-                       ((userClasesIds.Contains(h.ClaseId ?? 0)) || 
-                        (userActividadesIds.Contains(h.ActividadId ?? 0))))
+                       ((h.ClaseId.HasValue && userClasesIds.Contains(h.ClaseId.Value)) || 
+                        (h.ActividadId.HasValue && userActividadesIds.Contains(h.ActividadId.Value))))
             .ToListAsync();
 
         // Verificar si hay superposición de horarios

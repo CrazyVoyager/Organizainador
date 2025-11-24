@@ -29,10 +29,21 @@
             @Html.DisplayFor(model => model.HoraFin)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Clase)
+            Clase/Actividad
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Clase.Nombre)
+            @if (Model.Clase != null)
+            {
+                <span class="badge bg-primary">@Model.Clase.Nombre</span>
+            }
+            else if (Model.Actividad != null)
+            {
+                <span class="badge bg-success">@Model.Actividad.Nombre</span>
+            }
+            else
+            {
+                <span class="badge bg-secondary">Sin asignar</span>
+            }
         </dd>
     </dl>
 </div>
