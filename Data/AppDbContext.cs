@@ -33,23 +33,33 @@ namespace Organizainador.Data
         {
             base.OnModelCreating(modelBuilder); // NECESARIO para que las tablas de Identity se creen correctamente
 
-            // 1. Mapeo explícito de HorarioModel (Faltaban atributos [Table] y [Column] en el modelo)
+            // 1. Mapeo explícito de HorarioModel
             modelBuilder.Entity<HorarioModel>(entity =>
             {
                 entity.ToTable("tab_hor"); // Define el nombre de la tabla
 
                 // Mapeo de columnas explícito
                 entity.Property(e => e.Id).HasColumnName("tho_id_hor");
-                entity.Property(e => e.ClaseId).HasColumnName("tcl_id_clas"); // Clave foránea
+                entity.Property(e => e.ClaseId).HasColumnName("tcl_id_clas");
+                entity.Property(e => e.ActividadId).HasColumnName("tac_id_act");
                 entity.Property(e => e.DiaSemana).HasColumnName("tho_d_sem");
+                entity.Property(e => e.Fecha).HasColumnName("tho_fecha");
                 entity.Property(e => e.HoraInicio).HasColumnName("tho_h_ini");
                 entity.Property(e => e.HoraFin).HasColumnName("tho_h_fin");
 
                 // Relación: Un Horario pertenece a una Clase (1:N)
                 entity.HasOne(h => h.Clase)
-                      .WithMany(c => c.Horarios) // Asegúrate de añadir `public ICollection<HorarioModel>? Horarios { get; set; }` en ClaseModel
+                      .WithMany(c => c.Horarios)
                       .HasForeignKey(h => h.ClaseId)
-                      .IsRequired();
+                      .OnDelete(DeleteBehavior.Cascade)
+                      .IsRequired(false);
+
+                // Relación: Un Horario pertenece a una Actividad (1:N)
+                entity.HasOne(h => h.Actividad)
+                      .WithMany(a => a.Horarios)
+                      .HasForeignKey(h => h.ActividadId)
+                      .OnDelete(DeleteBehavior.Cascade)
+                      .IsRequired(false);
             });
 
             // 2. Relación Usuario (tab_usr) y Actividad (tab_act)

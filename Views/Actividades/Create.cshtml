@@ -39,9 +39,18 @@
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="CreatedAt" class="form-label">Fecha de Creación</label>
-                            <input asp-for="CreatedAt" type="datetime-local" class="form-control" required>
-                            <span asp-validation-for="CreatedAt" class="text-danger small"></span>
+                            <label for="fecha" class="form-label">Fecha</label>
+                            <input type="date" id="fecha" name="fecha" class="form-control">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="horaInicio" class="form-label">Hora de Inicio</label>
+                            <input type="time" id="horaInicio" name="horaInicio" class="form-control">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="horaFin" class="form-label">Hora de Fin</label>
+                            <input type="time" id="horaFin" name="horaFin" class="form-control">
                         </div>
 
                         <div class="d-flex justify-content-between">

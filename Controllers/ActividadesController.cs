@@ -30,8 +30,9 @@ namespace Organizainador.Controllers
             int userId = GetCurrentUserIdInt();
             if (userId == 0) return Forbid();
 
-            // 1. Filtrar SOLO las actividades del usuario logueado
+            // 1. Filtrar SOLO las actividades del usuario logueado e incluir horarios
             var actividades = await _context.Actividades
+                                            .Include(a => a.Horarios)
                                             .Where(a => a.UsuarioId == userId)
                                             .ToListAsync();
             return View(actividades);
@@ -45,6 +46,7 @@ namespace Organizainador.Controllers
             if (userId == 0 || id == null) return NotFound();
 
             var actividadModel = await _context.Actividades
+                .Include(a => a.Horarios)
                 .FirstOrDefaultAsync(m => m.Id == id && m.UsuarioId == userId);
 
             if (actividadModel == null) return NotFound();
@@ -63,19 +65,37 @@ namespace Organizainador.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
-            [Bind("Nombre,Descripcion,Etiqueta,FechaInicio,FechaFin")] ActividadModel actividadModel)
+            [Bind("Nombre,Descripcion,Etiqueta")] ActividadModel actividadModel,
+            DateTime? fecha,
+            TimeSpan horaInicio,
+            TimeSpan horaFin)
         {
             int userId = GetCurrentUserIdInt();
             if (userId == 0) return Forbid();
 
             // 1. ASIGNAR EL ID del usuario logueado
             actividadModel.UsuarioId = userId;
-            actividadModel.CreatedAt = DateTime.UtcNow; // Asignar la fecha de creación automáticamente
 
             if (ModelState.IsValid)
             {
+                // 2. Guardar la actividad primero
                 _context.Actividades.Add(actividadModel);
                 await _context.SaveChangesAsync();
+
+                // 3. Crear el horario asociado si se proporcionaron los datos
+                if (fecha.HasValue && horaInicio != default && horaFin != default)
+                {
+                    var horario = new HorarioModel
+                    {
+                        ActividadId = actividadModel.Id,
+                        Fecha = fecha.Value,
+                        HoraInicio = horaInicio,
+                        HoraFin = horaFin
+                    };
+                    _context.Horarios.Add(horario);
+                    await _context.SaveChangesAsync();
+                }
+
                 return RedirectToAction(nameof(Index));
             }
             return View(actividadModel);
@@ -88,7 +108,9 @@ namespace Organizainador.Controllers
             int userId = GetCurrentUserIdInt();
             if (userId == 0 || id == null) return NotFound();
 
-            var actividadModel = await _context.Actividades.FindAsync(id);
+            var actividadModel = await _context.Actividades
+                .Include(a => a.Horarios)
+                .FirstOrDefaultAsync(a => a.Id == id);
 
             // 1. Validar que la actividad existe Y pertenece al usuario logueado
             if (actividadModel == null || actividadModel.UsuarioId != userId) return NotFound();
@@ -100,14 +122,17 @@ namespace Organizainador.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id,
-            [Bind("Id,Nombre,Descripcion,Etiqueta,FechaInicio,FechaFin")] ActividadModel actividadModel)
+            [Bind("Id,Nombre,Descripcion,Etiqueta")] ActividadModel actividadModel,
+            DateTime? fecha,
+            TimeSpan horaInicio,
+            TimeSpan horaFin)
         {
             int userId = GetCurrentUserIdInt();
             if (userId == 0) return Forbid();
 
             if (id != actividadModel.Id) return NotFound();
 
-            // 1. Re-asignar la FK y CreatedAt para seguridad
+            // 1. Re-asignar la FK para seguridad
             actividadModel.UsuarioId = userId;
 
             if (ModelState.IsValid)
@@ -115,11 +140,39 @@ namespace Organizainador.Controllers
                 try
                 {
                     _context.Update(actividadModel);
-                    // 2. Marcar estas propiedades como NO modificadas
+                    // 2. Marcar UsuarioId como NO modificado
                     _context.Entry(actividadModel).Property(a => a.UsuarioId).IsModified = false;
-                    _context.Entry(actividadModel).Property(a => a.CreatedAt).IsModified = false;
 
                     await _context.SaveChangesAsync();
+
+                    // 3. Actualizar o crear el horario asociado
+                    var horarioExistente = await _context.Horarios
+                        .FirstOrDefaultAsync(h => h.ActividadId == id);
+
+                    if (fecha.HasValue && horaInicio != default && horaFin != default)
+                    {
+                        if (horarioExistente != null)
+                        {
+                            // Actualizar horario existente
+                            horarioExistente.Fecha = fecha.Value;
+                            horarioExistente.HoraInicio = horaInicio;
+                            horarioExistente.HoraFin = horaFin;
+                            _context.Update(horarioExistente);
+                        }
+                        else
+                        {
+                            // Crear nuevo horario
+                            var nuevoHorario = new HorarioModel
+                            {
+                                ActividadId = id,
+                                Fecha = fecha.Value,
+                                HoraInicio = horaInicio,
+                                HoraFin = horaFin
+                            };
+                            _context.Horarios.Add(nuevoHorario);
+                        }
+                        await _context.SaveChangesAsync();
+                    }
                 }
                 catch (DbUpdateConcurrencyException)
                 {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -17,12 +18,6 @@ namespace Organizainador.Models
         [Display(Name = "ID Usuario")]
         public int UsuarioId { get; set; }
 
-
-        // Propiedad de navegación (Opcional, pero recomendado para MVC)
-        // Permite acceder al objeto UsuarioModel relacionado (si lo configuras en el DbContext)
-        // public UsuarioModel Usuario { get; set; }
-
-
         [Required(ErrorMessage = "El nombre de la actividad es obligatorio")]
         [Column("tac_nom_act")]
         [Display(Name = "Nombre de la Actividad")]
@@ -36,8 +31,7 @@ namespace Organizainador.Models
         [Display(Name = "Tipo/Etiqueta")]
         public string Etiqueta { get; set; }
 
-        [Column("created_at")]
-        [Display(Name = "Fecha de Creación")]
-        public DateTime? CreatedAt { get; set; }
+        // Propiedad de navegación para horarios
+        public ICollection<HorarioModel>? Horarios { get; set; }
     }
 }

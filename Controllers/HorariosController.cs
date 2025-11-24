@@ -41,7 +41,7 @@ public class HorariosController : Controller
         // 2. Obtener los horarios cuyas Clases pertenecen al usuario actual
         var horarios = await _context.Horarios
             .Include(h => h.Clase) // Incluir el objeto Clase para mostrar su nombre
-            .Where(h => userClasesIds.Contains(h.ClaseId))
+            .Where(h => h.ClaseId.HasValue && userClasesIds.Contains(h.ClaseId.Value))
             .ToListAsync();
 
         // Si no hay clases registradas para el usuario, tampoco hay horarios.

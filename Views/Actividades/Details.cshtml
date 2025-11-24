@@ -36,19 +36,33 @@
                             @Html.DisplayFor(model => model.Etiqueta)
                         </dd>
 
-                        <dt class="col-sm-3">
-                            @Html.DisplayNameFor(model => model.UsuarioId)
-                        </dt>
-                        <dd class="col-sm-9">
-                            @Html.DisplayFor(model => model.UsuarioId)
-                        </dd>
+                        @{
+                            var horario = Model.Horarios?.FirstOrDefault();
+                        }
 
-                        <dt class="col-sm-3">
-                            @Html.DisplayNameFor(model => model.CreatedAt)
-                        </dt>
-                        <dd class="col-sm-9">
-                            @Html.DisplayFor(model => model.CreatedAt)
-                        </dd>
+                        @if (horario != null)
+                        {
+                            <dt class="col-sm-3">
+                                Fecha
+                            </dt>
+                            <dd class="col-sm-9">
+                                @horario.Fecha?.ToString("dd/MM/yyyy")
+                            </dd>
+
+                            <dt class="col-sm-3">
+                                Hora de Inicio
+                            </dt>
+                            <dd class="col-sm-9">
+                                @horario.HoraInicio.ToString(@"hh\:mm")
+                            </dd>
+
+                            <dt class="col-sm-3">
+                                Hora de Fin
+                            </dt>
+                            <dd class="col-sm-9">
+                                @horario.HoraFin.ToString(@"hh\:mm")
+                            </dd>
+                        }
                     </dl>
                 </div>
                 <div class="card-footer d-flex justify-content-between">
