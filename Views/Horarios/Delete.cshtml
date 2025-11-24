@@ -20,16 +20,16 @@
                             Esta acción no se puede deshacer. Se eliminará el horario para 
                             @if (Model.Clase != null)
                             {
-                                <strong>la clase @Model.Clase.Nombre</strong>
+                                <strong>la clase @Model.Clase.Nombre</strong><text>.</text>
                             }
                             else if (Model.Actividad != null)
                             {
-                                <strong>la actividad @Model.Actividad.Nombre</strong>
+                                <strong>la actividad @Model.Actividad.Nombre</strong><text>.</text>
                             }
                             else
                             {
-                                <strong>el elemento sin asignar</strong>
-                            }.
+                                <strong>el elemento sin asignar</strong><text>.</text>
+                            }
                         </p>
                     </div>
 
