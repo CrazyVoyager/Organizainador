@@ -32,7 +32,7 @@ namespace Organizainador.Models
 
         [Column("tho_recurrente")]
         [Display(Name = "Es recurrente")]
-        public bool EsRecurrente { get; set; } = true; // Por defecto es recurrente (todos los días)
+        public bool EsRecurrente { get; set; } = true; // Por defecto es recurrente (todas las semanas)
 
         // Propiedades de navegación
         // Permite cargar el objeto ClaseModel asociado sin hacer JOIN manual
