@@ -23,6 +23,9 @@ namespace Organizainador.Controllers
         private string GetCurrentUserIdString() => User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
         private int GetCurrentUserIdInt() => int.TryParse(GetCurrentUserIdString(), out int id) ? id : 0;
 
+        // Función auxiliar para convertir DateTime a UTC (requerido por PostgreSQL)
+        private static DateTime ConvertToUtc(DateTime dateTime) => DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
+
         // ======================== LISTADO PRINCIPAL (Index) ========================
         // GET: Actividades
         public async Task<IActionResult> Index()
@@ -88,7 +91,7 @@ namespace Organizainador.Controllers
                     var horario = new HorarioModel
                     {
                         ActividadId = actividadModel.Id,
-                        Fecha = DateTime.SpecifyKind(fecha.Value, DateTimeKind.Utc),
+                        Fecha = ConvertToUtc(fecha.Value),
                         HoraInicio = horaInicio,
                         HoraFin = horaFin
                     };
@@ -154,7 +157,7 @@ namespace Organizainador.Controllers
                         if (horarioExistente != null)
                         {
                             // Actualizar horario existente
-                            horarioExistente.Fecha = DateTime.SpecifyKind(fecha.Value, DateTimeKind.Utc);
+                            horarioExistente.Fecha = ConvertToUtc(fecha.Value);
                             horarioExistente.HoraInicio = horaInicio;
                             horarioExistente.HoraFin = horaFin;
                             _context.Update(horarioExistente);
@@ -165,7 +168,7 @@ namespace Organizainador.Controllers
                             var nuevoHorario = new HorarioModel
                             {
                                 ActividadId = id,
-                                Fecha = DateTime.SpecifyKind(fecha.Value, DateTimeKind.Utc),
+                                Fecha = ConvertToUtc(fecha.Value),
                                 HoraInicio = horaInicio,
                                 HoraFin = horaFin
                             };
