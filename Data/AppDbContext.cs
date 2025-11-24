@@ -41,15 +41,22 @@ namespace Organizainador.Data
                 // Mapeo de columnas explícito
                 entity.Property(e => e.Id).HasColumnName("tho_id_hor");
                 entity.Property(e => e.ClaseId).HasColumnName("tcl_id_clas"); // Clave foránea
+                entity.Property(e => e.ActividadId).HasColumnName("tac_id_act"); // Clave foránea
                 entity.Property(e => e.DiaSemana).HasColumnName("tho_d_sem");
                 entity.Property(e => e.HoraInicio).HasColumnName("tho_h_ini");
                 entity.Property(e => e.HoraFin).HasColumnName("tho_h_fin");
 
-                // Relación: Un Horario pertenece a una Clase (1:N)
+                // Relación: Un Horario pertenece a una Clase (1:N) - Opcional
                 entity.HasOne(h => h.Clase)
                       .WithMany(c => c.Horarios) // Asegúrate de añadir `public ICollection<HorarioModel>? Horarios { get; set; }` en ClaseModel
                       .HasForeignKey(h => h.ClaseId)
-                      .IsRequired();
+                      .IsRequired(false);
+
+                // Relación: Un Horario pertenece a una Actividad (1:N) - Opcional
+                entity.HasOne(h => h.Actividad)
+                      .WithMany()
+                      .HasForeignKey(h => h.ActividadId)
+                      .IsRequired(false);
             });
 
             // 2. Relación Usuario (tab_usr) y Actividad (tab_act)

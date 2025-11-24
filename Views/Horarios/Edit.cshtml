@@ -1,49 +1,146 @@
 ﻿@model Organizainador.Models.HorarioModel
-
+@using Microsoft.AspNetCore.Mvc.Rendering
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Modificar Horario";
 }
 
-<h1>Edit</h1>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-xl-8 col-lg-10">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-warning">
+                        <i class="fas fa-edit me-1"></i> Modificar Horario
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-<h4>HorarioModel</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="ClaseId" class="control-label"></label>
-                <select asp-for="ClaseId" class="form-control" asp-items="ViewBag.ClaseId"></select>
-                <span asp-validation-for="ClaseId" class="text-danger"></span>
+                        <div class="mb-3">
+                            <label class="form-label">Tipo de Asignación</label>
+                            <select id="tipoAsignacion" class="form-select" onchange="toggleAsignacion()">
+                                <option value="">-- Selecciona el tipo --</option>
+                                @if (Model.ClaseId.HasValue)
+                                {
+                                    <option value="clase" selected>Clase</option>
+                                    <option value="actividad">Actividad</option>
+                                }
+                                else if (Model.ActividadId.HasValue)
+                                {
+                                    <option value="clase">Clase</option>
+                                    <option value="actividad" selected>Actividad</option>
+                                }
+                                else
+                                {
+                                    <option value="clase">Clase</option>
+                                    <option value="actividad">Actividad</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3" id="claseGroup" style="display:none;">
+                            <label asp-for="ClaseId" class="form-label">Clase Asignada</label>
+                            <select asp-for="ClaseId" class="form-control"
+                                    asp-items="ViewBag.ClaseId as SelectList">
+                                <option value="">Selecciona una Clase</option>
+                            </select>
+                            <span asp-validation-for="ClaseId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3" id="actividadGroup" style="display:none;">
+                            <label asp-for="ActividadId" class="form-label">Actividad Asignada</label>
+                            <select asp-for="ActividadId" class="form-control"
+                                    asp-items="ViewBag.ActividadId as SelectList">
+                                <option value="">Selecciona una Actividad</option>
+                            </select>
+                            <span asp-validation-for="ActividadId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DiaSemana" class="form-label">Día de la Semana</label>
+                                <select asp-for="DiaSemana" class="form-select" required>
+                                    <option value="">Selecciona el Día</option>
+                                    <option value="Lunes">Lunes</option>
+                                    <option value="Martes">Martes</option>
+                                    <option value="Miércoles">Miércoles</option>
+                                    <option value="Jueves">Jueves</option>
+                                    <option value="Viernes">Viernes</option>
+                                    <option value="Sábado">Sábado</option>
+                                    <option value="Domingo">Domingo</option>
+                                </select>
+                                <span asp-validation-for="DiaSemana" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="HoraInicio" class="form-label">Hora de Inicio</label>
+                                <input asp-for="HoraInicio" type="time" class="form-control" required>
+                                <span asp-validation-for="HoraInicio" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="HoraFin" class="form-label">Hora de Fin</label>
+                                <input asp-for="HoraFin" type="time" class="form-control" required>
+                                <span asp-validation-for="HoraFin" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> Volver al Listado
+                            </a>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-save me-1"></i> Actualizar Horario
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="DiaSemana" class="control-label"></label>
-                <input asp-for="DiaSemana" class="form-control" />
-                <span asp-validation-for="DiaSemana" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="HoraInicio" class="control-label"></label>
-                <input asp-for="HoraInicio" class="form-control" />
-                <span asp-validation-for="HoraInicio" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="HoraFin" class="control-label"></label>
-                <input asp-for="HoraFin" class="form-control" />
-                <span asp-validation-for="HoraFin" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function toggleAsignacion() {
+            var tipo = document.getElementById('tipoAsignacion').value;
+            var claseGroup = document.getElementById('claseGroup');
+            var actividadGroup = document.getElementById('actividadGroup');
+            var claseSelect = document.getElementById('ClaseId');
+            var actividadSelect = document.getElementById('ActividadId');
+
+            if (tipo === 'clase') {
+                claseGroup.style.display = 'block';
+                actividadGroup.style.display = 'none';
+                claseSelect.disabled = false;
+                actividadSelect.disabled = true;
+                actividadSelect.value = '';
+            } else if (tipo === 'actividad') {
+                claseGroup.style.display = 'none';
+                actividadGroup.style.display = 'block';
+                claseSelect.disabled = true;
+                actividadSelect.disabled = false;
+                claseSelect.value = '';
+            } else {
+                claseGroup.style.display = 'none';
+                actividadGroup.style.display = 'none';
+                claseSelect.disabled = true;
+                actividadSelect.disabled = true;
+                claseSelect.value = '';
+                actividadSelect.value = '';
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleAsignacion();
+        });
+    </script>
 }
