@@ -45,6 +45,19 @@
                 <span class="badge bg-secondary">Sin asignar</span>
             }
         </dd>
+        <dt class = "col-sm-2">
+            Tipo de Evento
+        </dt>
+        <dd class = "col-sm-10">
+            @if (Model.EsRecurrente)
+            {
+                <span class="badge bg-info"><i class="fas fa-sync-alt"></i> Recurrente (se repite todas las semanas)</span>
+            }
+            else
+            {
+                <span class="badge bg-warning"><i class="fas fa-calendar-day"></i> Único (solo una vez)</span>
+            }
+        </dd>
     </dl>
 </div>
 <div>

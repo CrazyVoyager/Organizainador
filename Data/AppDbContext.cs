@@ -45,6 +45,7 @@ namespace Organizainador.Data
                 entity.Property(e => e.DiaSemana).HasColumnName("tho_d_sem");
                 entity.Property(e => e.HoraInicio).HasColumnName("tho_h_ini");
                 entity.Property(e => e.HoraFin).HasColumnName("tho_h_fin");
+                entity.Property(e => e.EsRecurrente).HasColumnName("tho_recurrente");
 
                 // Relación: Un Horario pertenece a una Clase (1:N) - Opcional
                 entity.HasOne(h => h.Clase)

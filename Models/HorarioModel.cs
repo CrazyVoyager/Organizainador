@@ -28,7 +28,11 @@ namespace Organizainador.Models
 
         [Required(ErrorMessage = "La hora de fin es obligatoria")]
         [Column("tho_h_fin")]
-        public TimeSpan HoraFin { get; set; } 
+        public TimeSpan HoraFin { get; set; }
+
+        [Column("tho_recurrente")]
+        [Display(Name = "Es recurrente")]
+        public bool EsRecurrente { get; set; } = true; // Por defecto es recurrente (todos los días)
 
         // Propiedades de navegación
         // Permite cargar el objeto ClaseModel asociado sin hacer JOIN manual

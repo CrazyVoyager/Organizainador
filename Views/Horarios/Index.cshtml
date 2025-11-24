@@ -50,6 +50,7 @@
                                 <th>Hora Inicio</th>
                                 <th>Hora Fin</th>
                                 <th>Duración</th>
+                                <th>Tipo</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -78,6 +79,16 @@
                                         @{
                                             var duracion = horario.HoraFin - horario.HoraInicio;
                                             <span class="badge bg-secondary">@duracion.TotalHours:00 Hrs</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (horario.EsRecurrente)
+                                        {
+                                            <span class="badge bg-info"><i class="fas fa-sync-alt"></i> Recurrente</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning"><i class="fas fa-calendar-day"></i> Único</span>
                                         }
                                     </td>
                                     <td>

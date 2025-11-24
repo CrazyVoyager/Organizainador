@@ -69,6 +69,19 @@
                             <div class="col-sm-4"><strong>Duración:</strong></div>
                             <div class="col-sm-8">@((Model.HoraFin - Model.HoraInicio).TotalHours):00 Hrs</div>
                         </div>
+                        <div class="row mt-2">
+                            <div class="col-sm-4"><strong>Tipo:</strong></div>
+                            <div class="col-sm-8">
+                                @if (Model.EsRecurrente)
+                                {
+                                    <span class="badge bg-info"><i class="fas fa-sync-alt"></i> Recurrente</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning"><i class="fas fa-calendar-day"></i> Único</span>
+                                }
+                            </div>
+                        </div>
                     </div>
 
                     <form asp-action="Eliminar" method="post">

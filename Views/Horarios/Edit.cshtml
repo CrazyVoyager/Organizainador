@@ -74,6 +74,14 @@
                                 </select>
                                 <span asp-validation-for="DiaSemana" class="text-danger small"></span>
                             </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="EsRecurrente" class="form-label">Tipo de Evento</label>
+                                <select asp-for="EsRecurrente" class="form-select" required>
+                                    <option value="true">Recurrente (se repite todas las semanas)</option>
+                                    <option value="false">Único (solo una vez)</option>
+                                </select>
+                                <span asp-validation-for="EsRecurrente" class="text-danger small"></span>
+                            </div>
                         </div>
 
                         <div class="row">
@@ -119,20 +127,14 @@
             if (tipo === 'clase') {
                 claseGroup.style.display = 'block';
                 actividadGroup.style.display = 'none';
-                claseSelect.disabled = false;
-                actividadSelect.disabled = true;
                 actividadSelect.value = '';
             } else if (tipo === 'actividad') {
                 claseGroup.style.display = 'none';
                 actividadGroup.style.display = 'block';
-                claseSelect.disabled = true;
-                actividadSelect.disabled = false;
                 claseSelect.value = '';
             } else {
                 claseGroup.style.display = 'none';
                 actividadGroup.style.display = 'none';
-                claseSelect.disabled = true;
-                actividadSelect.disabled = true;
                 claseSelect.value = '';
                 actividadSelect.value = '';
             }

@@ -132,7 +132,7 @@ public class HorariosController : Controller
     // ======================== CREAR HORARIO (POST) ========================
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("ClaseId,ActividadId,DiaSemana,HoraInicio,HoraFin")] HorarioModel horarioModel)
+    public async Task<IActionResult> Create([Bind("ClaseId,ActividadId,DiaSemana,HoraInicio,HoraFin,EsRecurrente")] HorarioModel horarioModel)
     {
         int userId = GetCurrentUserIdInt();
         if (userId == 0) return Forbid();
@@ -255,7 +255,7 @@ public class HorariosController : Controller
     // ======================== MODIFICAR HORARIO (POST) ========================
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, [Bind("Id,ClaseId,ActividadId,DiaSemana,HoraInicio,HoraFin")] HorarioModel horarioModel)
+    public async Task<IActionResult> Edit(int id, [Bind("Id,ClaseId,ActividadId,DiaSemana,HoraInicio,HoraFin,EsRecurrente")] HorarioModel horarioModel)
     {
         if (id != horarioModel.Id) return NotFound();
 
