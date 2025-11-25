@@ -55,7 +55,7 @@
 
         <!-- Botones de acción -->
         <div class="action-buttons">
-            <button class="add-event-btn" title="Crear nuevo evento">➕ Nuevo Evento</button>
+            <a href="/Horarios/Create" class="add-schedule-btn" title="Agregar nuevo horario">📅 Agregar Nuevo Horario</a>
             <button class="ver-mas-btn" onclick="window.location.href='/Horarios'">📋 Ver Horarios</button>
         </div>
 
@@ -67,6 +67,9 @@
     </div>
 
 </div>
+
+<!-- Floating Action Button for mobile -->
+<a href="/Horarios/Create" class="fab-add-schedule" title="Agregar nuevo horario">📅</a>
 
 <partial name="_Modal" />
 
