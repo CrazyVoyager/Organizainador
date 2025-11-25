@@ -1,405 +1,280 @@
-﻿        using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Organizainador.Data;
 using Organizainador.Models;
-using Microsoft.AspNetCore.Authorization;
+using System.Globalization;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
-[Authorize]
-public class HorariosController : Controller
+namespace Organizainador.Controllers
 {
-    private readonly AppDbContext _context;
-
-    public HorariosController(AppDbContext context)
+    public class HorariosController : Controller
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
+        private readonly ILogger<HorariosController> _logger;
 
-    private int GetCurrentUserIdInt()
-    {
-        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        return int.TryParse(userIdString, out int userId) ? userId : 0;
-    }
-
-    public async Task<IActionResult> Index()
-    {
-        int userId = GetCurrentUserIdInt();
-        if (userId == 0) return Forbid();
-
-        var userClasesIds = await _context.Clases
-            .Where(c => c.UsuarioId == userId)
-            .Select(c => c.Id)
-            .ToListAsync();
-
-        var userActividadesIds = await _context.Actividades
-            .Where(a => a.UsuarioId == userId)
-            .Select(a => a.Id)
-            .ToListAsync();
-
-        var horarios = await _context.Horarios
-            .Include(h => h.Clase)
-            .Include(h => h.Actividad)
-            .Where(h => (h.ClaseId.HasValue && userClasesIds.Contains(h.ClaseId.Value)) ||
-                       (h.ActividadId.HasValue && userActividadesIds.Contains(h.ActividadId.Value)))
-            .ToListAsync();
-
-        if (!userClasesIds.Any() && !userActividadesIds.Any())
+        public HorariosController(AppDbContext context, ILogger<HorariosController> logger)
         {
-            TempData["InfoMessage"] = "Aún no tienes clases ni actividades registradas, por favor registra una para agregarle horarios.";
+            _context = context;
+            _logger = logger;
         }
 
-        return View(horarios);
-    }
-
-    public async Task<IActionResult> Create()
-    {
-        int userId = GetCurrentUserIdInt();
-        if (userId == 0) return Forbid();
-
-        var userClases = await _context.Clases
-            .Where(c => c.UsuarioId == userId)
-            .ToListAsync();
-
-        var userActividades = await _context.Actividades
-            .Where(a => a.UsuarioId == userId)
-            .ToListAsync();
-
-        if (!userClases.Any() && !userActividades.Any())
+        private int GetCurrentUserIdInt()
         {
-            TempData["ErrorMessage"] = "Debes crear una Clase o Actividad primero para poder asignarle un Horario.";
-            return RedirectToAction(nameof(Index));
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return int.TryParse(userIdString, out int id) ? id : 0;
         }
 
-        ViewData["ClaseId"] = new SelectList(userClases, "Id", "Nombre");
-        ViewData["ActividadId"] = new SelectList(userActividades, "Id", "Nombre");
-        return View();
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("ClaseId,ActividadId,DiaSemana,HoraInicio,HoraFin,EsRecurrente")] HorarioModel horarioModel)
-    {
-        int userId = GetCurrentUserIdInt();
-        if (userId == 0) return Forbid();
-
-        if (!horarioModel.ClaseId.HasValue && !horarioModel.ActividadId.HasValue)
+        // GET: Horarios
+        public async Task<IActionResult> Index()
         {
-            ModelState.AddModelError("", "Debes seleccionar una Clase o una Actividad.");
+            int userId = GetCurrentUserIdInt();
+            if (userId == 0) return Forbid();
+
+            var horarios = await _context.Horarios
+                .Include(h => h.Clase)
+                .Include(h => h.Actividad)
+                .Where(h => (h.Clase != null && h.Clase.UsuarioId == userId) ||
+                           (h.Actividad != null && h.Actividad.UsuarioId == userId))
+                .ToListAsync();
+
+            return View(horarios);
         }
 
-        if (horarioModel.ClaseId.HasValue && horarioModel.ActividadId.HasValue)
+        // GET: Horarios/Create
+        public async Task<IActionResult> Create()
         {
-            ModelState.AddModelError("", "Debes seleccionar solo una Clase o una Actividad, no ambas.");
+            int userId = GetCurrentUserIdInt();
+            if (userId == 0) return Forbid();
+
+            ViewData["ClaseId"] = new SelectList(
+                await _context.Clases.Where(c => c.UsuarioId == userId).ToListAsync(),
+                "Id", "Nombre");
+
+            ViewData["ActividadId"] = new SelectList(
+                await _context.Actividades.Where(a => a.UsuarioId == userId).ToListAsync(),
+                "Id", "Nombre");
+
+            return View();
         }
 
-        // ⭐ VALIDACIÓN IMPORTANTE: La hora de fin debe ser posterior a la hora de inicio
-        if (horarioModel.HoraFin <= horarioModel.HoraInicio)
+        // POST: Horarios/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("ClaseId,ActividadId,DiaSemana,HoraInicio,HoraFin,EsRecurrente,FechaEspecifica")] HorarioModel horario)
         {
-            ModelState.AddModelError("HoraFin", "La hora de fin debe ser posterior a la hora de inicio.");
-        }
+            int userId = GetCurrentUserIdInt();
+            if (userId == 0) return Forbid();
 
-        if (horarioModel.ClaseId.HasValue)
-        {
-            var clase = await _context.Clases.FindAsync(horarioModel.ClaseId.Value);
-            if (clase == null || clase.UsuarioId != userId)
+            // Si NO es recurrente, extraer el día de la semana de la fecha específica
+            if (!horario.EsRecurrente && horario.FechaEspecifica.HasValue)
             {
-                return Forbid();
+                // ⭐ CONVERTIR A UTC PARA POSTGRESQL
+                horario.FechaEspecifica = DateTime.SpecifyKind(horario.FechaEspecifica.Value, DateTimeKind.Utc);
+
+                var cultura = new CultureInfo("es-ES");
+                horario.DiaSemana = cultura.DateTimeFormat.GetDayName(horario.FechaEspecifica.Value.DayOfWeek);
+                horario.DiaSemana = char.ToUpper(horario.DiaSemana[0]) + horario.DiaSemana.Substring(1);
             }
-        }
 
-        if (horarioModel.ActividadId.HasValue)
-        {
-            var actividad = await _context.Actividades.FindAsync(horarioModel.ActividadId.Value);
-            if (actividad == null || actividad.UsuarioId != userId)
+            // Si es recurrente, limpiar la fecha específica
+            if (horario.EsRecurrente)
             {
-                return Forbid();
+                horario.FechaEspecifica = null;
             }
-        }
 
-        if (ModelState.IsValid)
-        {
-            _context.Add(horarioModel);
-            await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = "Horario creado exitosamente.";
-            return RedirectToAction(nameof(Index));
-        }
-
-        var userClases = await _context.Clases
-            .Where(c => c.UsuarioId == userId)
-            .ToListAsync();
-
-        var userActividades = await _context.Actividades
-            .Where(a => a.UsuarioId == userId)
-            .ToListAsync();
-
-        ViewData["ClaseId"] = new SelectList(userClases, "Id", "Nombre", horarioModel.ClaseId);
-        ViewData["ActividadId"] = new SelectList(userActividades, "Id", "Nombre", horarioModel.ActividadId);
-        return View(horarioModel);
-    }
-
-    public async Task<IActionResult> Edit(int? id)
-    {
-        if (id == null) return NotFound();
-
-        int userId = GetCurrentUserIdInt();
-        if (userId == 0) return Forbid();
-
-        var horarioModel = await _context.Horarios
-            .Include(h => h.Clase)
-            .Include(h => h.Actividad)
-            .FirstOrDefaultAsync(h => h.Id == id);
-
-        if (horarioModel == null)
-        {
-            return NotFound();
-        }
-
-        var belongsToUser = false;
-        if (horarioModel.ClaseId.HasValue)
-        {
-            belongsToUser = horarioModel.Clase?.UsuarioId == userId;
-        }
-        else if (horarioModel.ActividadId.HasValue)
-        {
-            belongsToUser = horarioModel.Actividad?.UsuarioId == userId;
-        }
-
-        if (!belongsToUser)
-        {
-            return NotFound();
-        }
-
-        var userClases = await _context.Clases
-            .Where(c => c.UsuarioId == userId)
-            .ToListAsync();
-
-        var userActividades = await _context.Actividades
-            .Where(a => a.UsuarioId == userId)
-            .ToListAsync();
-
-        ViewData["ClaseId"] = new SelectList(userClases, "Id", "Nombre", horarioModel.ClaseId);
-        ViewData["ActividadId"] = new SelectList(userActividades, "Id", "Nombre", horarioModel.ActividadId);
-        return View(horarioModel);
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, [Bind("Id,ClaseId,ActividadId,DiaSemana,HoraInicio,HoraFin,EsRecurrente")] HorarioModel horarioModel)
-    {
-        if (id != horarioModel.Id) return NotFound();
-
-        int userId = GetCurrentUserIdInt();
-        if (userId == 0) return Forbid();
-
-        var existingHorario = await _context.Horarios
-            .Include(h => h.Clase)
-            .Include(h => h.Actividad)
-            .AsNoTracking()
-            .FirstOrDefaultAsync(h => h.Id == id);
-
-        if (existingHorario == null)
-        {
-            return NotFound();
-        }
-
-        var belongsToUser = false;
-        if (existingHorario.ClaseId.HasValue)
-        {
-            belongsToUser = existingHorario.Clase?.UsuarioId == userId;
-        }
-        else if (existingHorario.ActividadId.HasValue)
-        {
-            belongsToUser = existingHorario.Actividad?.UsuarioId == userId;
-        }
-
-        if (!belongsToUser)
-        {
-            return NotFound();
-        }
-
-        if (!horarioModel.ClaseId.HasValue && !horarioModel.ActividadId.HasValue)
-        {
-            ModelState.AddModelError("", "Debes seleccionar una Clase o una Actividad.");
-        }
-
-        if (horarioModel.ClaseId.HasValue && horarioModel.ActividadId.HasValue)
-        {
-            ModelState.AddModelError("", "Debes seleccionar solo una Clase o una Actividad, no ambas.");
-        }
-
-        // ⭐ VALIDACIÓN IMPORTANTE: La hora de fin debe ser posterior a la hora de inicio
-        if (horarioModel.HoraFin <= horarioModel.HoraInicio)
-        {
-            ModelState.AddModelError("HoraFin", "La hora de fin debe ser posterior a la hora de inicio.");
-        }
-
-        if (horarioModel.ClaseId.HasValue)
-        {
-            var newClase = await _context.Clases.FindAsync(horarioModel.ClaseId.Value);
-            if (newClase == null || newClase.UsuarioId != userId)
+            if (ModelState.IsValid)
             {
-                ModelState.AddModelError("ClaseId", "La clase seleccionada no es válida o no te pertenece.");
-            }
-        }
-
-        if (horarioModel.ActividadId.HasValue)
-        {
-            var newActividad = await _context.Actividades.FindAsync(horarioModel.ActividadId.Value);
-            if (newActividad == null || newActividad.UsuarioId != userId)
-            {
-                ModelState.AddModelError("ActividadId", "La actividad seleccionada no es válida o no te pertenece.");
-            }
-        }
-
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(horarioModel);
-                await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "Horario actualizado exitosamente.";
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!HorarioModelExists(horarioModel.Id))
+                try
                 {
-                    return NotFound();
+                    _context.Add(horario);
+                    await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Horario creado exitosamente.";
+                    return RedirectToAction(nameof(Index));
                 }
-                else
+                catch (Exception ex)
                 {
+                    _logger.LogError($"Error al guardar: {ex.Message}");
+                    if (ex.InnerException != null)
+                    {
+                        _logger.LogError($"Inner exception: {ex.InnerException.Message}");
+                    }
+                    ModelState.AddModelError("", $"Error al guardar: {ex.InnerException?.Message ?? ex.Message}");
+                }
+            }
+
+            // Si hay errores, recargar los dropdowns
+            ViewData["ClaseId"] = new SelectList(
+                await _context.Clases.Where(c => c.UsuarioId == userId).ToListAsync(),
+                "Id", "Nombre", horario.ClaseId);
+
+            ViewData["ActividadId"] = new SelectList(
+                await _context.Actividades.Where(a => a.UsuarioId == userId).ToListAsync(),
+                "Id", "Nombre", horario.ActividadId);
+
+            return View(horario);
+        }
+
+        // GET: Horarios/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null) return NotFound();
+
+            int userId = GetCurrentUserIdInt();
+            if (userId == 0) return Forbid();
+
+            var horario = await _context.Horarios
+                .Include(h => h.Clase)
+                .Include(h => h.Actividad)
+                .FirstOrDefaultAsync(h => h.Id == id);
+
+            if (horario == null) return NotFound();
+
+            if ((horario.ClaseId.HasValue && horario.Clase?.UsuarioId != userId) ||
+                (horario.ActividadId.HasValue && horario.Actividad?.UsuarioId != userId))
+            {
+                return Forbid();
+            }
+
+            ViewData["ClaseId"] = new SelectList(
+                await _context.Clases.Where(c => c.UsuarioId == userId).ToListAsync(),
+                "Id", "Nombre", horario.ClaseId);
+
+            ViewData["ActividadId"] = new SelectList(
+                await _context.Actividades.Where(a => a.UsuarioId == userId).ToListAsync(),
+                "Id", "Nombre", horario.ActividadId);
+
+            return View(horario);
+        }
+
+        // POST: Horarios/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,ClaseId,ActividadId,DiaSemana,HoraInicio,HoraFin,EsRecurrente,FechaEspecifica")] HorarioModel horario)
+        {
+            if (id != horario.Id) return NotFound();
+
+            int userId = GetCurrentUserIdInt();
+            if (userId == 0) return Forbid();
+
+            // Si NO es recurrente, extraer el día de la semana
+            if (!horario.EsRecurrente && horario.FechaEspecifica.HasValue)
+            {
+                // ⭐ CONVERTIR A UTC PARA POSTGRESQL
+                horario.FechaEspecifica = DateTime.SpecifyKind(horario.FechaEspecifica.Value, DateTimeKind.Utc);
+
+                var cultura = new CultureInfo("es-ES");
+                horario.DiaSemana = cultura.DateTimeFormat.GetDayName(horario.FechaEspecifica.Value.DayOfWeek);
+                horario.DiaSemana = char.ToUpper(horario.DiaSemana[0]) + horario.DiaSemana.Substring(1);
+            }
+
+            // Si es recurrente, limpiar la fecha específica
+            if (horario.EsRecurrente)
+            {
+                horario.FechaEspecifica = null;
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(horario);
+                    await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Horario actualizado exitosamente.";
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_context.Horarios.Any(e => e.Id == horario.Id))
+                        return NotFound();
                     throw;
                 }
+                return RedirectToAction(nameof(Index));
             }
+
+            ViewData["ClaseId"] = new SelectList(
+                await _context.Clases.Where(c => c.UsuarioId == userId).ToListAsync(),
+                "Id", "Nombre", horario.ClaseId);
+
+            ViewData["ActividadId"] = new SelectList(
+                await _context.Actividades.Where(a => a.UsuarioId == userId).ToListAsync(),
+                "Id", "Nombre", horario.ActividadId);
+
+            return View(horario);
+        }
+
+        // GET: Horarios/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null) return NotFound();
+
+            int userId = GetCurrentUserIdInt();
+            if (userId == 0) return Forbid();
+
+            var horario = await _context.Horarios
+                .Include(h => h.Clase)
+                .Include(h => h.Actividad)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (horario == null) return NotFound();
+
+            if ((horario.ClaseId.HasValue && horario.Clase?.UsuarioId != userId) ||
+                (horario.ActividadId.HasValue && horario.Actividad?.UsuarioId != userId))
+            {
+                return Forbid();
+            }
+
+            return View(horario);
+        }
+
+        // GET: Horarios/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null) return NotFound();
+
+            int userId = GetCurrentUserIdInt();
+            if (userId == 0) return Forbid();
+
+            var horario = await _context.Horarios
+                .Include(h => h.Clase)
+                .Include(h => h.Actividad)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (horario == null) return NotFound();
+
+            if ((horario.ClaseId.HasValue && horario.Clase?.UsuarioId != userId) ||
+                (horario.ActividadId.HasValue && horario.Actividad?.UsuarioId != userId))
+            {
+                return Forbid();
+            }
+
+            return View(horario);
+        }
+
+        // POST: Horarios/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            int userId = GetCurrentUserIdInt();
+            if (userId == 0) return Forbid();
+
+            var horario = await _context.Horarios
+                .Include(h => h.Clase)
+                .Include(h => h.Actividad)
+                .FirstOrDefaultAsync(h => h.Id == id);
+
+            if (horario != null)
+            {
+                if ((horario.ClaseId.HasValue && horario.Clase?.UsuarioId == userId) ||
+                    (horario.ActividadId.HasValue && horario.Actividad?.UsuarioId == userId))
+                {
+                    _context.Horarios.Remove(horario);
+                    await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Horario eliminado exitosamente.";
+                }
+            }
+
             return RedirectToAction(nameof(Index));
         }
-
-        var userClases = await _context.Clases
-            .Where(c => c.UsuarioId == userId)
-            .ToListAsync();
-
-        var userActividades = await _context.Actividades
-            .Where(a => a.UsuarioId == userId)
-            .ToListAsync();
-
-        ViewData["ClaseId"] = new SelectList(userClases, "Id", "Nombre", horarioModel.ClaseId);
-        ViewData["ActividadId"] = new SelectList(userActividades, "Id", "Nombre", horarioModel.ActividadId);
-        return View(horarioModel);
-    }
-
-    // Cambiado de "Eliminar" a "Delete"
-    public async Task<IActionResult> Delete(int? id)
-    {
-        if (id == null) return NotFound();
-
-        int userId = GetCurrentUserIdInt();
-        if (userId == 0) return Forbid();
-
-        var horarioModel = await _context.Horarios
-            .Include(h => h.Clase)
-            .Include(h => h.Actividad)
-            .FirstOrDefaultAsync(m => m.Id == id);
-
-        if (horarioModel == null)
-        {
-            return NotFound();
-        }
-
-        var belongsToUser = false;
-        if (horarioModel.ClaseId.HasValue)
-        {
-            belongsToUser = horarioModel.Clase?.UsuarioId == userId;
-        }
-        else if (horarioModel.ActividadId.HasValue)
-        {
-            belongsToUser = horarioModel.Actividad?.UsuarioId == userId;
-        }
-
-        if (!belongsToUser)
-        {
-            return NotFound();
-        }
-
-        return View(horarioModel);
-    }
-
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
-    {
-        int userId = GetCurrentUserIdInt();
-        if (userId == 0) return Forbid();
-
-        var horarioModel = await _context.Horarios
-            .Include(h => h.Clase)
-            .Include(h => h.Actividad)
-            .FirstOrDefaultAsync(m => m.Id == id);
-
-        if (horarioModel == null)
-        {
-            TempData["ErrorMessage"] = "No se pudo encontrar este Horario.";
-            return RedirectToAction(nameof(Index));
-        }
-
-        var belongsToUser = false;
-        if (horarioModel.ClaseId.HasValue)
-        {
-            belongsToUser = horarioModel.Clase?.UsuarioId == userId;
-        }
-        else if (horarioModel.ActividadId.HasValue)
-        {
-            belongsToUser = horarioModel.Actividad?.UsuarioId == userId;
-        }
-
-        if (!belongsToUser)
-        {
-            TempData["ErrorMessage"] = "No tienes permiso para eliminar este Horario.";
-            return RedirectToAction(nameof(Index));
-        }
-
-        _context.Horarios.Remove(horarioModel);
-        await _context.SaveChangesAsync();
-        TempData["SuccessMessage"] = "Horario eliminado exitosamente.";
-        return RedirectToAction(nameof(Index));
-    }
-
-    private bool HorarioModelExists(int id)
-    {
-        return _context.Horarios.Any(e => e.Id == id);
-    }
-
-    public async Task<IActionResult> Details(int? id)
-    {
-        if (id == null) return NotFound();
-
-        int userId = GetCurrentUserIdInt();
-        if (userId == 0) return Forbid();
-
-        var horarioModel = await _context.Horarios
-            .Include(h => h.Clase)
-            .Include(h => h.Actividad)
-            .FirstOrDefaultAsync(m => m.Id == id);
-
-        if (horarioModel == null)
-        {
-            return NotFound();
-        }
-
-        var belongsToUser = false;
-        if (horarioModel.ClaseId.HasValue)
-        {
-            belongsToUser = horarioModel.Clase?.UsuarioId == userId;
-        }
-        else if (horarioModel.ActividadId.HasValue)
-        {
-            belongsToUser = horarioModel.Actividad?.UsuarioId == userId;
-        }
-
-        if (!belongsToUser)
-        {
-            return NotFound();
-        }
-
-        return View(horarioModel);
     }
 }

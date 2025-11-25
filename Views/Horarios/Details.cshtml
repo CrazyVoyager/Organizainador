@@ -31,8 +31,37 @@
                             }
                         </dd>
 
-                        <dt class="col-sm-4">Día de la Semana:</dt>
-                        <dd class="col-sm-8">@Model.DiaSemana</dd>
+                        <dt class="col-sm-4">Tipo de Evento:</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.EsRecurrente)
+                            {
+                                <span class="badge bg-info"><i class="fas fa-sync-alt"></i> Recurrente (se repite todas las semanas)</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning"><i class="fas fa-calendar-day"></i> Único (solo una vez)</span>
+                            }
+                        </dd>
+
+                        @if (Model.EsRecurrente)
+                        {
+                            <dt class="col-sm-4">Día de la Semana:</dt>
+                            <dd class="col-sm-8">@Model.DiaSemana</dd>
+                        }
+                        else
+                        {
+                            <dt class="col-sm-4">Fecha Específica:</dt>
+                            <dd class="col-sm-8">
+                                @if (Model.FechaEspecifica.HasValue)
+                                {
+                                    <span class="badge bg-primary">@Model.FechaEspecifica.Value.ToString("dddd, dd/MM/yyyy")</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No especificada</span>
+                                }
+                            </dd>
+                        }
 
                         <dt class="col-sm-4">Hora de Inicio:</dt>
                         <dd class="col-sm-8">@Model.HoraInicio.ToString(@"hh\:mm")</dd>
@@ -46,18 +75,6 @@
                                 var duracion = Model.HoraFin - Model.HoraInicio;
                             }
                             <span class="badge bg-secondary">@duracion.TotalHours.ToString("F2") Hrs</span>
-                        </dd>
-
-                        <dt class="col-sm-4">Tipo de Evento:</dt>
-                        <dd class="col-sm-8">
-                            @if (Model.EsRecurrente)
-                            {
-                                <span class="badge bg-info"><i class="fas fa-sync-alt"></i> Recurrente (se repite todas las semanas)</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-warning"><i class="fas fa-calendar-day"></i> Único (solo una vez)</span>
-                            }
                         </dd>
                     </dl>
 
