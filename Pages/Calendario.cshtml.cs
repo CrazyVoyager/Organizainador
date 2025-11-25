@@ -216,7 +216,7 @@ namespace Organizainador.Pages
                     Nombre = title,
                     Descripcion = description,
                     Etiqueta = "Calendario",
-                    CreatedAt = DateTime.SpecifyKind(start, DateTimeKind.Utc)
+                    CreatedAt = DateTime.UtcNow  // Timestamp de creación, no la fecha del evento
                 };
 
                 _dbContext.Actividades.Add(actividad);
@@ -249,9 +249,8 @@ namespace Organizainador.Pages
                 if (actividad == null)
                     return new JsonResult(new { success = false, message = "Evento no encontrado o sin permisos." });
 
-                // Actualizar la actividad
+                // Actualizar solo el título (CreatedAt no debe modificarse)
                 actividad.Nombre = title;
-                actividad.CreatedAt = DateTime.SpecifyKind(start, DateTimeKind.Utc);
 
                 _dbContext.Actividades.Update(actividad);
                 await _dbContext.SaveChangesAsync();
