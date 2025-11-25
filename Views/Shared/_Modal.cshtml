@@ -1,0 +1,118 @@
+﻿@*
+    Este es un Partial View para el modal de opciones de un evento (Actividad o Clase)
+    Debe ser manipulado y mostrado por JavaScript (Calendario.js).
+*@
+<div id="eventOptionsModal" class="event-options-modal-backdrop" style="display:none;">
+    <div class="event-options-modal">
+        <h4 id="modalEventTitle"></h4>
+        <p class="event-time" id="modalEventTime"></p>
+
+        <div class="modal-options-container">
+            @* Este botón solo será visible si el evento es una Actividad (no una Clase) *@
+            <button id="btnDetails" class="modal-option-btn modal-option-details" data-action="details" style="display:none;">
+                📄 Ver Detalles
+            </button>
+
+            <button id="btnEdit" class="modal-option-btn modal-option-edit" data-action="edit">
+                ✏️ Editar
+            </button>
+
+            <button id="btnDelete" class="modal-option-btn modal-option-delete" data-action="delete">
+                🗑️ Eliminar
+            </button>
+        </div>
+
+        <button id="modalCloseButton" class="modal-close-btn">Cerrar</button>
+    </div>
+</div>
+
+<style>
+    /* Estilos Básicos para el Modal (Se recomienda mover a un archivo CSS dedicado, pero se incluyen aquí para funcionalidad inmediata) */
+    .event-options-modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10001; /* Mayor que la notificación */
+        transition: opacity 0.3s;
+    }
+
+    .event-options-modal {
+        background: white;
+        padding: 20px 30px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        transform: scale(0.9);
+        transition: transform 0.3s;
+    }
+
+    /* Clase para mostrar el modal con efecto */
+    .event-options-modal-backdrop.show {
+        opacity: 1;
+    }
+
+        .event-options-modal-backdrop.show .event-options-modal {
+            transform: scale(1);
+        }
+
+    .event-options-modal h4 {
+        margin-top: 0;
+        color: #333;
+        font-size: 1.5em;
+    }
+
+    .event-options-modal .event-time {
+        font-size: 0.9em;
+        color: #666;
+        margin-bottom: 20px;
+    }
+
+    .modal-options-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .modal-option-btn, .modal-close-btn {
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1em;
+        font-weight: 600;
+        transition: background 0.2s;
+        width: 100%;
+    }
+
+        .modal-option-btn:hover, .modal-close-btn:hover {
+            background: #5a67d8;
+        }
+
+    .modal-option-delete {
+        background: #ff6b6b;
+    }
+
+        .modal-option-delete:hover {
+            background: #e55a5a;
+        }
+
+    .modal-close-btn {
+        margin-top: 15px;
+        background: #ccc;
+        color: #333;
+    }
+
+        .modal-close-btn:hover {
+            background: #bbb;
+        }
+</style>
