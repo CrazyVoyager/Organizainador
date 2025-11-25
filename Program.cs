@@ -77,4 +77,16 @@ app.MapControllerRoute(
 
 app.MapRazorPages();
 
+// Configurar archivos estáticos con UTF-8
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        if (ctx.File.Name.EndsWith(".json"))
+        {
+            ctx.Context.Response.Headers.Append("Content-Type", "application/json; charset=utf-8");
+        }
+    }
+});
+
 app.Run();

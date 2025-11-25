@@ -1,19 +1,40 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using Organizainador.Data;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Organizainador.Pages
 {
     public class PaginaPrincipalModel : PageModel
     {
-        [BindProperty(SupportsGet = true)]
-        public string Usuario { get; set; }
+        private readonly AppDbContext _context;
 
-        public void OnGet()
+        public PaginaPrincipalModel(AppDbContext context)
         {
-            // Si no viene por parámetro, establecer un valor por defecto
-            if (string.IsNullOrEmpty(Usuario))
+            _context = context;
+        }
+
+        public string Usuario { get; set; } = "Usuario";
+
+        public async Task OnGetAsync()
+        {
+            // Obtener el ID del usuario autenticado desde los Claims
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            
+            if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
             {
-                Usuario = "Usuario";
+                // Buscar el usuario en la base de datos
+                var usuarioDb = await _context.Usuarios
+                    .Where(u => u.Id == userId)
+                    .Select(u => u.Nombre)
+                    .FirstOrDefaultAsync();
+
+                if (!string.IsNullOrEmpty(usuarioDb))
+                {
+                    Usuario = usuarioDb;
+                }
             }
         }
     }

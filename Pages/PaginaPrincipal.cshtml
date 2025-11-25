@@ -276,24 +276,52 @@
             }
         }
 
-        // --- 2. FRASES DESDE JSON ---
+        // --- 2. FRASES DESDE JSON (MEJORADO PARA UTF-8) ---
         async function cargarFraseDoof() {
             try {
-                // Buscamos el archivo JSON en la carpeta data
-                const response = await fetch('/data/frases.json');
+                // ⭐ MEJORA: Especificar explícitamente UTF-8 en la solicitud
+                const response = await fetch('/data/frases.json', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json; charset=utf-8',
+                        'Content-Type': 'application/json; charset=utf-8'
+                    },
+                    cache: 'no-cache' // ⭐ Forzar recarga para evitar caché corrupto
+                });
 
-                if (!response.ok) throw new Error("No se encontró el archivo JSON");
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
-                const frases = await response.json();
+                // ⭐ MEJORA: Leer como texto primero para asegurar UTF-8
+                const textContent = await response.text();
+                
+                // ⭐ Parsear manualmente para mejor control de errores
+                const frases = JSON.parse(textContent);
+
+                // Validar que sea un array
+                if (!Array.isArray(frases) || frases.length === 0) {
+                    throw new Error("El archivo JSON no contiene un array válido");
+                }
 
                 // Elegir frase aleatoria
                 const random = Math.floor(Math.random() * frases.length);
-                document.getElementById('doofQuote').textContent = '"' + frases[random] + '"';
+                const fraseSeleccionada = frases[random];
+
+                // ⭐ Asegurar que la frase se muestre correctamente
+                const quoteElement = document.getElementById('doofQuote');
+                if (quoteElement) {
+                    quoteElement.textContent = '"' + fraseSeleccionada + '"';
+                    console.log('Frase cargada:', fraseSeleccionada); // Para debug
+                }
 
             } catch (error) {
                 console.error("Error cargando frases:", error);
-                // Fallback por si falla el JSON
-                document.getElementById('doofQuote').textContent = '"¡Maldita seas, error de carga!"';
+                // Fallback con frase correctamente codificada
+                const quoteElement = document.getElementById('doofQuote');
+                if (quoteElement) {
+                    quoteElement.textContent = '"¡Maldita seas, error de carga!"';
+                }
             }
         }
 
