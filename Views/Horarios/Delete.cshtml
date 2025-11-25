@@ -5,49 +5,99 @@
 
 <div class="container-fluid">
     <div class="row justify-content-center">
-        <div class="col-xl-6 col-lg-8">
-            <div class="card border-left-danger shadow">
-                <div class="card-header py-3 bg-danger text-white">
-                    <h6 class="m-0 font-weight-bold">
-                        <i class="fas fa-exclamation-triangle me-1"></i> Confirmar Eliminación
-                    </h6>
+        <div class="col-xl-8 col-lg-10">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a asp-action="Index" class="text-decoration-none">
+                            <i class="fas fa-clock me-1"></i>Horarios
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Eliminar</li>
+                </ol>
+            </nav>
+
+            <!-- Confirmación de eliminación -->
+            <div class="card shadow-sm border-danger">
+                <div class="card-header bg-danger text-white py-3">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i> Confirmar Eliminación
+                    </h5>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-4">
                     <div class="text-center mb-4">
-                        <i class="fas fa-trash-alt fa-3x text-danger mb-3"></i>
-                        <h4 class="text-gray-800">¿Está seguro de eliminar este Horario?</h4>
-                        <p class="text-gray-600">Esta acción no se puede deshacer. Se eliminará el horario para la clase **@Model.Clase?.Nombre**.</p>
+                        <i class="fas fa-trash-alt fa-4x text-danger mb-3"></i>
+                        <h4 class="text-gray-800 mb-3">¿Está seguro de eliminar este horario?</h4>
+                        <p class="text-gray-600">Esta acción no se puede deshacer.</p>
                     </div>
 
                     <div class="alert alert-warning">
-                        <h6 class="alert-heading">Información del Horario a Eliminar:</h6>
+                        <h6 class="alert-heading mb-3">
+                            <i class="fas fa-info-circle me-2"></i>Información del horario a eliminar:
+                        </h6>
                         <hr>
                         <div class="row">
-                            <div class="col-sm-4"><strong>Clase:</strong></div>
-                            <div class="col-sm-8">@Model.Clase?.Nombre</div>
+                            <div class="col-sm-4 fw-bold">Asignado a:</div>
+                            <div class="col-sm-8">
+                                @if (Model.Clase != null)
+                                {
+                                    <span class="badge bg-primary">@Model.Clase.Nombre</span>
+                                }
+                                else if (Model.Actividad != null)
+                                {
+                                    <span class="badge bg-success">@Model.Actividad.Nombre</span>
+                                }
+                            </div>
                         </div>
                         <div class="row mt-2">
-                            <div class="col-sm-4"><strong>Día:</strong></div>
-                            <div class="col-sm-8">@Model.DiaSemana</div>
+                            <div class="col-sm-4 fw-bold">Tipo:</div>
+                            <div class="col-sm-8">
+                                @if (Model.EsRecurrente)
+                                {
+                                    <span class="badge bg-info">Recurrente</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning">Único</span>
+                                }
+                            </div>
                         </div>
                         <div class="row mt-2">
-                            <div class="col-sm-4"><strong>Hora Inicio:</strong></div>
-                            <div class="col-sm-8">@Model.HoraInicio.ToString(@"hh\:mm")</div>
+                            <div class="col-sm-4 fw-bold">@(Model.EsRecurrente ? "Día:" : "Fecha:"):</div>
+                            <div class="col-sm-8">
+                                @if (Model.EsRecurrente)
+                                {
+                                    @Model.DiaSemana
+                                }
+                                else if (Model.FechaEspecifica.HasValue)
+                                {
+                                    @Model.FechaEspecifica.Value.ToString("dd/MM/yyyy")
+                                }
+                            </div>
                         </div>
                         <div class="row mt-2">
-                            <div class="col-sm-4"><strong>Hora Fin:</strong></div>
-                            <div class="col-sm-8">@Model.HoraFin.ToString(@"hh\:mm")</div>
+                            <div class="col-sm-4 fw-bold">Horario:</div>
+                            <div class="col-sm-8">
+                                @Model.HoraInicio.ToString(@"hh\:mm") - @Model.HoraFin.ToString(@"hh\:mm")
+                            </div>
                         </div>
                         <div class="row mt-2">
-                            <div class="col-sm-4"><strong>Duración:</strong></div>
-                            <div class="col-sm-8">@((Model.HoraFin - Model.HoraInicio).TotalHours):00 Hrs</div>
+                            <div class="col-sm-4 fw-bold">Duración:</div>
+                            <div class="col-sm-8">
+                                @{
+                                    var duracion = Model.HoraFin - Model.HoraInicio;
+                                }
+                                <span class="badge bg-secondary">@duracion.TotalHours.ToString("F2") horas</span>
+                            </div>
                         </div>
                     </div>
 
-                    <form asp-action="Eliminar" method="post">
+                    <form asp-action="Delete" method="post">
+                        @Html.AntiForgeryToken()
                         <input type="hidden" asp-for="Id" />
                         <div class="d-flex justify-content-between mt-4">
-                            <a asp-action="Index" class="btn btn-success">
+                            <a asp-action="Index" class="btn btn-secondary">
                                 <i class="fas fa-arrow-left me-1"></i> Cancelar
                             </a>
                             <button type="submit" class="btn btn-danger">

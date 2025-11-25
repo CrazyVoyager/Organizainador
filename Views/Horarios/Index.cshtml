@@ -5,127 +5,200 @@
 }
 
 <div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-clock me-2"></i>Horarios</h1>
-        <a asp-action="Create" class="btn btn-primary">
-            <i class="fas fa-plus me-1"></i> Nuevo Horario
-        </a>
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h1 class="h3 mb-1 text-gray-800">
+                        <i class="fas fa-clock me-2"></i>Horarios
+                    </h1>
+                    <p class="text-muted mb-0 small">Gestiona los horarios de tus clases y actividades</p>
+                </div>
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i> Nuevo Horario
+                </a>
+            </div>
+        </div>
     </div>
 
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Lista de Horarios Registrados</h6>
+    <!-- Barra de búsqueda y filtros -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body py-3">
+            <form asp-action="Index" method="get" class="row g-3 align-items-end">
+                <div class="col-md-6">
+                    <label class="form-label small fw-bold mb-1">Buscar</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white">
+                            <i class="fas fa-search text-muted"></i>
+                        </span>
+                        <input type="text" 
+                               name="busqueda" 
+                               class="form-control" 
+                               placeholder="Buscar por clase, actividad o día..."
+                               value="@ViewData["BusquedaActual"]">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold mb-1">Tipo</label>
+                    <select name="filtroTipo" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="recurrente" selected="@(ViewData["FiltroTipo"]?.ToString() == "recurrente")">Recurrentes</option>
+                        <option value="unico" selected="@(ViewData["FiltroTipo"]?.ToString() == "unico")">Únicos</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search me-1"></i> Buscar
+                    </button>
+                </div>
+            </form>
         </div>
-        <div class="card-body">
-            @if (TempData["SuccessMessage"] != null)
-            {
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    @TempData["SuccessMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
-            @if (TempData["ErrorMessage"] != null)
-            {
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    @TempData["ErrorMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
-            @if (TempData["InfoMessage"] != null)
-            {
-                <div class="alert alert-info" role="alert">
-                    @TempData["InfoMessage"]
-                </div>
-            }
+    </div>
 
-            @if (Model != null && Model.Any())
+    <!-- Mensajes -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Lista de horarios -->
+    @if (Model != null && Model.Any())
+    {
+        <div class="row">
+            @foreach (var horario in Model)
             {
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover" width="100%" cellspacing="0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Clase/Actividad</th>
-                                <th>Día</th>
-                                <th>Hora Inicio</th>
-                                <th>Hora Fin</th>
-                                <th>Duración</th>
-                                <th>Tipo</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @{
-                                var horariosOrdenados = Model.OrderBy(h => h.DiaSemana).ThenBy(h => h.HoraInicio).ToList();
-                            }
-                            @foreach (var horario in horariosOrdenados)
-                            {
-                                <tr>
-                                    <td>
-                                        @if (horario.Clase != null)
-                                        {
-                                            <span class="badge bg-primary">@horario.Clase.Nombre</span>
-                                        }
-                                        else if (horario.Actividad != null)
-                                        {
-                                            <span class="badge bg-success">@horario.Actividad.Nombre</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-secondary">Sin asignar</span>
-                                        }
-                                    </td>
-                                    <td>@horario.DiaSemana</td>
-                                    <td>@horario.HoraInicio.ToString(@"hh\:mm")</td>
-                                    <td>@horario.HoraFin.ToString(@"hh\:mm")</td>
-                                    <td>
-                                        @{
-                                            var duracion = horario.HoraFin - horario.HoraInicio;
-                                        }
-                                        <span class="badge bg-secondary">@duracion.TotalHours.ToString("F2") Hrs</span>
-                                    </td>
-                                    <td>
-                                        @if (horario.EsRecurrente)
-                                        {
-                                            <span class="badge bg-info"><i class="fas fa-sync-alt"></i> Recurrente</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-warning"><i class="fas fa-calendar-day"></i> Único</span>
-                                        }
-                                    </td>
-                                    <td>
-                                        <div class="btn-group" role="group">
-                                            <a asp-action="Details" asp-route-id="@horario.Id"
-                                               class="btn btn-info btn-sm">
-                                                <i class="fas fa-info-circle"></i> Ver
-                                            </a>
-                                            <a asp-action="Edit" asp-route-id="@horario.Id"
-                                               class="btn btn-warning btn-sm">
-                                                <i class="fas fa-edit"></i> Editar
-                                            </a>
-                                            <a asp-action="Delete" asp-route-id="@horario.Id"
-                                               class="btn btn-danger btn-sm">
-                                                <i class="fas fa-trash"></i> Eliminar
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card shadow-sm h-100 hover-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="flex-grow-1">
+                                    @if (horario.Clase != null)
+                                    {
+                                        <span class="badge bg-primary mb-2">
+                                            <i class="fas fa-book me-1"></i>@horario.Clase.Nombre
+                                        </span>
+                                    }
+                                    else if (horario.Actividad != null)
+                                    {
+                                        <span class="badge bg-success mb-2">
+                                            <i class="fas fa-tasks me-1"></i>@horario.Actividad.Nombre
+                                        </span>
+                                    }
+                                </div>
+                                @if (horario.EsRecurrente)
+                                {
+                                    <span class="badge bg-info">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning">
+                                        <i class="fas fa-calendar-day"></i>
+                                    </span>
+                                }
+                            </div>
+
+                            <div class="mb-3">
+                                <h6 class="card-title mb-2">
+                                    <i class="far fa-calendar me-2 text-muted"></i>
+                                    @if (horario.EsRecurrente)
+                                    {
+                                        @horario.DiaSemana
+                                    }
+                                    else if (horario.FechaEspecifica.HasValue)
+                                    {
+                                        @horario.FechaEspecifica.Value.ToString("dd/MM/yyyy")
+                                    }
+                                </h6>
+                                <div class="d-flex align-items-center text-muted small">
+                                    <i class="far fa-clock me-2"></i>
+                                    <span>@horario.HoraInicio.ToString(@"hh\:mm") - @horario.HoraFin.ToString(@"hh\:mm")</span>
+                                </div>
+                                <div class="mt-2">
+                                    @{
+                                        var duracion = horario.HoraFin - horario.HoraInicio;
+                                    }
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-hourglass-half me-1"></i>
+                                        @duracion.TotalHours.ToString("F1") hrs
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-top">
+                            <div class="d-flex justify-content-between">
+                                <a asp-action="Details" asp-route-id="@horario.Id" 
+                                   class="btn btn-sm btn-outline-info">
+                                    <i class="fas fa-eye"></i> Ver
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@horario.Id" 
+                                   class="btn btn-sm btn-outline-warning">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@horario.Id" 
+                                   class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash"></i> Eliminar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             }
-            else if (TempData["InfoMessage"] == null)
-            {
-                <div class="text-center py-4">
-                    <i class="fas fa-clock fa-3x text-gray-300 mb-3"></i>
-                    <h5 class="text-gray-500">No hay horarios registrados</h5>
-                    <p class="text-gray-500">Comienza agregando el primer horario a una de tus clases.</p>
-                    <a asp-action="Create" class="btn btn-primary">
-                        <i class="fas fa-plus me-1"></i> Crear Primer Horario
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm">
+            <div class="card-body text-center py-5">
+                <div class="mb-3">
+                    <i class="fas fa-clock fa-4x text-muted opacity-50"></i>
+                </div>
+                <h5 class="text-muted mb-2">No hay horarios registrados</h5>
+                <p class="text-muted small mb-4">
+                    @if (ViewData["BusquedaActual"] != null || ViewData["FiltroTipo"] != null)
+                    {
+                        <text>No se encontraron resultados para tu búsqueda.</text>
+                    }
+                    else
+                    {
+                        <text>Comienza agregando el primer horario a tus clases o actividades.</text>
+                    }
+                </p>
+                @if (ViewData["BusquedaActual"] != null || ViewData["FiltroTipo"] != null)
+                {
+                    <a asp-action="Index" class="btn btn-outline-secondary me-2">
+                        <i class="fas fa-times me-1"></i> Limpiar búsqueda
                     </a>
-                </div>
-            }
+                }
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i> Crear Primer Horario
+                </a>
+            </div>
         </div>
-    </div>
+    }
 </div>
+
+<style>
+    .hover-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+</style>

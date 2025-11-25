@@ -6,92 +6,123 @@
 
 <div class="container-fluid">
     <div class="row justify-content-center">
-        <div class="col-xl-6 col-lg-8">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">
-                        <i class="fas fa-info-circle me-1"></i> Detalles del Horario
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <dl class="row">
-                        <dt class="col-sm-4">Clase/Actividad:</dt>
-                        <dd class="col-sm-8">
-                            @if (Model.Clase != null)
-                            {
-                                <span class="badge bg-primary">@Model.Clase.Nombre</span>
-                            }
-                            else if (Model.Actividad != null)
-                            {
-                                <span class="badge bg-success">@Model.Actividad.Nombre</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-secondary">Sin asignar</span>
-                            }
-                        </dd>
-
-                        <dt class="col-sm-4">Tipo de Evento:</dt>
-                        <dd class="col-sm-8">
-                            @if (Model.EsRecurrente)
-                            {
-                                <span class="badge bg-info"><i class="fas fa-sync-alt"></i> Recurrente (se repite todas las semanas)</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-warning"><i class="fas fa-calendar-day"></i> Único (solo una vez)</span>
-                            }
-                        </dd>
-
-                        @if (Model.EsRecurrente)
-                        {
-                            <dt class="col-sm-4">Día de la Semana:</dt>
-                            <dd class="col-sm-8">@Model.DiaSemana</dd>
-                        }
-                        else
-                        {
-                            <dt class="col-sm-4">Fecha Específica:</dt>
-                            <dd class="col-sm-8">
-                                @if (Model.FechaEspecifica.HasValue)
-                                {
-                                    <span class="badge bg-primary">@Model.FechaEspecifica.Value.ToString("dddd, dd/MM/yyyy")</span>
-                                }
-                                else
-                                {
-                                    <span class="text-muted">No especificada</span>
-                                }
-                            </dd>
-                        }
-
-                        <dt class="col-sm-4">Hora de Inicio:</dt>
-                        <dd class="col-sm-8">@Model.HoraInicio.ToString(@"hh\:mm")</dd>
-
-                        <dt class="col-sm-4">Hora de Fin:</dt>
-                        <dd class="col-sm-8">@Model.HoraFin.ToString(@"hh\:mm")</dd>
-
-                        <dt class="col-sm-4">Duración:</dt>
-                        <dd class="col-sm-8">
-                            @{
-                                var duracion = Model.HoraFin - Model.HoraInicio;
-                            }
-                            <span class="badge bg-secondary">@duracion.TotalHours.ToString("F2") Hrs</span>
-                        </dd>
-                    </dl>
-
-                    <div class="d-flex justify-content-between mt-4">
-                        <a asp-action="Index" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left me-1"></i> Volver al Listado
+        <div class="col-xl-8 col-lg-10">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a asp-action="Index" class="text-decoration-none">
+                            <i class="fas fa-clock me-1"></i>Horarios
                         </a>
-                        <div>
-                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Detalle</li>
+                </ol>
+            </nav>
+
+            <!-- Información del Horario -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 text-primary">
+                            <i class="fas fa-info-circle me-2"></i>Información del Horario
+                        </h5>
+                        <div class="btn-group">
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-warning">
                                 <i class="fas fa-edit me-1"></i> Editar
                             </a>
-                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-sm btn-danger">
                                 <i class="fas fa-trash me-1"></i> Eliminar
                             </a>
                         </div>
                     </div>
                 </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted small fw-bold">ASIGNADO A</label>
+                            <p class="mb-0">
+                                @if (Model.Clase != null)
+                                {
+                                    <span class="badge bg-primary fs-6">
+                                        <i class="fas fa-book me-1"></i>@Model.Clase.Nombre
+                                    </span>
+                                }
+                                else if (Model.Actividad != null)
+                                {
+                                    <span class="badge bg-success fs-6">
+                                        <i class="fas fa-tasks me-1"></i>@Model.Actividad.Nombre
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Sin asignar</span>
+                                }
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted small fw-bold">TIPO DE EVENTO</label>
+                            <p class="mb-0">
+                                @if (Model.EsRecurrente)
+                                {
+                                    <span class="badge bg-info fs-6">
+                                        <i class="fas fa-sync-alt me-1"></i> Recurrente
+                                    </span>
+                                    <small class="d-block text-muted mt-1">Se repite todas las semanas</small>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning fs-6">
+                                        <i class="fas fa-calendar-day me-1"></i> Único
+                                    </span>
+                                    <small class="d-block text-muted mt-1">Solo una vez</small>
+                                }
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted small fw-bold">
+                                @(Model.EsRecurrente ? "DÍA DE LA SEMANA" : "FECHA ESPECÍFICA")
+                            </label>
+                            <p class="mb-0 fs-5">
+                                @if (Model.EsRecurrente)
+                                {
+                                    <i class="far fa-calendar me-2"></i>
+                                    @Model.DiaSemana
+                                }
+                                else if (Model.FechaEspecifica.HasValue)
+                                {
+                                    <i class="far fa-calendar-check me-2"></i>
+                                    @Model.FechaEspecifica.Value.ToString("dddd, dd/MM/yyyy")
+                                }
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted small fw-bold">HORARIO</label>
+                            <p class="mb-0 fs-5">
+                                <i class="far fa-clock me-2"></i>
+                                @Model.HoraInicio.ToString(@"hh\:mm") - @Model.HoraFin.ToString(@"hh\:mm")
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted small fw-bold">DURACIÓN</label>
+                            <p class="mb-0">
+                                @{
+                                    var duracion = Model.HoraFin - Model.HoraInicio;
+                                }
+                                <span class="badge bg-secondary fs-6">
+                                    <i class="fas fa-hourglass-half me-1"></i>
+                                    @duracion.TotalHours.ToString("F2") horas
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón volver -->
+            <div class="text-center mb-4">
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Volver al Listado
+                </a>
             </div>
         </div>
     </div>

@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+ï»¿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -19,13 +19,12 @@ namespace Organizainador.Pages
         public DateTime Start { get; set; }
         public DateTime? End { get; set; }
         public string Color { get; set; }
-        public string Description { get; set; } // Añadido para la barra lateral
-        public string EventType { get; set; }   // 'Clase' o 'Actividad'
+        public string Description { get; set; }
+        public string EventType { get; set; }
     }
 
     public class CalendarioModel : PageModel
     {
-        // Asegúrate de que 'AppDbContext' coincida con el nombre real de tu contexto
         private readonly AppDbContext _dbContext;
 
         public CalendarioModel(AppDbContext dbContext)
@@ -33,28 +32,26 @@ namespace Organizainador.Pages
             _dbContext = dbContext;
         }
 
-        // Propiedad para cargar la lista de eventos del día en la barra lateral (Vista Razor)
         public List<AppEvent> DailyEvents { get; set; } = new List<AppEvent>();
 
-        // --- 1. OnGet: Carga Inicial de la Página ---
+        // --- 1. OnGet: Carga Inicial de la PÃ¡gina ---
         public async Task OnGetAsync()
         {
-            // Al entrar a la página, cargamos los eventos de HOY para la barra lateral
             await LoadDailyEvents(DateTime.Today);
         }
 
-        // --- 2. Método Auxiliar: Cargar eventos de un día específico en DailyEvents ---
+        // --- 2. MÃ©todo Auxiliar: Cargar eventos de un dÃ­a especÃ­fico ---
         private async Task LoadDailyEvents(DateTime date)
         {
             int userId = GetCurrentUserId();
 
             DailyEvents = (await GetEventsForUser(userId))
-                .Where(e => e.Start.Date == date.Date) // Filtra solo los eventos de esa fecha
-                .OrderBy(e => e.Start)                 // Ordena por hora de inicio
+                .Where(e => e.Start.Date == date.Date)
+                .OrderBy(e => e.Start)
                 .ToList();
         }
 
-        // --- 3. Método Auxiliar: Obtener ID del usuario actual ---
+        // --- 3. MÃ©todo Auxiliar: Obtener ID del usuario actual ---
         private int GetCurrentUserId()
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -65,74 +62,124 @@ namespace Organizainador.Pages
             return 0;
         }
 
-        // --- 4. Lógica Principal: Obtener TODAS las actividades y clases (incluyendo recurrencia) ---
+        // --- 4. LÃ³gica Principal: Obtener TODOS los eventos (Clases y Actividades) ---
         private async Task<List<AppEvent>> GetEventsForUser(int userId)
         {
             if (userId == 0) return new List<AppEvent>();
 
             var events = new List<AppEvent>();
 
-            // A. Obtener Actividades
-            var actividades = await _dbContext.Actividades
-                .Where(a => a.UsuarioId == userId)
-                .ToListAsync();
-
-            foreach (var act in actividades)
-            {
-                events.Add(new AppEvent
-                {
-                    Id = act.Id,
-                    Title = act.Nombre,
-                    Start = act.CreatedAt ?? DateTime.MinValue,
-                    End = (act.CreatedAt ?? DateTime.MinValue).AddHours(1),
-                    Color = "#dc3545", // Rojo
-                    Description = act.Descripcion,
-                    EventType = "Actividad"
-                });
-            }
-
-            // B. Obtener Horarios de Clases
+            // â­ CORRECCIÃ“N: Obtener horarios (tanto de clases como de actividades)
             var horarios = await _dbContext.Horarios
                 .Include(h => h.Clase)
-                .Where(h => h.Clase.UsuarioId == userId)
+                .Include(h => h.Actividad)
+                .Where(h => (h.Clase != null && h.Clase.UsuarioId == userId) ||
+                           (h.Actividad != null && h.Actividad.UsuarioId == userId))
                 .ToListAsync();
 
             var dayMap = new Dictionary<string, DayOfWeek>
             {
                 { "Lunes", DayOfWeek.Monday },
                 { "Martes", DayOfWeek.Tuesday },
-                { "Miércoles", DayOfWeek.Wednesday },
+                { "MiÃ©rcoles", DayOfWeek.Wednesday },
                 { "Jueves", DayOfWeek.Thursday },
                 { "Viernes", DayOfWeek.Friday },
-                { "Sábado", DayOfWeek.Saturday },
+                { "SÃ¡bado", DayOfWeek.Saturday },
                 { "Domingo", DayOfWeek.Sunday }
             };
 
-            // Proyectamos horarios recurrentes (30 días atrás, 1 año adelante)
-            for (int i = -30; i <= 365; i++)
+            foreach (var h in horarios)
             {
-                DateTime day = DateTime.Today.AddDays(i);
-
-                foreach (var h in horarios)
+                // â­ EVENTOS RECURRENTES (se repiten cada semana)
+                if (h.EsRecurrente && !string.IsNullOrEmpty(h.DiaSemana))
                 {
-                    if (dayMap.TryGetValue(h.DiaSemana, out DayOfWeek targetDayOfWeek) && day.DayOfWeek == targetDayOfWeek)
+                    // Proyectamos 30 dÃ­as atrÃ¡s y 365 dÃ­as adelante
+                    for (int i = -30; i <= 365; i++)
                     {
-                        DateTime start = day.Date.Add(h.HoraInicio);
-                        DateTime end = day.Date.Add(h.HoraFin);
+                        DateTime day = DateTime.Today.AddDays(i);
 
-                        if (end <= start) end = end.AddDays(1);
-
-                        events.Add(new AppEvent
+                        if (dayMap.TryGetValue(h.DiaSemana, out DayOfWeek targetDayOfWeek) && 
+                            day.DayOfWeek == targetDayOfWeek)
                         {
-                            Id = h.Id,
-                            Title = h.Clase.Nombre + " (" + h.DiaSemana + ")",
-                            Start = start,
-                            End = end,
-                            Color = "#0d6efd", // Azul
-                            Description = h.Clase.Descripcion,
-                            EventType = "Clase"
-                        });
+                            DateTime start = day.Date.Add(h.HoraInicio);
+                            DateTime end = day.Date.Add(h.HoraFin);
+
+                            if (end <= start) end = end.AddDays(1);
+
+                            // Determinar si es Clase o Actividad
+                            string titulo = "";
+                            string descripcion = "";
+                            string color = "";
+                            string tipo = "";
+
+                            if (h.Clase != null)
+                            {
+                                titulo = $"{h.Clase.Nombre} ({h.DiaSemana})";
+                                descripcion = h.Clase.Descripcion;
+                                color = "#2563EB"; // Azul para Clases
+                                tipo = "Clase";
+                            }
+                            else if (h.Actividad != null)
+                            {
+                                titulo = $"{h.Actividad.Nombre} ({h.DiaSemana})";
+                                descripcion = h.Actividad.Descripcion;
+                                color = "#10B981"; // Verde para Actividades
+                                tipo = "Actividad";
+                            }
+
+                            events.Add(new AppEvent
+                            {
+                                Id = h.Id,
+                                Title = titulo,
+                                Start = start,
+                                End = end,
+                                Color = color,
+                                Description = descripcion,
+                                EventType = tipo
+                            });
+                        }
                     }
+                }
+                // â­ EVENTOS ÃšNICOS (ocurren solo una vez en una fecha especÃ­fica)
+                else if (!h.EsRecurrente && h.FechaEspecifica.HasValue)
+                {
+                    // Usar la fecha especÃ­fica del horario
+                    DateTime fechaEvento = h.FechaEspecifica.Value.Date;
+                    DateTime start = fechaEvento.Add(h.HoraInicio);
+                    DateTime end = fechaEvento.Add(h.HoraFin);
+
+                    if (end <= start) end = end.AddDays(1);
+
+                    string titulo = "";
+                    string descripcion = "";
+                    string color = "";
+                    string tipo = "";
+
+                    if (h.Clase != null)
+                    {
+                        titulo = $"{h.Clase.Nombre} ({fechaEvento:dd/MM})";
+                        descripcion = h.Clase.Descripcion;
+                        color = "#2563EB"; // Azul para Clases
+                        tipo = "Clase";
+                    }
+                    else if (h.Actividad != null)
+                    {
+                        titulo = $"{h.Actividad.Nombre} ({fechaEvento:dd/MM})";
+                        descripcion = h.Actividad.Descripcion;
+                        color = "#10B981"; // Verde para Actividades
+                        tipo = "Actividad";
+                    }
+
+                    events.Add(new AppEvent
+                    {
+                        Id = h.Id,
+                        Title = titulo,
+                        Start = start,
+                        End = end,
+                        Color = color,
+                        Description = descripcion,
+                        EventType = tipo
+                    });
                 }
             }
 
@@ -165,18 +212,17 @@ namespace Organizainador.Pages
             return new JsonResult(calendarEvents);
         }
 
-        // --- 6. Handler AJAX: OnGetDailyEvents (Para actualizar la barra lateral al hacer click) ---
+        // --- 6. Handler AJAX: OnGetDailyEvents (Para actualizar la barra lateral) ---
         public async Task<JsonResult> OnGetDailyEvents(string date)
         {
             if (!DateTime.TryParse(date, out DateTime selectedDate))
             {
-                return new JsonResult(new { success = false, message = "Formato de fecha inválido." });
+                return new JsonResult(new { success = false, message = "Formato de fecha invÃ¡lido." });
             }
 
             int userId = GetCurrentUserId();
             if (userId == 0) return new JsonResult(new { success = false, message = "Usuario no autenticado." });
 
-            // Obtenemos todos y filtramos en memoria (se podría optimizar, pero reutiliza tu lógica actual)
             var allEvents = await GetEventsForUser(userId);
 
             var dailyEvents = allEvents
@@ -188,7 +234,7 @@ namespace Organizainador.Pages
                     description = e.Description,
                     time = e.Start.ToString("HH:mm") + (e.End.HasValue ? " - " + e.End.Value.ToString("HH:mm") : ""),
                     color = e.Color,
-                    type = e.EventType
+                    eventType = e.EventType
                 })
                 .ToList();
 

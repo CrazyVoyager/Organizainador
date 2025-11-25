@@ -39,6 +39,14 @@ document.addEventListener('DOMContentLoaded', function () {
             list: 'Agenda'
         },
 
+        // ⭐ CONFIGURACIÓN DE FORMATO DE HORA
+        eventTimeFormat: {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+            meridiem: false
+        },
+
         // Configuración de visualización
         height: 'auto',
         expandRows: true,
@@ -50,6 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
         navLinks: true,
         weekNumbers: false,
         dayMaxEvents: 3,
+        displayEventTime: true, // ⭐ Mostrar hora en eventos
 
         // Interactividad
         selectable: false,
@@ -63,6 +72,30 @@ document.addEventListener('DOMContentLoaded', function () {
         eventDrop: handleEventDrop,
         eventResize: handleEventResize,
         datesSet: handleDatesSet,
+
+        // ⭐ FORMATO DEL CONTENIDO DEL EVENTO
+        eventContent: function(arg) {
+            const eventType = arg.event.extendedProps.eventType || 'default';
+            const colors = getEventColors(eventType);
+            
+            // Formatear hora de inicio y fin
+            const startTime = arg.event.start ? formatTime(arg.event.start) : '';
+            const endTime = arg.event.end ? formatTime(arg.event.end) : '';
+            const timeRange = endTime ? `${startTime} - ${endTime}` : startTime;
+            
+            return {
+                html: `
+                    <div class="fc-event-main-frame">
+                        <div class="fc-event-time">${timeRange}</div>
+                        <div class="fc-event-title-container">
+                            <div class="fc-event-title fc-sticky">
+                                ${colors.icon} ${arg.event.title}
+                            </div>
+                        </div>
+                    </div>
+                `
+            };
+        },
 
         // Mensajes
         moreLinkText: function(num) {
@@ -146,8 +179,11 @@ document.addEventListener('DOMContentLoaded', function () {
      * Configurar evento al montarse
      */
     function handleEventMount(info) {
-        // Tooltip
-        const tooltip = info.event.extendedProps.description || info.event.title;
+        // ⭐ Tooltip con hora de inicio y fin
+        const startTime = info.event.start ? formatTime(info.event.start) : '';
+        const endTime = info.event.end ? formatTime(info.event.end) : '';
+        const timeRange = endTime ? `${startTime} - ${endTime}` : startTime;
+        const tooltip = `${info.event.title}\n${timeRange}${info.event.extendedProps.description ? '\n' + info.event.extendedProps.description : ''}`;
         info.el.title = tooltip;
 
         // Obtener tipo de evento
@@ -164,12 +200,6 @@ document.addEventListener('DOMContentLoaded', function () {
         info.el.style.borderRadius = '0.375rem';
         info.el.style.padding = '4px 8px';
         info.el.style.fontWeight = '600';
-        
-        // Añadir icono al título
-        const titleElement = info.el.querySelector('.fc-event-title');
-        if (titleElement && !titleElement.textContent.startsWith(colors.icon)) {
-            titleElement.textContent = `${colors.icon} ${titleElement.textContent}`;
-        }
 
         // Añadir botón de menú
         addEventMenuButton(info.el);
@@ -201,7 +231,11 @@ document.addEventListener('DOMContentLoaded', function () {
      * Manejar arrastre de evento
      */
     async function handleEventDrop(info) {
-        if (!confirm(`¿Mover "${info.event.title}" a ${formatDateTime(info.event.start)}?`)) {
+        const startTime = formatTime(info.event.start);
+        const endTime = info.event.end ? formatTime(info.event.end) : '';
+        const timeRange = endTime ? `${startTime} - ${endTime}` : startTime;
+        
+        if (!confirm(`¿Mover "${info.event.title}" a ${timeRange}?`)) {
             info.revert();
             return;
         }
@@ -345,15 +379,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         eventList.innerHTML = events.map(event => {
-            // Determinar el tipo de evento basado en el color o propiedades
-            let eventType = 'default';
-            if (event.color === '#2563EB' || event.eventType === 'Clase') {
-                eventType = 'Clase';
-            } else if (event.color === '#10B981' || event.eventType === 'Actividad') {
-                eventType = 'Actividad';
-            } else if (event.color === '#F59E0B' || event.eventType === 'Tarea') {
-                eventType = 'Tarea';
-            }
+            // Determinar el tipo de evento
+            let eventType = event.eventType || 'default';
+            if (event.color === '#2563EB') eventType = 'Clase';
+            else if (event.color === '#10B981') eventType = 'Actividad';
+            else if (event.color === '#F59E0B') eventType = 'Tarea';
 
             const colors = getEventColors(eventType);
             
@@ -364,8 +394,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         <span style="font-size: 1rem;">${colors.icon}</span>
                         <strong style="color: ${colors.text};">${escapeHtml(event.title)}</strong>
                     </div>
-                    <div class="event-time" style="color: ${colors.text}; opacity: 0.8;">${event.time}</div>
-                    ${event.description ? `<p style="color: ${colors.text}; opacity: 0.7;">${escapeHtml(event.description)}</p>` : ''}
+                    <div class="event-time" style="color: ${colors.text}; opacity: 0.8; font-weight: 600;">
+                        ⏰ ${event.time}
+                    </div>
+                    ${event.description ? `<p style="color: ${colors.text}; opacity: 0.7; font-size: 0.875rem; margin-top: 0.25rem;">${escapeHtml(event.description)}</p>` : ''}
                 </div>
             `;
         }).join('');
@@ -411,9 +443,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (modalTime) {
-            const timeText = formatDateTime(event.start);
-            const endText = event.end ? ` - ${formatDateTime(event.end)}` : '';
-            modalTime.textContent = timeText + endText;
+            // ⭐ Mostrar solo las horas
+            const startTime = event.start ? formatTime(event.start) : '';
+            const endTime = event.end ? formatTime(event.end) : '';
+            const timeRange = endTime ? `${startTime} - ${endTime}` : startTime;
+            modalTime.textContent = `⏰ ${timeRange}`;
         }
 
         // Mostrar/ocultar botón de detalles
@@ -495,6 +529,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const eventType = event.extendedProps.eventType || 'default';
         const colors = getEventColors(eventType);
         
+        const startTime = event.start ? formatTime(event.start) : '';
+        const endTime = event.end ? formatTime(event.end) : '';
+        const timeRange = endTime ? `${startTime} - ${endTime}` : startTime;
+        
         const details = `
 ${colors.icon} Detalles del Evento
 ━━━━━━━━━━━━━━━━━━━━━
@@ -504,8 +542,8 @@ ${colors.icon} Detalles del Evento
 
 ${event.extendedProps.description ? `📄 Descripción: ${event.extendedProps.description}` : '📄 Sin descripción'}
 
-⏰ Inicio: ${formatDateTime(event.start)}
-${event.end ? `⏰ Fin: ${formatDateTime(event.end)}` : ''}
+⏰ Horario: ${timeRange}
+📅 Fecha: ${formatDate(event.start)}
         `;
 
         alert(details.trim());
@@ -538,7 +576,34 @@ ${event.end ? `⏰ Fin: ${formatDateTime(event.end)}` : ''}
     }
 
     /**
-     * Formatear fecha y hora
+     * ⭐ Formatear solo la hora (HH:MM)
+     */
+    function formatTime(date) {
+        if (!date) return '';
+        
+        return new Date(date).toLocaleTimeString('es-CL', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        });
+    }
+
+    /**
+     * ⭐ Formatear solo la fecha
+     */
+    function formatDate(date) {
+        if (!date) return '';
+        
+        return new Date(date).toLocaleDateString('es-CL', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+    }
+
+    /**
+     * Formatear fecha y hora completa (solo para casos especiales)
      */
     function formatDateTime(date) {
         if (!date) return '';
@@ -669,6 +734,22 @@ ${event.end ? `⏰ Fin: ${formatDateTime(event.end)}` : ''}
         .event-item:hover {
             transform: translateX(4px) !important;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        /* ⭐ Estilos mejorados para mostrar hora en eventos del calendario */
+        .fc-event-time {
+            font-weight: 700;
+            font-size: 0.75rem;
+            margin-bottom: 2px;
+        }
+
+        .fc-event-title {
+            font-size: 0.8rem;
+            line-height: 1.2;
+        }
+
+        .fc-daygrid-event {
+            padding: 3px 5px !important;
         }
     `;
     document.head.appendChild(style);
