@@ -6,40 +6,78 @@
 <div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-xl-8 col-lg-10">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">
-                        <i class="fas fa-book me-1"></i> Crear Nueva Clase
-                    </h6>
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a asp-action="Index" class="text-decoration-none">
+                            <i class="fas fa-book me-1"></i>Clases
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Nueva Clase</li>
+                </ol>
+            </nav>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 text-primary">
+                        <i class="fas fa-plus-circle me-2"></i>Crear Nueva Clase
+                    </h5>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-4">
                     <form asp-action="Crear" method="post">
                         @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
-                        <div class="mb-3">
-                            <label asp-for="Nombre" class="form-label">Nombre de la Clase</label>
-                            <input asp-for="Nombre" class="form-control" placeholder="Ingrese el nombre de la clase" required>
-                            <span asp-validation-for="Nombre" class="text-danger small"></span>
+                        <!-- Información de la Clase -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-muted mb-3 pb-2 border-bottom">
+                                    <i class="fas fa-info-circle me-2"></i>Información de la Clase
+                                </h6>
+                            </div>
+                            
+                            <div class="col-12 mb-3">
+                                <label asp-for="Nombre" class="form-label fw-bold">
+                                    Nombre de la Clase <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="Nombre" 
+                                       class="form-control" 
+                                       placeholder="Ej: Matemáticas, Historia, Programación..."
+                                       autofocus
+                                       required>
+                                <span asp-validation-for="Nombre" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12 mb-3">
+                                <label asp-for="Descripcion" class="form-label fw-bold">
+                                    Descripción
+                                    <span class="text-muted small">(Opcional)</span>
+                                </label>
+                                <textarea asp-for="Descripcion" 
+                                          class="form-control" 
+                                          rows="4"
+                                          placeholder="Describe los detalles de la clase..."></textarea>
+                                <span asp-validation-for="Descripcion" class="text-danger small"></span>
+                                <small class="text-muted">Puedes añadir detalles adicionales sobre la clase</small>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="Descripcion" class="form-label">Descripción</label>
-                            <textarea asp-for="Descripcion" class="form-control" placeholder="Ingrese una descripción"></textarea>
-                            <span asp-validation-for="Descripcion" class="text-danger small"></span>
+                        <!-- Nota informativa -->
+                        <div class="alert alert-info d-flex align-items-center" role="alert">
+                            <i class="fas fa-info-circle me-2 fa-lg"></i>
+                            <div>
+                                <strong>Nota:</strong> Después de crear la clase, podrás asignarle horarios específicos desde la sección de Horarios.
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="CantidadHorasDia" class="form-label">Horas por Día</label>
-                            <input asp-for="CantidadHorasDia" type="number" class="form-control" placeholder="Ej: 2" min="1" max="24" required>
-                            <span asp-validation-for="CantidadHorasDia" class="text-danger small"></span>
-                        </div>
-
-                        <div class="d-flex justify-content-between">
-                            <a asp-action="Index" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left me-1"></i> Volver al Listado
+                        <!-- Botones de acción -->
+                        <div class="d-flex justify-content-between pt-3 border-top">
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> Cancelar
                             </a>
-                            <button type="submit" class="btn btn-success">
-                                <i class="fas fa-save me-1"></i> Guardar Clase
+                            <button type="submit" class="btn btn-success px-4">
+                                <i class="fas fa-save me-1"></i> Crear Clase
                             </button>
                         </div>
                     </form>
@@ -50,19 +88,5 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-    
-    <script>
-        // Debug script
-        console.log("Vista de Crear Clase cargada correctamente");
-        
-        document.querySelector('form').addEventListener('submit', function(e) {
-            console.log('Formulario enviado');
-            console.log('UsuarioId:', document.getElementById('UsuarioId').value);
-            console.log('Nombre:', document.getElementById('Nombre').value);
-            console.log('CantidadHorasDia:', document.getElementById('CantidadHorasDia').value);
-        });
-    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

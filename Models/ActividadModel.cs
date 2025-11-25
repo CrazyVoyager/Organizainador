@@ -17,24 +17,21 @@ namespace Organizainador.Models
         [Display(Name = "ID Usuario")]
         public int UsuarioId { get; set; }
 
-
-        // Propiedad de navegación (Opcional, pero recomendado para MVC)
-        // Permite acceder al objeto UsuarioModel relacionado (si lo configuras en el DbContext)
-        // public UsuarioModel Usuario { get; set; }
-
-
         [Required(ErrorMessage = "El nombre de la actividad es obligatorio")]
         [Column("tac_nom_act")]
         [Display(Name = "Nombre de la Actividad")]
+        [StringLength(500)]
         public string Nombre { get; set; }
 
         [Column("tac_desc")]
         [Display(Name = "Descripción")]
-        public string Descripcion { get; set; }
+        [StringLength(2000)]
+        public string? Descripcion { get; set; }  // Nullable - Opcional
 
         [Column("tac_t_act")]
         [Display(Name = "Tipo/Etiqueta")]
-        public string Etiqueta { get; set; }
+        [StringLength(100)]
+        public string? Etiqueta { get; set; }  // Nullable - Opcional
 
         [Column("created_at")]
         [Display(Name = "Fecha de Creación")]

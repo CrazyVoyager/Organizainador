@@ -5,56 +5,69 @@
 
 <div class="container-fluid">
     <div class="row justify-content-center">
-        <div class="col-xl-6 col-lg-8">
-            <div class="card border-left-danger shadow">
-                <div class="card-header py-3 bg-danger text-white">
-                    <h6 class="m-0 font-weight-bold">
-                        <i class="fas fa-exclamation-triangle me-1"></i> Confirmar Eliminación
-                    </h6>
+        <div class="col-xl-8 col-lg-10">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a asp-action="Index" class="text-decoration-none">
+                            <i class="fas fa-book me-1"></i>Clases
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Eliminar</li>
+                </ol>
+            </nav>
+
+            <div class="card shadow-sm border-danger">
+                <div class="card-header bg-danger text-white py-3">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Confirmar Eliminación
+                    </h5>
                 </div>
-                <div class="card-body">
-                    <div class="text-center mb-4">
-                        <i class="fas fa-trash-alt fa-3x text-danger mb-3"></i>
-                        <h4 class="text-gray-800">¿Está seguro de eliminar esta clase?</h4>
-                        <p class="text-gray-600">Esta acción no se puede deshacer.</p>
-                    </div>
+                <div class="card-body p-4">
+                    @if (ViewData["PuedeEliminar"] as bool? == false)
+                    {
+                        <div class="alert alert-warning" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            <strong>No se puede eliminar esta clase</strong> porque tiene horarios asociados.
+                            Debes eliminar primero los horarios relacionados.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            ¿Estás seguro de que deseas eliminar esta clase? Esta acción no se puede deshacer.
+                        </div>
+                    }
 
-                    <div class="alert alert-warning">
-                        <h6 class="alert-heading">Información de la Clase a Eliminar:</h6>
-                        <hr>
-                        <div class="row">
-                            <div class="col-sm-4"><strong>ID:</strong></div>
-                            <div class="col-sm-8">@Model.Id</div>
-                        </div>
-                        <div class="row mt-2">
-                            <div class="col-sm-4"><strong>Nombre:</strong></div>
-                            <div class="col-sm-8">@Model.Nombre</div>
-                        </div>
-                        <div class="row mt-2">
-                            <div class="col-sm-4"><strong>Descripción:</strong></div>
-                            <div class="col-sm-8">@Model.Descripcion</div>
-                        </div>
-                        <div class="row mt-2">
-                            <div class="col-sm-4"><strong>Horas por Día:</strong></div>
-                            <div class="col-sm-8">@Model.CantidadHorasDia</div>
-                        </div>
-                        <div class="row mt-2">
-                            <div class="col-sm-4"><strong>Usuario:</strong></div>
-                            <div class="col-sm-8">@ViewBag.UsuarioNombre</div>
-                        </div>
-                    </div>
+                    <h6 class="text-muted mb-3">Detalles de la clase:</h6>
+                    <dl class="row">
+                        <dt class="col-sm-3">Nombre:</dt>
+                        <dd class="col-sm-9"><strong>@Model.Nombre</strong></dd>
 
-                    <form asp-action="Eliminar" method="post">
-                        <input type="hidden" asp-for="Id" />
-                        <div class="d-flex justify-content-between">
-                            <a asp-action="Index" class="btn btn-success">
-                                <i class="fas fa-arrow-left me-1"></i> Cancelar
-                            </a>
-                            <button type="submit" class="btn btn-danger">
-                                <i class="fas fa-trash me-1"></i> Confirmar Eliminación
-                            </button>
-                        </div>
-                    </form>
+                        @if (!string.IsNullOrEmpty(Model.Descripcion))
+                        {
+                            <dt class="col-sm-3">Descripción:</dt>
+                            <dd class="col-sm-9">@Model.Descripcion</dd>
+                        }
+                    </dl>
+
+                    <div class="d-flex justify-content-between pt-3 border-top">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Cancelar
+                        </a>
+                        @if (ViewData["PuedeEliminar"] as bool? != false)
+                        {
+                            <form asp-action="Eliminar" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" asp-for="Id" />
+                                <button type="submit" class="btn btn-danger px-4">
+                                    <i class="fas fa-trash me-1"></i> Sí, Eliminar
+                                </button>
+                            </form>
+                        }
+                    </div>
                 </div>
             </div>
         </div>

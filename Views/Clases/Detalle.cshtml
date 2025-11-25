@@ -1,6 +1,6 @@
-﻿@model Organizainador.Models.ActividadModel
+﻿@model Organizainador.Models.ClaseModel
 @{
-    ViewData["Title"] = "Detalle de Actividad";
+    ViewData["Title"] = "Detalle de Clase";
 }
 
 <div class="container-fluid">
@@ -11,25 +11,25 @@
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">
                         <a asp-action="Index" class="text-decoration-none">
-                            <i class="fas fa-tasks me-1"></i>Actividades
+                            <i class="fas fa-book me-1"></i>Clases
                         </a>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">@Model.Nombre</li>
                 </ol>
             </nav>
 
-            <!-- Información de la Actividad -->
+            <!-- Información de la Clase -->
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-white py-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="mb-0 text-primary">
-                            <i class="fas fa-clipboard-check me-2"></i>Información de la Actividad
+                            <i class="fas fa-graduation-cap me-2"></i>Información de la Clase
                         </h5>
                         <div class="btn-group">
-                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-warning">
+                            <a asp-action="Modificar" asp-route-id="@Model.Id" class="btn btn-sm btn-warning">
                                 <i class="fas fa-edit me-1"></i> Editar
                             </a>
-                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-sm btn-danger">
+                            <a asp-action="Eliminar" asp-route-id="@Model.Id" class="btn btn-sm btn-danger">
                                 <i class="fas fa-trash me-1"></i> Eliminar
                             </a>
                         </div>
@@ -37,22 +37,9 @@
                 </div>
                 <div class="card-body p-4">
                     <div class="row">
-                        <div class="col-md-8 mb-3">
+                        <div class="col-12 mb-3">
                             <label class="form-label text-muted small fw-bold">NOMBRE</label>
                             <p class="mb-0 fs-5">@Model.Nombre</p>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label text-muted small fw-bold">ETIQUETA</label>
-                            <p class="mb-0">
-                                @if (!string.IsNullOrEmpty(Model.Etiqueta))
-                                {
-                                    <span class="badge bg-primary fs-6">@Model.Etiqueta</span>
-                                }
-                                else
-                                {
-                                    <span class="text-muted">Sin etiqueta</span>
-                                }
-                            </p>
                         </div>
                         <div class="col-12 mb-3">
                             <label class="form-label text-muted small fw-bold">DESCRIPCIÓN</label>
@@ -64,20 +51,6 @@
                                 else
                                 {
                                     <span class="text-muted">Sin descripción</span>
-                                }
-                            </p>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label text-muted small fw-bold">FECHA DE CREACIÓN</label>
-                            <p class="mb-0">
-                                @if (Model.CreatedAt.HasValue)
-                                {
-                                    <i class="far fa-calendar me-2"></i>
-                                    @Model.CreatedAt.Value.ToString("dd/MM/yyyy HH:mm")
-                                }
-                                else
-                                {
-                                    <span class="text-muted">No especificada</span>
                                 }
                             </p>
                         </div>
@@ -102,6 +75,7 @@
                                         <th>Día/Fecha</th>
                                         <th>Hora Inicio</th>
                                         <th>Hora Fin</th>
+                                        <th>Duración</th>
                                         <th>Tipo</th>
                                     </tr>
                                 </thead>
@@ -124,6 +98,12 @@
                                             <td>@horario.HoraInicio.ToString(@"hh\:mm")</td>
                                             <td>@horario.HoraFin.ToString(@"hh\:mm")</td>
                                             <td>
+                                                @{
+                                                    var duracion = horario.HoraFin - horario.HoraInicio;
+                                                }
+                                                <span class="badge bg-secondary">@duracion.TotalHours.ToString("F1") h</span>
+                                            </td>
+                                            <td>
                                                 @if (horario.EsRecurrente)
                                                 {
                                                     <span class="badge bg-info">Recurrente</span>
@@ -143,7 +123,7 @@
                     {
                         <div class="text-center py-4">
                             <i class="far fa-calendar-times fa-3x text-muted mb-3"></i>
-                            <p class="text-muted mb-3">No hay horarios asociados a esta actividad.</p>
+                            <p class="text-muted mb-3">No hay horarios asociados a esta clase.</p>
                             <a href="/Horarios/Create" class="btn btn-primary btn-sm">
                                 <i class="fas fa-plus me-1"></i> Agregar Horario
                             </a>

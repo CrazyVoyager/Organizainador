@@ -6,36 +6,69 @@
 <div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-xl-8 col-lg-10">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-warning">
-                        <i class="fas fa-edit me-1"></i> Modificar Clase
-                    </h6>
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a asp-action="Index" class="text-decoration-none">
+                            <i class="fas fa-book me-1"></i>Clases
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Editar: @Model.Nombre</li>
+                </ol>
+            </nav>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 text-warning">
+                        <i class="fas fa-edit me-2"></i>Modificar Clase
+                    </h5>
                 </div>
-                <div class="card-body">
-                    <form asp-action="Modificar" method="post" class="needs-validation" novalidate>
+                <div class="card-body p-4">
+                    <form asp-action="Modificar" method="post">
+                        @Html.AntiForgeryToken()
                         <input type="hidden" asp-for="Id" />
-                        <div class="mb-3">
-                            <label asp-for="Nombre" class="form-label">Nombre de la Clase</label>
-                            <input asp-for="Nombre" class="form-control" placeholder="Ingrese el nombre de la clase" required>
-                            <span asp-validation-for="Nombre" class="text-danger small"></span>
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <!-- Información de la Clase -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-muted mb-3 pb-2 border-bottom">
+                                    <i class="fas fa-info-circle me-2"></i>Información de la Clase
+                                </h6>
+                            </div>
+                            
+                            <div class="col-12 mb-3">
+                                <label asp-for="Nombre" class="form-label fw-bold">
+                                    Nombre de la Clase <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="Nombre" 
+                                       class="form-control" 
+                                       placeholder="Ej: Matemáticas, Historia, Programación..."
+                                       required>
+                                <span asp-validation-for="Nombre" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12 mb-3">
+                                <label asp-for="Descripcion" class="form-label fw-bold">
+                                    Descripción
+                                    <span class="text-muted small">(Opcional)</span>
+                                </label>
+                                <textarea asp-for="Descripcion" 
+                                          class="form-control" 
+                                          rows="4"
+                                          placeholder="Describe los detalles de la clase..."></textarea>
+                                <span asp-validation-for="Descripcion" class="text-danger small"></span>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label asp-for="Descripcion" class="form-label">Descripción</label>
-                            <textarea asp-for="Descripcion" class="form-control" placeholder="Ingrese una descripción"></textarea>
-                            <span asp-validation-for="Descripcion" class="text-danger small"></span>
-                        </div>
-                        <div class="mb-3">
-                            <label asp-for="CantidadHorasDia" class="form-label">Horas por Día</label>
-                            <input asp-for="CantidadHorasDia" type="number" step="0.01" class="form-control" placeholder="0.00" required>
-                            <span asp-validation-for="CantidadHorasDia" class="text-danger small"></span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <a asp-action="Index" class="btn btn-secondary">
+
+                        <!-- Botones de acción -->
+                        <div class="d-flex justify-content-between pt-3 border-top">
+                            <a asp-action="Index" class="btn btn-outline-secondary">
                                 <i class="fas fa-arrow-left me-1"></i> Cancelar
                             </a>
-                            <button type="submit" class="btn btn-warning">
-                                <i class="fas fa-save me-1"></i> Actualizar Clase
+                            <button type="submit" class="btn btn-warning px-4">
+                                <i class="fas fa-save me-1"></i> Guardar Cambios
                             </button>
                         </div>
                     </form>
@@ -46,7 +79,5 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

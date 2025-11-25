@@ -1,8 +1,4 @@
-﻿// ActividadesController.cs (VERSION CORREGIDA Y SEGURA)
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Organizainador.Data;
 using Organizainador.Models;
@@ -13,161 +9,314 @@ namespace Organizainador.Controllers
     public class ActividadesController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly ILogger<ActividadesController> _logger;
 
-        public ActividadesController(AppDbContext context)
+        public ActividadesController(AppDbContext context, ILogger<ActividadesController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
-        // Funciones Auxiliares para obtener el ID del usuario logueado.
+        // ======================== MÉTODOS AUXILIARES ========================
         private string GetCurrentUserIdString() => User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
         private int GetCurrentUserIdInt() => int.TryParse(GetCurrentUserIdString(), out int id) ? id : 0;
 
-        // ======================== LISTADO PRINCIPAL (Index) ========================
-        // GET: Actividades
-        public async Task<IActionResult> Index()
+        // ======================== LISTADO PRINCIPAL ========================
+        [HttpGet]
+        public async Task<IActionResult> Index(string? busqueda, string? filtroEtiqueta)
         {
-            int userId = GetCurrentUserIdInt();
-            if (userId == 0) return Forbid();
+            try
+            {
+                int userId = GetCurrentUserIdInt();
+                if (userId == 0) return Forbid();
 
-            // 1. Filtrar SOLO las actividades del usuario logueado
-            var actividades = await _context.Actividades
-                                            .Where(a => a.UsuarioId == userId)
-                                            .ToListAsync();
-            return View(actividades);
+                var query = _context.Actividades
+                    .Where(a => a.UsuarioId == userId)
+                    .AsQueryable();
+
+                // Búsqueda
+                if (!string.IsNullOrWhiteSpace(busqueda))
+                {
+                    query = query.Where(a =>
+                        a.Nombre.Contains(busqueda) ||
+                        (a.Descripcion != null && a.Descripcion.Contains(busqueda))
+                    );
+                    ViewData["BusquedaActual"] = busqueda;
+                }
+
+                // Filtro por etiqueta
+                if (!string.IsNullOrWhiteSpace(filtroEtiqueta))
+                {
+                    query = query.Where(a => a.Etiqueta == filtroEtiqueta);
+                    ViewData["FiltroEtiquetaActual"] = filtroEtiqueta;
+                }
+
+                // Obtener etiquetas únicas para el filtro
+                var etiquetas = await _context.Actividades
+                    .Where(a => a.UsuarioId == userId && a.Etiqueta != null)
+                    .Select(a => a.Etiqueta)
+                    .Distinct()
+                    .OrderBy(e => e)
+                    .ToListAsync();
+
+                ViewData["Etiquetas"] = etiquetas;
+
+                var actividades = await query
+                    .OrderByDescending(a => a.CreatedAt)
+                    .ToListAsync();
+
+                return View(actividades);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al cargar la lista de actividades");
+                TempData["ErrorMessage"] = "Ocurrió un error al cargar las actividades.";
+                return View(new List<ActividadModel>());
+            }
         }
 
-        // ======================== DETALLES (Details) ========================
-        // GET: Actividades/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // ======================== DETALLE DE ACTIVIDAD ========================
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
         {
-            int userId = GetCurrentUserIdInt();
-            if (userId == 0 || id == null) return NotFound();
+            try
+            {
+                int userId = GetCurrentUserIdInt();
+                if (userId == 0) return Forbid();
 
-            var actividadModel = await _context.Actividades
-                .FirstOrDefaultAsync(m => m.Id == id && m.UsuarioId == userId);
+                var actividad = await _context.Actividades
+                    .FirstOrDefaultAsync(a => a.Id == id && a.UsuarioId == userId);
 
-            if (actividadModel == null) return NotFound();
+                if (actividad == null)
+                {
+                    TempData["ErrorMessage"] = "Actividad no encontrada.";
+                    return RedirectToAction(nameof(Index));
+                }
 
-            return View(actividadModel);
+                // Obtener horarios relacionados
+                var horarios = await _context.Horarios
+                    .Where(h => h.ActividadId == id)
+                    .OrderBy(h => h.DiaSemana)
+                    .ThenBy(h => h.HoraInicio)
+                    .ToListAsync();
+
+                ViewData["Horarios"] = horarios;
+
+                return View(actividad);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al cargar el detalle de la actividad {Id}", id);
+                TempData["ErrorMessage"] = "Error al cargar el detalle de la actividad.";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
-        // ======================== CREAR ACTIVIDAD (Create) ========================
-        // GET: Actividades/Create
+        // ======================== CREAR ACTIVIDAD ========================
+        [HttpGet]
         public IActionResult Create()
         {
-            return View();
+            return View(new ActividadModel());
         }
 
-        // POST: Actividades/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("Nombre,Descripcion,Etiqueta,FechaInicio,FechaFin")] ActividadModel actividadModel)
+        public async Task<IActionResult> Create(ActividadModel actividad)
         {
-            int userId = GetCurrentUserIdInt();
-            if (userId == 0) return Forbid();
-
-            // 1. ASIGNAR EL ID del usuario logueado
-            actividadModel.UsuarioId = userId;
-            actividadModel.CreatedAt = DateTime.UtcNow; // Asignar la fecha de creación automáticamente
-
-            if (ModelState.IsValid)
+            try
             {
-                _context.Actividades.Add(actividadModel);
+                int userId = GetCurrentUserIdInt();
+                if (userId == 0) return Forbid();
+
+                // Asignar usuario y fecha
+                actividad.UsuarioId = userId;
+                actividad.CreatedAt = DateTime.UtcNow;
+
+                if (!ModelState.IsValid)
+                {
+                    return View(actividad);
+                }
+
+                _context.Actividades.Add(actividad);
                 await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Actividad creada: {Nombre} por usuario {UserId}", actividad.Nombre, userId);
+                TempData["SuccessMessage"] = $"Actividad '{actividad.Nombre}' creada exitosamente.";
                 return RedirectToAction(nameof(Index));
             }
-            return View(actividadModel);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al crear actividad");
+                ModelState.AddModelError("", "Ocurrió un error al crear la actividad. Por favor, intenta nuevamente.");
+                return View(actividad);
+            }
         }
 
-        // ======================== MODIFICAR ACTIVIDAD (Edit) ========================
-        // GET: Actividades/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // ======================== EDITAR ACTIVIDAD ========================
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
         {
-            int userId = GetCurrentUserIdInt();
-            if (userId == 0 || id == null) return NotFound();
+            try
+            {
+                int userId = GetCurrentUserIdInt();
+                if (userId == 0) return Forbid();
 
-            var actividadModel = await _context.Actividades.FindAsync(id);
+                var actividad = await _context.Actividades
+                    .FirstOrDefaultAsync(a => a.Id == id && a.UsuarioId == userId);
 
-            // 1. Validar que la actividad existe Y pertenece al usuario logueado
-            if (actividadModel == null || actividadModel.UsuarioId != userId) return NotFound();
+                if (actividad == null)
+                {
+                    TempData["ErrorMessage"] = "Actividad no encontrada.";
+                    return RedirectToAction(nameof(Index));
+                }
 
-            return View(actividadModel);
+                return View(actividad);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al cargar la actividad {Id} para editar", id);
+                TempData["ErrorMessage"] = "Error al cargar la actividad.";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
-        // POST: Actividades/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,
-            [Bind("Id,Nombre,Descripcion,Etiqueta,FechaInicio,FechaFin")] ActividadModel actividadModel)
+        public async Task<IActionResult> Edit(int id, ActividadModel actividad)
         {
-            int userId = GetCurrentUserIdInt();
-            if (userId == 0) return Forbid();
-
-            if (id != actividadModel.Id) return NotFound();
-
-            // 1. Re-asignar la FK y CreatedAt para seguridad
-            actividadModel.UsuarioId = userId;
-
-            if (ModelState.IsValid)
+            if (id != actividad.Id)
             {
-                try
-                {
-                    _context.Update(actividadModel);
-                    // 2. Marcar estas propiedades como NO modificadas
-                    _context.Entry(actividadModel).Property(a => a.UsuarioId).IsModified = false;
-                    _context.Entry(actividadModel).Property(a => a.CreatedAt).IsModified = false;
+                return NotFound();
+            }
 
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
+            try
+            {
+                int userId = GetCurrentUserIdInt();
+                if (userId == 0) return Forbid();
+
+                // Verificar pertenencia
+                var actividadExistente = await _context.Actividades
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(a => a.Id == id && a.UsuarioId == userId);
+
+                if (actividadExistente == null)
                 {
-                    if (!_context.Actividades.Any(e => e.Id == actividadModel.Id)) return NotFound();
-                    throw;
+                    TempData["ErrorMessage"] = "Actividad no encontrada.";
+                    return RedirectToAction(nameof(Index));
                 }
+
+                // Preservar valores originales
+                actividad.UsuarioId = userId;
+                actividad.CreatedAt = actividadExistente.CreatedAt;
+
+                if (!ModelState.IsValid)
+                {
+                    return View(actividad);
+                }
+
+                _context.Update(actividad);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Actividad actualizada: {Id} - {Nombre}", actividad.Id, actividad.Nombre);
+                TempData["SuccessMessage"] = $"Actividad '{actividad.Nombre}' actualizada exitosamente.";
                 return RedirectToAction(nameof(Index));
             }
-            return View(actividadModel);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await ActividadExistsAsync(actividad.Id))
+                {
+                    TempData["ErrorMessage"] = "La actividad ya no existe.";
+                    return RedirectToAction(nameof(Index));
+                }
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al actualizar actividad {Id}", id);
+                ModelState.AddModelError("", "Ocurrió un error al actualizar la actividad.");
+                return View(actividad);
+            }
         }
 
-        // ======================== ELIMINAR ACTIVIDAD (Delete) ========================
-        // GET: Actividades/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // ======================== ELIMINAR ACTIVIDAD ========================
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
         {
-            int userId = GetCurrentUserIdInt();
-            if (userId == 0 || id == null) return NotFound();
+            try
+            {
+                int userId = GetCurrentUserIdInt();
+                if (userId == 0) return Forbid();
 
-            var actividadModel = await _context.Actividades
-                .FirstOrDefaultAsync(m => m.Id == id && m.UsuarioId == userId);
+                var actividad = await _context.Actividades
+                    .FirstOrDefaultAsync(a => a.Id == id && a.UsuarioId == userId);
 
-            if (actividadModel == null) return NotFound();
+                if (actividad == null)
+                {
+                    TempData["ErrorMessage"] = "Actividad no encontrada.";
+                    return RedirectToAction(nameof(Index));
+                }
 
-            return View(actividadModel);
+                // Verificar horarios relacionados
+                var tieneHorarios = await _context.Horarios.AnyAsync(h => h.ActividadId == id);
+                ViewData["TieneHorarios"] = tieneHorarios;
+                ViewData["PuedeEliminar"] = !tieneHorarios;
+
+                return View(actividad);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al cargar la actividad {Id} para eliminar", id);
+                TempData["ErrorMessage"] = "Error al cargar la actividad.";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
-        // POST: Actividades/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
+        [ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            int userId = GetCurrentUserIdInt();
-            if (userId == 0) return Forbid();
-
-            var actividadModel = await _context.Actividades.FindAsync(id);
-
-            if (actividadModel != null && actividadModel.UsuarioId == userId)
+            try
             {
-                _context.Actividades.Remove(actividadModel);
-                await _context.SaveChangesAsync();
-            }
+                int userId = GetCurrentUserIdInt();
+                if (userId == 0) return Forbid();
 
-            return RedirectToAction(nameof(Index));
+                var actividad = await _context.Actividades
+                    .FirstOrDefaultAsync(a => a.Id == id && a.UsuarioId == userId);
+
+                if (actividad == null)
+                {
+                    TempData["ErrorMessage"] = "Actividad no encontrada.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // Verificar horarios relacionados
+                var tieneHorarios = await _context.Horarios.AnyAsync(h => h.ActividadId == id);
+                if (tieneHorarios)
+                {
+                    TempData["ErrorMessage"] = "No se puede eliminar la actividad porque tiene horarios asociados.";
+                    return RedirectToAction(nameof(Delete), new { id });
+                }
+
+                _context.Actividades.Remove(actividad);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Actividad eliminada: {Id} - {Nombre}", actividad.Id, actividad.Nombre);
+                TempData["SuccessMessage"] = $"Actividad '{actividad.Nombre}' eliminada exitosamente.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al eliminar actividad {Id}", id);
+                TempData["ErrorMessage"] = "Error al eliminar la actividad.";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
-        private bool ActividadModelExists(int id)
+        // ======================== MÉTODOS AUXILIARES ========================
+        private async Task<bool> ActividadExistsAsync(int id)
         {
-            return _context.Actividades.Any(e => e.Id == id);
+            return await _context.Actividades.AnyAsync(e => e.Id == id);
         }
     }
 }

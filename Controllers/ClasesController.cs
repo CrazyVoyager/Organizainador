@@ -1,141 +1,273 @@
-﻿// ClasesController.cs (VERSION CORREGIDA Y SEGURA)
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Organizainador.Models;
 using Organizainador.Data;
-using System.Linq;
-using System.Security.Claims; // Necesario para FindFirstValue
-using System.Threading.Tasks;
+using Organizainador.Models;
+using System.Security.Claims;
 
 namespace Organizainador.Controllers
 {
     public class ClasesController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly ILogger<ClasesController> _logger;
 
-        public ClasesController(AppDbContext context)
+        public ClasesController(AppDbContext context, ILogger<ClasesController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
-        // Función Auxiliar para obtener el ID del usuario logueado.
-        // Asume que tu UsuarioId en ClaseModel es INT, pero Identity lo maneja como STRING.
+        // ======================== MÉTODOS AUXILIARES ========================
         private string GetCurrentUserIdString() => User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
         private int GetCurrentUserIdInt() => int.TryParse(GetCurrentUserIdString(), out int id) ? id : 0;
 
-        // ======================== LISTADO PRINCIPAL (Index) ========================
+        // ======================== LISTADO PRINCIPAL ========================
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? busqueda)
         {
-            int userId = GetCurrentUserIdInt();
-            if (userId == 0) return Forbid(); // Redirigir si no está logueado o el ID no es válido
+            try
+            {
+                int userId = GetCurrentUserIdInt();
+                if (userId == 0) return Forbid();
 
-            // 1. Filtrar SOLO las clases del usuario logueado
-            var clases = await _context.Clases
-                                       .Where(c => c.UsuarioId == userId)
-                                       .ToListAsync();
+                var query = _context.Clases
+                    .Include(c => c.Horarios) // ⭐ AGREGAR ESTA LÍNEA
+                    .Where(c => c.UsuarioId == userId)
+                    .AsQueryable();
 
-            // Ya no es necesario cargar ViewBag.Usuarios
-            return View(clases);
+                // Búsqueda
+                if (!string.IsNullOrWhiteSpace(busqueda))
+                {
+                    query = query.Where(c =>
+                        c.Nombre.Contains(busqueda) ||
+                        (c.Descripcion != null && c.Descripcion.Contains(busqueda))
+                    );
+                    ViewData["BusquedaActual"] = busqueda;
+                }
+
+                var clases = await query
+                    .OrderBy(c => c.Nombre)
+                    .ToListAsync();
+
+                return View(clases);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al cargar la lista de clases");
+                TempData["ErrorMessage"] = "Ocurrió un error al cargar las clases.";
+                return View(new List<ClaseModel>());
+            }
         }
 
-        // ======================== CREAR CLASE (Crear) ========================
+        // ======================== DETALLE DE CLASE ========================
+        [HttpGet]
+        public async Task<IActionResult> Detalle(int id)
+        {
+            try
+            {
+                int userId = GetCurrentUserIdInt();
+                if (userId == 0) return Forbid();
+
+                var clase = await _context.Clases
+                    .FirstOrDefaultAsync(c => c.Id == id && c.UsuarioId == userId);
+
+                if (clase == null)
+                {
+                    TempData["ErrorMessage"] = "Clase no encontrada.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // Obtener horarios relacionados
+                var horarios = await _context.Horarios
+                    .Where(h => h.ClaseId == id)
+                    .OrderBy(h => h.DiaSemana)
+                    .ThenBy(h => h.HoraInicio)
+                    .ToListAsync();
+
+                ViewData["Horarios"] = horarios;
+
+                return View(clase);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al cargar el detalle de la clase {Id}", id);
+                TempData["ErrorMessage"] = "Error al cargar el detalle de la clase.";
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        // ======================== CREAR CLASE ========================
         [HttpGet]
         public IActionResult Crear()
         {
-            // Ya no necesitas cargar el ViewBag.Usuarios
-            return View();
+            return View(new ClaseModel());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Crear(
-            [Bind("Nombre,Descripcion,CantidadHorasDia")] ClaseModel clase)
+        public async Task<IActionResult> Crear(ClaseModel clase)
         {
-            int userId = GetCurrentUserIdInt();
-            if (userId == 0) return Forbid();
-
-            // 1. ASIGNAR EL ID del usuario logueado (Ignorando lo que venga del formulario)
-            clase.UsuarioId = userId;
-
-            if (ModelState.IsValid)
+            try
             {
+                int userId = GetCurrentUserIdInt();
+                if (userId == 0) return Forbid();
+
+                // Asignar usuario
+                clase.UsuarioId = userId;
+
+                // Remover validación de navegación si existe
+                ModelState.Remove("Horarios");
+
+                if (!ModelState.IsValid)
+                {
+                    // Log de errores de validación
+                    foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        _logger.LogWarning("Error de validación: {ErrorMessage}", error.ErrorMessage);
+                    }
+                    return View(clase);
+                }
+
+                // Asegurarse de que la colección de Horarios sea null al crear
+                clase.Horarios = null;
+
                 _context.Clases.Add(clase);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Index");
-            }
 
-            // Si la validación falla, regresa la vista. Ya no necesita el ViewBag.
-            return View(clase);
+                _logger.LogInformation("Clase creada: {Nombre} por usuario {UserId}", clase.Nombre, userId);
+                TempData["SuccessMessage"] = $"Clase '{clase.Nombre}' creada exitosamente.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException dbEx)
+            {
+                _logger.LogError(dbEx, "Error de base de datos al crear clase: {InnerException}", dbEx.InnerException?.Message);
+                ModelState.AddModelError("", $"Error de base de datos: {dbEx.InnerException?.Message ?? dbEx.Message}");
+                return View(clase);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al crear clase: {Message}", ex.Message);
+                ModelState.AddModelError("", $"Ocurrió un error al crear la clase: {ex.Message}");
+                return View(clase);
+            }
         }
 
-        // ======================== MODIFICAR CLASE (Modificar) ========================
+        // ======================== EDITAR CLASE ========================
         [HttpGet]
         public async Task<IActionResult> Modificar(int id)
         {
-            int userId = GetCurrentUserIdInt();
-            if (userId == 0) return Forbid();
+            try
+            {
+                int userId = GetCurrentUserIdInt();
+                if (userId == 0) return Forbid();
 
-            var clase = await _context.Clases.FindAsync(id);
+                var clase = await _context.Clases
+                    .FirstOrDefaultAsync(c => c.Id == id && c.UsuarioId == userId);
 
-            // 1. Validar que la clase existe Y pertenece al usuario logueado
-            if (clase == null || clase.UsuarioId != userId) return NotFound();
+                if (clase == null)
+                {
+                    TempData["ErrorMessage"] = "Clase no encontrada.";
+                    return RedirectToAction(nameof(Index));
+                }
 
-            // Ya no es necesario cargar el ViewBag.Usuarios
-            return View(clase);
+                return View(clase);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al cargar la clase {Id} para editar", id);
+                TempData["ErrorMessage"] = "Error al cargar la clase.";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Modificar(int id, [Bind("Id,Nombre,Descripcion,CantidadHorasDia")] ClaseModel clase)
+        public async Task<IActionResult> Modificar(int id, ClaseModel clase)
         {
-            int userId = GetCurrentUserIdInt();
-            if (userId == 0) return Forbid();
-
-            if (id != clase.Id) return NotFound();
-
-            // 1. Re-asignar la FK de seguridad. Esto previene que un atacante cambie el UsuarioId.
-            clase.UsuarioId = userId;
-
-            if (ModelState.IsValid)
+            if (id != clase.Id)
             {
-                try
-                {
-                    _context.Update(clase);
-                    // 2. Marcar la propiedad UsuarioId como NO modificada, por si acaso
-                    _context.Entry(clase).Property(c => c.UsuarioId).IsModified = false;
-
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_context.Clases.Any(e => e.Id == clase.Id)) return NotFound();
-                    throw;
-                }
-                return RedirectToAction("Index");
+                return NotFound();
             }
 
-            // Si falla la validación, regresa la vista.
-            return View(clase);
+            try
+            {
+                int userId = GetCurrentUserIdInt();
+                if (userId == 0) return Forbid();
+
+                // Verificar pertenencia
+                var claseExistente = await _context.Clases
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(c => c.Id == id && c.UsuarioId == userId);
+
+                if (claseExistente == null)
+                {
+                    TempData["ErrorMessage"] = "Clase no encontrada.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // Preservar usuario
+                clase.UsuarioId = userId;
+
+                if (!ModelState.IsValid)
+                {
+                    return View(clase);
+                }
+
+                _context.Update(clase);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Clase actualizada: {Id} - {Nombre}", clase.Id, clase.Nombre);
+                TempData["SuccessMessage"] = $"Clase '{clase.Nombre}' actualizada exitosamente.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await ClaseExistsAsync(clase.Id))
+                {
+                    TempData["ErrorMessage"] = "La clase ya no existe.";
+                    return RedirectToAction(nameof(Index));
+                }
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al actualizar clase {Id}", id);
+                ModelState.AddModelError("", "Ocurrió un error al actualizar la clase.");
+                return View(clase);
+            }
         }
 
-        // ======================== ELIMINAR CLASE (Eliminar) ========================
+        // ======================== ELIMINAR CLASE ========================
         [HttpGet]
         public async Task<IActionResult> Eliminar(int id)
         {
-            int userId = GetCurrentUserIdInt();
-            if (userId == 0) return Forbid();
+            try
+            {
+                int userId = GetCurrentUserIdInt();
+                if (userId == 0) return Forbid();
 
-            var clase = await _context.Clases
-                .FirstOrDefaultAsync(c => c.Id == id && c.UsuarioId == userId); // Filtrar por ID de clase Y de usuario
+                var clase = await _context.Clases
+                    .FirstOrDefaultAsync(c => c.Id == id && c.UsuarioId == userId);
 
-            if (clase == null) return NotFound();
+                if (clase == null)
+                {
+                    TempData["ErrorMessage"] = "Clase no encontrada.";
+                    return RedirectToAction(nameof(Index));
+                }
 
-            // Opcional: Si quieres mostrar el nombre del usuario en la vista de eliminación
-            var usuario = await _context.Usuarios.FindAsync(clase.UsuarioId);
-            ViewBag.UsuarioNombre = usuario?.Nombre; // Asume que Tab_usr es tu DbSet<UsuarioModel>
+                // Verificar horarios relacionados
+                var tieneHorarios = await _context.Horarios.AnyAsync(h => h.ClaseId == id);
+                ViewData["TieneHorarios"] = tieneHorarios;
+                ViewData["PuedeEliminar"] = !tieneHorarios;
 
-            return View(clase);
+                return View(clase);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al cargar la clase {Id} para eliminar", id);
+                TempData["ErrorMessage"] = "Error al cargar la clase.";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpPost]
@@ -143,20 +275,47 @@ namespace Organizainador.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EliminarConfirmado(int id)
         {
-            int userId = GetCurrentUserIdInt();
-            if (userId == 0) return Forbid();
-
-            var clase = await _context.Clases.FindAsync(id);
-
-            // Validar existencia y propiedad antes de eliminar
-            if (clase != null && clase.UsuarioId == userId)
+            try
             {
+                int userId = GetCurrentUserIdInt();
+                if (userId == 0) return Forbid();
+
+                var clase = await _context.Clases
+                    .FirstOrDefaultAsync(c => c.Id == id && c.UsuarioId == userId);
+
+                if (clase == null)
+                {
+                    TempData["ErrorMessage"] = "Clase no encontrada.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // Verificar horarios relacionados
+                var tieneHorarios = await _context.Horarios.AnyAsync(h => h.ClaseId == id);
+                if (tieneHorarios)
+                {
+                    TempData["ErrorMessage"] = "No se puede eliminar la clase porque tiene horarios asociados.";
+                    return RedirectToAction(nameof(Eliminar), new { id });
+                }
+
                 _context.Clases.Remove(clase);
                 await _context.SaveChangesAsync();
 
-                TempData["SuccessMessage"] = "Clase eliminada exitosamente";
+                _logger.LogInformation("Clase eliminada: {Id} - {Nombre}", clase.Id, clase.Nombre);
+                TempData["SuccessMessage"] = $"Clase '{clase.Nombre}' eliminada exitosamente.";
+                return RedirectToAction(nameof(Index));
             }
-            return RedirectToAction("Index");
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al eliminar clase {Id}", id);
+                TempData["ErrorMessage"] = "Error al eliminar la clase.";
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        // ======================== MÉTODOS AUXILIARES ========================
+        private async Task<bool> ClaseExistsAsync(int id)
+        {
+            return await _context.Clases.AnyAsync(e => e.Id == id);
         }
     }
 }

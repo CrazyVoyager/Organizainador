@@ -1,0 +1,124 @@
+﻿@model Organizainador.Models.UsuarioModel
+@{
+    ViewData["Title"] = "Detalle de Usuario";
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-xl-8 col-lg-10">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a asp-action="Index" class="text-decoration-none">
+                            <i class="fas fa-users me-1"></i>Usuarios
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">@Model.Nombre</li>
+                </ol>
+            </nav>
+
+            <!-- Información del Usuario -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 text-primary">
+                            <i class="fas fa-user me-2"></i>Información del Usuario
+                        </h5>
+                        <div class="btn-group">
+                            <a asp-action="Editar" asp-route-id="@Model.Id" class="btn btn-sm btn-warning">
+                                <i class="fas fa-edit me-1"></i> Editar
+                            </a>
+                            <a asp-action="Eliminar" asp-route-id="@Model.Id" class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash me-1"></i> Eliminar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted small fw-bold">NOMBRE COMPLETO</label>
+                            <p class="mb-0 fs-5">@Model.Nombre</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted small fw-bold">CORREO ELECTRÓNICO</label>
+                            <p class="mb-0">
+                                <i class="fas fa-envelope text-muted me-2"></i>
+                                <a href="mailto:@Model.Email" class="text-decoration-none">@Model.Email</a>
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted small fw-bold">CASA DE ESTUDIOS</label>
+                            <p class="mb-0">
+                                @if (!string.IsNullOrEmpty(Model.CEst))
+                                {
+                                    @Model.CEst
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No especificado</span>
+                                }
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted small fw-bold">ESPECIALIDAD/CARRERA</label>
+                            <p class="mb-0">
+                                @if (!string.IsNullOrEmpty(Model.Est))
+                                {
+                                    @Model.Est
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No especificado</span>
+                                }
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted small fw-bold">ROL</label>
+                            <p class="mb-0">
+                                @if (!string.IsNullOrEmpty(Model.Rol))
+                                {
+                                    <span class="badge bg-primary">@Model.Rol</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No especificado</span>
+                                }
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estadísticas -->
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-book fa-3x text-primary mb-3"></i>
+                            <h3 class="mb-1">@ViewData["CantidadClases"]</h3>
+                            <p class="text-muted mb-0">Clases Registradas</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-tasks fa-3x text-success mb-3"></i>
+                            <h3 class="mb-1">@ViewData["CantidadActividades"]</h3>
+                            <p class="text-muted mb-0">Actividades Creadas</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón volver -->
+            <div class="text-center mb-4">
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Volver al Listado
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

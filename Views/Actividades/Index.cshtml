@@ -1,95 +1,193 @@
-﻿@model IEnumerable<Organizainador.Models.ActividadModel>
-
+﻿@model List<Organizainador.Models.ActividadModel>
 @{
     ViewData["Title"] = "Gestión de Actividades";
 }
 
 <div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-tasks me-2"></i>Actividades</h1>
-        <a asp-action="Create" class="btn btn-primary">
-            <i class="fas fa-plus me-1"></i> Nueva Actividad
-        </a>
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h1 class="h3 mb-1 text-gray-800">
+                        <i class="fas fa-tasks me-2"></i>Actividades
+                    </h1>
+                    <p class="text-muted mb-0 small">Gestiona tus actividades y tareas</p>
+                </div>
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i> Nueva Actividad
+                </a>
+            </div>
+        </div>
     </div>
 
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Lista de Actividades</h6>
-        </div>
-        <div class="card-body">
-            @if (Model.Any())
-            {
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover" width="100%" cellspacing="0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>
-                                    @Html.DisplayNameFor(model => model.Nombre)
-                                </th>
-                                <th>
-                                    @Html.DisplayNameFor(model => model.Descripcion)
-                                </th>
-                                <th>
-                                    @Html.DisplayNameFor(model => model.Etiqueta)
-                                </th>
-                                <th>
-                                    @Html.DisplayNameFor(model => model.UsuarioId)
-                                </th>
-                                <th>
-                                    @Html.DisplayNameFor(model => model.CreatedAt)
-                                </th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model)
+    <!-- Barra de búsqueda y filtros -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body py-3">
+            <form asp-action="Index" method="get" class="row g-3 align-items-end">
+                <div class="col-md-6">
+                    <label class="form-label small fw-bold mb-1">Buscar</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white">
+                            <i class="fas fa-search text-muted"></i>
+                        </span>
+                        <input type="text"
+                               name="busqueda"
+                               class="form-control"
+                               placeholder="Buscar por nombre o descripción..."
+                               value="@ViewData["BusquedaActual"]">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold mb-1">Etiqueta</label>
+                    <select name="filtroEtiqueta" class="form-select">
+                        <option value="">Todas las etiquetas</option>
+                        @if (ViewData["Etiquetas"] is List<string> etiquetas)
+                        {
+                            foreach (var etiqueta in etiquetas)
                             {
-                                <tr>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Nombre)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Descripcion)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Etiqueta)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.UsuarioId)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.CreatedAt)
-                                    </td>
-                                    <td>
-                                        <div class="btn-group" role="group">
-                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
-                                                <i class="fas fa-edit"></i> Editar
-                                            </a>
-                                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">
-                                                <i class="fas fa-eye"></i> Detalles
-                                            </a>
-                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">
-                                                <i class="fas fa-trash"></i> Eliminar
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
+                                <option value="@etiqueta" selected="@(ViewData["FiltroEtiquetaActual"]?.ToString() == etiqueta)">
+                                    @etiqueta
+                                </option>
                             }
-                        </tbody>
-                    </table>
+                        }
+                    </select>
                 </div>
-            }
-            else
-            {
-                <div class="text-center py-4">
-                    <i class="fas fa-tasks fa-3x text-gray-300 mb-3"></i>
-                    <h5 class="text-gray-500">No hay actividades registradas</h5>
-                    <p class="text-gray-500">Comienza agregando una nueva actividad.</p>
-                    <a asp-action="Create" class="btn btn-primary">
-                        <i class="fas fa-plus me-1"></i> Crear Primera Actividad
-                    </a>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search me-1"></i> Buscar
+                    </button>
                 </div>
-            }
+            </form>
         </div>
     </div>
+
+    <!-- Mensajes -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Lista de actividades -->
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var actividad in Model)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card shadow-sm h-100 hover-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-clipboard-check text-success me-2"></i>
+                                    @actividad.Nombre
+                                </h5>
+                                @if (!string.IsNullOrEmpty(actividad.Etiqueta))
+                                {
+                                    <span class="badge bg-primary">@actividad.Etiqueta</span>
+                                }
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(actividad.Descripcion))
+                            {
+                                <p class="card-text text-muted small mb-3">
+                                    @(actividad.Descripcion.Length > 100
+                                                            ? actividad.Descripcion.Substring(0, 100) + "..."
+                                                            : actividad.Descripcion)
+                    </p>
+                                        }
+                            else
+                            {
+                                <p class="card-text text-muted small mb-3 fst-italic">Sin descripción</p>
+                            }
+
+                            @if (actividad.CreatedAt.HasValue)
+                            {
+                                <p class="small text-muted mb-3">
+                                    <i class="far fa-calendar me-1"></i>
+                                    Creada: @actividad.CreatedAt.Value.ToString("dd/MM/yyyy HH:mm")
+                                </p>
+                            }
+                        </div>
+                        <div class="card-footer bg-white border-top">
+                            <div class="d-flex justify-content-between">
+                                <a asp-action="Details" asp-route-id="@actividad.Id"
+                                   class="btn btn-sm btn-outline-info">
+                                    <i class="fas fa-eye"></i> Ver
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@actividad.Id"
+                                   class="btn btn-sm btn-outline-warning">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@actividad.Id"
+                                   class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash"></i> Eliminar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <div class="mb-3">
+                            <i class="fas fa-tasks fa-4x text-muted opacity-50"></i>
+                        </div>
+                        <h5 class="text-muted mb-2">No hay actividades registradas</h5>
+                        <p class="text-muted small mb-4">
+                            @if (ViewData["BusquedaActual"] != null || ViewData["FiltroEtiquetaActual"] != null)
+                            {
+                                <text>No se encontraron resultados para tu búsqueda.</text>
+                            }
+                            else
+                            {
+                                <text>Comienza agregando tu primera actividad.</text>
+                            }
+                        </p>
+                        @if (ViewData["BusquedaActual"] != null || ViewData["FiltroEtiquetaActual"] != null)
+                        {
+                            <a asp-action="Index" class="btn btn-outline-secondary me-2">
+                                <i class="fas fa-times me-1"></i> Limpiar filtros
+                            </a>
+                        }
+                        <a asp-action="Create" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i> Crear Primera Actividad
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>
+
+<style>
+    .hover-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .hover-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        }
+
+    .card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+</style>

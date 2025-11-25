@@ -1,82 +1,148 @@
-﻿@* ORGANIZAINADOR/Views/Usuarios/Crear.cshtml *@
-@using Organizainador.Models
-@{
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
-@model UsuarioModel
+﻿@model Organizainador.Models.UsuarioModel
 @{
     ViewData["Title"] = "Crear Usuario";
 }
 
-<div class="row justify-content-center">
-    <div class="col-xl-8 col-lg-10">
-        <div class="card">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">
-                    <i class="fas fa-user-plus me-1"></i> Crear Nuevo Usuario
-                </h6>
-            </div>
-            <div class="card-body">
-                <form asp-action="Crear" method="post" class="needs-validation" novalidate>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="Nombre" class="form-label">Nombre Completo</label>
-                            <input asp-for="Nombre" class="form-control" placeholder="Ingrese el nombre completo" required>
-                            <span asp-validation-for="Nombre" class="text-danger small"></span>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="Email" class="form-label">Email</label>
-                            <input asp-for="Email" type="email" class="form-control" placeholder="usuario@ejemplo.com" required>
-                            <span asp-validation-for="Email" class="text-danger small"></span>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="CEst" class="form-label">Casa de Estudios</label>
-                            <input asp-for="CEst" class="form-control" placeholder="Ej: Universidad de Chile" required>
-                            <span asp-validation-for="CEst" class="text-danger small"></span>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="Est" class="form-label">Especialidad/Carrera</label>
-                            <input asp-for="Est" class="form-control" placeholder="Ej: Ingeniería Civil" required>
-                            <span asp-validation-for="Est" class="text-danger small"></span>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="Contrasena" class="form-label">Contraseña</label>
-                            <input asp-for="Contrasena" type="password" class="form-control" placeholder="Contraseña de acceso" required>
-                            <span asp-validation-for="Contrasena" class="text-danger small"></span>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="Rol" class="form-label">Rol de Usuario</label>
-                            <select asp-for="Rol" class="form-select" required>
-                                <option value="">Seleccionar Rol</option>
-                                <option value="User">Usuario Estándar</option>
-                                <option value="Admin">Administrador</option>
-                            </select>
-                            <span asp-validation-for="Rol" class="text-danger small"></span>
-                        </div>
-                    </div>
-
-                    <div class="d-flex justify-content-between mt-4">
-                        <a asp-action="Index" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left me-1"></i> Volver al Listado
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-xl-8 col-lg-10">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a asp-action="Index" class="text-decoration-none">
+                            <i class="fas fa-users me-1"></i>Usuarios
                         </a>
-                        <button type="submit" class="btn btn-success">
-                            <i class="fas fa-save me-1"></i> Guardar Usuario
-                        </button>
-                    </div>
-                </form>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Nuevo Usuario</li>
+                </ol>
+            </nav>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 text-primary">
+                        <i class="fas fa-user-plus me-2"></i>Crear Nuevo Usuario
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Crear" method="post">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <!-- Información Básica -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-muted mb-3 pb-2 border-bottom">
+                                    <i class="fas fa-id-card me-2"></i>Información Básica
+                                </h6>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Nombre" class="form-label fw-bold">
+                                    Nombre Completo <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="Nombre" 
+                                       class="form-control" 
+                                       placeholder="Ingrese el nombre completo"
+                                       autofocus>
+                                <span asp-validation-for="Nombre" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Email" class="form-label fw-bold">
+                                    Correo Electrónico <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-envelope"></i>
+                                    </span>
+                                    <input asp-for="Email" 
+                                           type="email"
+                                           class="form-control" 
+                                           placeholder="usuario@ejemplo.com">
+                                </div>
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <!-- Información Académica -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-muted mb-3 pb-2 border-bottom">
+                                    <i class="fas fa-graduation-cap me-2"></i>Información Académica
+                                </h6>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CEst" class="form-label fw-bold">
+                                    Casa de Estudios
+                                </label>
+                                <input asp-for="CEst" 
+                                       class="form-control" 
+                                       placeholder="Ej: Universidad XYZ">
+                                <span asp-validation-for="CEst" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Est" class="form-label fw-bold">
+                                    Especialidad/Carrera
+                                </label>
+                                <input asp-for="Est" 
+                                       class="form-control" 
+                                       placeholder="Ej: Ingeniería Informática">
+                                <span asp-validation-for="Est" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <!-- Información del Sistema -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-muted mb-3 pb-2 border-bottom">
+                                    <i class="fas fa-shield-alt me-2"></i>Información del Sistema
+                                </h6>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Rol" class="form-label fw-bold">
+                                    Rol de Usuario
+                                </label>
+                                <select asp-for="Rol" class="form-select">
+                                    <option value="">-- Seleccione un rol --</option>
+                                    <option value="Admin">Administrador</option>
+                                    <option value="Usuario">Usuario</option>
+                                    <option value="Estudiante">Estudiante</option>
+                                </select>
+                                <span asp-validation-for="Rol" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Contrasena" class="form-label fw-bold">
+                                    Contraseña
+                                </label>
+                                <input asp-for="Contrasena" 
+                                       type="password"
+                                       class="form-control" 
+                                       placeholder="Ingrese una contraseña">
+                                <span asp-validation-for="Contrasena" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <div class="d-flex justify-content-between pt-3 border-top">
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="fas fa-save me-1"></i> Crear Usuario
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
