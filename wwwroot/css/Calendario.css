@@ -299,16 +299,16 @@
 .fab-add-schedule {
     display: none;
     position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 60px;
-    height: 60px;
+    bottom: 2rem;
+    right: 2rem;
+    width: 3.75rem;
+    height: 3.75rem;
     background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
     color: white;
     border-radius: 50%;
     box-shadow: 0 6px 20px rgba(56, 239, 125, 0.4);
     text-decoration: none;
-    font-size: 28px;
+    font-size: 1.75rem;
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;

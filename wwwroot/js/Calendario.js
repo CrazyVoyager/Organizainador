@@ -36,7 +36,9 @@
         // Navegación mejorada
         navLinks: true, // Permite hacer clic en los días para ir a la vista de día
 
-        // Deshabilitar selección de celdas para evitar creación de eventos genéricos
+        // Deshabilitar selección de celdas para evitar creación de eventos genéricos.
+        // La creación de horarios se realiza exclusivamente a través de /Horarios/Create
+        // para garantizar la integridad de datos y validación adecuada del modelo de negocio.
         selectable: false,
 
         // Permitir arrastrar y soltar eventos
