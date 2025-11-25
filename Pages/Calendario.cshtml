@@ -1,7 +1,7 @@
 ﻿@page
 @model Organizainador.Pages.CalendarioModel
 @{
-    ViewData["Title"] = "Mi Calendario";
+    ViewData["Title"] = "Mi Calendario Inteligente";
 }
 
 <link rel="stylesheet" href="~/css/Calendario.css" />
@@ -10,39 +10,58 @@
 
 <div class="calendar-page-container">
 
+    <!-- Barra lateral mejorada -->
     <div class="calendar-sidebar">
-        <h3>@DateTime.Now.ToString("dd MMMM, yyyy")</h3>
-        <p>@DateTime.Now.ToString("HH:mm")</p>
 
-        <div id="daily-events-list" class="event-list">
-
-            @if (Model.DailyEvents != null && Model.DailyEvents.Any())
-            {
-                @foreach (var evento in Model.DailyEvents)
-                {
-                    <div class="event-item" style="border-left-color: @evento.Color;">
-                        <strong>@evento.Title</strong>
-                        <p>
-                            @evento.Start.ToString("HH:mm")
-                            @(evento.End.HasValue ? " - " + evento.End.Value.ToString("HH:mm") : "")
-                        </p>
-                        <p>@evento.Description</p>
-                    </div>
-                }
-            }
-            else
-            {
-                <div class="event-item" style="border-left-color: #6c757d;">
-                    <strong>No hay eventos</strong>
-                    <p>No tienes actividades programadas para hoy.</p>
-                </div>
-            }
-
+        <!-- Header con fecha y hora en tiempo real -->
+        <div class="date-time-header">
+            <h3>@DateTime.Now.ToString("dddd, dd 'de' MMMM", new System.Globalization.CultureInfo("es-ES"))</h3>
+            <div class="current-time">@DateTime.Now.ToString("HH:mm:ss")</div>
         </div>
 
-        <button class="ver-mas-btn">Ver más</button>
+        <!-- Lista de eventos del día -->
+        <div class="events-container">
+            <h4>Eventos de Hoy</h4>
+            <div class="event-list">
+                @if (Model.DailyEvents != null && Model.DailyEvents.Any())
+                {
+                    @foreach (var evento in Model.DailyEvents.OrderBy(e => e.Start))
+                    {
+                        <div class="event-item" style="border-left-color: @evento.Color;">
+                            <strong>@evento.Title</strong>
+                            <div class="event-time">
+                                @evento.Start.ToString("HH:mm")
+                                @if (evento.End.HasValue)
+                                {
+                                    <span> - @evento.End.Value.ToString("HH:mm")</span>
+                                }
+                            </div>
+                            @if (!string.IsNullOrEmpty(evento.Description))
+                            {
+                                <p>@evento.Description</p>
+                            }
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="no-events">
+                        <strong>No hay eventos</strong>
+                        <p>No tienes actividades programadas para hoy.</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="action-buttons">
+            <button class="add-event-btn" title="Crear nuevo evento">➕ Nuevo Evento</button>
+            <button class="ver-mas-btn" onclick="window.location.href='/Horarios'">📋 Ver Horarios</button>
+        </div>
+
     </div>
 
+    <!-- Calendario principal -->
     <div class="calendar-main">
         <div id="calendar"></div>
     </div>
@@ -51,6 +70,6 @@
 
 @section Scripts {
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
-
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/locales/es.global.min.js'></script>
     <script src="~/js/Calendario.js"></script>
 }
