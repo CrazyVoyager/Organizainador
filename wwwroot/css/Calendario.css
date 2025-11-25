@@ -135,7 +135,7 @@
 }
 
 .ver-mas-btn,
-.add-event-btn {
+.add-schedule-btn {
     flex: 1;
     padding: 14px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -148,26 +148,31 @@
     font-weight: 600;
     transition: all 0.3s ease;
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
     .ver-mas-btn:hover,
-    .add-event-btn:hover {
+    .add-schedule-btn:hover {
         transform: translateY(-2px);
         box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
     }
 
     .ver-mas-btn:active,
-    .add-event-btn:active {
+    .add-schedule-btn:active {
         transform: translateY(0);
     }
 
-.add-event-btn {
+.add-schedule-btn {
     background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
     box-shadow: 0 4px 12px rgba(56, 239, 125, 0.3);
 }
 
-    .add-event-btn:hover {
+    .add-schedule-btn:hover {
         box-shadow: 0 6px 16px rgba(56, 239, 125, 0.4);
+        color: white;
     }
 
 /* Calendario principal */
@@ -290,6 +295,32 @@
         background: #764ba2;
     }
 
+/* Floating Action Button (FAB) for mobile */
+.fab-add-schedule {
+    display: none;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    border-radius: 50%;
+    box-shadow: 0 6px 20px rgba(56, 239, 125, 0.4);
+    text-decoration: none;
+    font-size: 28px;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+    .fab-add-schedule:hover {
+        transform: scale(1.1) rotate(90deg);
+        box-shadow: 0 8px 24px rgba(56, 239, 125, 0.5);
+        color: white;
+    }
+
 /* Responsivo */
 @media (max-width: 992px) {
     .calendar-page-container {
@@ -326,6 +357,15 @@
 
     .date-time-header .current-time {
         font-size: 2rem;
+    }
+
+    /* Show FAB on mobile, hide sidebar buttons */
+    .fab-add-schedule {
+        display: flex;
+    }
+
+    .action-buttons {
+        flex-direction: column;
     }
 }
 

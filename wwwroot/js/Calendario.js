@@ -36,57 +36,8 @@
         // Navegación mejorada
         navLinks: true, // Permite hacer clic en los días para ir a la vista de día
 
-        // Selección de rangos de tiempo
-        selectable: true,
-        selectMirror: true, // Muestra una pre-visualización mientras seleccionas
-
-        // Función para crear eventos
-        select: async function (selectionInfo) {
-            const title = prompt('📝 Introduce el título del evento:');
-
-            if (title && title.trim()) {
-                const description = prompt('📄 Descripción (opcional):');
-
-                const formData = new FormData();
-                formData.append('title', title.trim());
-                formData.append('start', selectionInfo.startStr);
-                formData.append('end', selectionInfo.endStr);
-                if (description) {
-                    formData.append('description', description.trim());
-                }
-
-                try {
-                    const response = await fetch('/Calendario?handler=CreateEvent', {
-                        method: 'POST',
-                        headers: {
-                            'RequestVerificationToken': token
-                        },
-                        body: formData
-                    });
-
-                    const result = await response.json();
-
-                    if (result.success) {
-                        // Mostrar notificación de éxito
-                        showNotification('✅ Evento creado exitosamente', 'success');
-                        calendar.refetchEvents();
-
-                        // Actualizar lista de eventos del día si es hoy
-                        if (isToday(selectionInfo.start)) {
-                            updateDailyEvents();
-                        }
-                    } else {
-                        showNotification('❌ Error: ' + result.message, 'error');
-                    }
-
-                } catch (error) {
-                    console.error('Error en fetch:', error);
-                    showNotification('❌ Error de conexión', 'error');
-                }
-            }
-
-            calendar.unselect(); // Limpiar selección
-        },
+        // Deshabilitar selección de celdas para evitar creación de eventos genéricos
+        selectable: false,
 
         // Permitir arrastrar y soltar eventos
         editable: true,
@@ -170,15 +121,6 @@
     });
 
     calendar.render();
-
-    // Botón para agregar evento rápido
-    const addEventBtn = document.querySelector('.add-event-btn');
-    if (addEventBtn) {
-        addEventBtn.addEventListener('click', function () {
-            const now = new Date();
-            calendar.select(now);
-        });
-    }
 
     // Funciones auxiliares
 
