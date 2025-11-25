@@ -17,11 +17,19 @@
 
     // Actualizar reloj en tiempo real
     updateClock();
-    setInterval(updateClock, 1000);
+    const clockInterval = setInterval(updateClock, 1000);
 
     // Cargar eventos del día actual al iniciar
     const today = new Date().toISOString().split('T')[0];
     updateDailyEvents(today);
+
+    // Limpiar intervalos cuando se abandona la página
+    window.addEventListener('beforeunload', function() {
+        clearInterval(clockInterval);
+        if (window.statsInterval) {
+            clearInterval(window.statsInterval);
+        }
+    });
 
     var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
@@ -216,7 +224,7 @@
     // Funciones auxiliares
 
     function updateClock() {
-        const clockElement = document.querySelector('.current-time');
+        const clockElement = document.getElementById('live-clock');
         if (clockElement) {
             const now = new Date();
             clockElement.textContent = now.toLocaleTimeString('es-ES', {
@@ -541,8 +549,7 @@
 
     // ==================== CARACTERÍSTICAS PROFESIONALES AÑADIDAS ====================
 
-    // Variables globales para filtros y estadísticas
-    let allEvents = [];
+    // Variable global para filtro actual
     let currentFilter = 'all';
 
     // --- FILTROS DE EVENTOS ---
@@ -593,9 +600,13 @@
         });
 
         // Eventos de esta semana
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+        endOfWeek.setHours(23, 59, 59, 999);
+        
         const weekEvents = events.filter(e => {
             const eventDate = e.start;
-            return eventDate && eventDate >= startOfWeek && eventDate <= today;
+            return eventDate && eventDate >= startOfWeek && eventDate <= endOfWeek;
         });
 
         // Eventos de este mes
@@ -672,6 +683,15 @@
         }
     }
 
+    function escapeICSText(text) {
+        if (!text) return '';
+        return text
+            .replace(/\\/g, '\\\\')
+            .replace(/;/g, '\\;')
+            .replace(/,/g, '\\,')
+            .replace(/\n/g, '\\n');
+    }
+
     function exportCalendar() {
         const events = calendar.getEvents();
         let icsContent = 'BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Organizainador//ES\n';
@@ -685,9 +705,9 @@
                 if (event.end) {
                     icsContent += `DTEND:${formatDateToICS(event.end)}\n`;
                 }
-                icsContent += `SUMMARY:${event.title}\n`;
+                icsContent += `SUMMARY:${escapeICSText(event.title)}\n`;
                 if (event.extendedProps.description) {
-                    icsContent += `DESCRIPTION:${event.extendedProps.description}\n`;
+                    icsContent += `DESCRIPTION:${escapeICSText(event.extendedProps.description)}\n`;
                 }
                 icsContent += 'END:VEVENT\n';
             }
@@ -704,7 +724,8 @@
         link.click();
         URL.revokeObjectURL(url);
 
-        showNotification('✅ Calendario exportado', 'success');
+        // Mostrar notificación de éxito inline
+        alert('✅ Calendario exportado exitosamente');
     }
 
     function formatDateToICS(date) {
@@ -749,8 +770,8 @@
     updateStatistics();
     updateEventsCount();
 
-    // Actualizar estadísticas cada minuto
-    setInterval(function() {
+    // Actualizar estadísticas cada minuto (guardar referencia para limpieza)
+    window.statsInterval = setInterval(function() {
         updateStatistics();
         updateEventsCount();
     }, 60000);
