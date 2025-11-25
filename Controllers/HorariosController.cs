@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using Organizainador.Data;
 using Organizainador.Models;
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims; // Necesario para ClaimTypes
-using Microsoft.AspNetCore.Mvc.Rendering; // Necesario para SelectList
+using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
-[Authorize] // Asegura que solo usuarios autenticados puedan acceder
+[Authorize]
 public class HorariosController : Controller
 {
     private readonly AppDbContext _context;
@@ -16,77 +16,144 @@ public class HorariosController : Controller
         _context = context;
     }
 
-    // Helper para obtener el ID de usuario autenticado como entero
     private int GetCurrentUserIdInt()
     {
         var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        // En una app real, el ID de usuario de Identity es un string, pero
-        // asumiremos que tu FK en tus modelos (ClaseModel.UsuarioId) es un INT.
-        // Aquí simulamos la conversión.
         return int.TryParse(userIdString, out int userId) ? userId : 0;
     }
 
-    // ======================== LISTADO PRINCIPAL (Index) ========================
-    public async Task<IActionResult> Index()
+    private async Task<bool> CheckScheduleConflict(int userId, string diaSemana, TimeSpan horaInicio, TimeSpan horaFin, int? excludeHorarioId)
     {
-        int userId = GetCurrentUserIdInt();
-        if (userId == 0) return Forbid();
-
-        // 1. Obtener los IDs de todas las clases que pertenecen al usuario actual
         var userClasesIds = await _context.Clases
             .Where(c => c.UsuarioId == userId)
             .Select(c => c.Id)
             .ToListAsync();
 
-        // 2. Obtener los horarios cuyas Clases pertenecen al usuario actual
-        var horarios = await _context.Horarios
-            .Include(h => h.Clase) // Incluir el objeto Clase para mostrar su nombre
-            .Where(h => userClasesIds.Contains(h.ClaseId))
+        var userActividadesIds = await _context.Actividades
+            .Where(a => a.UsuarioId == userId)
+            .Select(a => a.Id)
             .ToListAsync();
 
-        // Si no hay clases registradas para el usuario, tampoco hay horarios.
-        if (!userClasesIds.Any()) 
+        var conflictingHorarios = await _context.Horarios
+            .Where(h => h.DiaSemana == diaSemana &&
+                       (excludeHorarioId == null || h.Id != excludeHorarioId) &&
+                       ((h.ClaseId.HasValue && userClasesIds.Contains(h.ClaseId.Value)) ||
+                        (h.ActividadId.HasValue && userActividadesIds.Contains(h.ActividadId.Value))))
+            .ToListAsync();
+
+        foreach (var horario in conflictingHorarios)
         {
-            TempData["InfoMessage"] = "Aún no tienes clases registradas, por favor registra una para agregarle horarios.";
+            if ((horaInicio >= horario.HoraInicio && horaInicio < horario.HoraFin) ||
+                (horaFin > horario.HoraInicio && horaFin <= horario.HoraFin) ||
+                (horaInicio <= horario.HoraInicio && horaFin >= horario.HoraFin))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public async Task<IActionResult> Index()
+    {
+        int userId = GetCurrentUserIdInt();
+        if (userId == 0) return Forbid();
+
+        var userClasesIds = await _context.Clases
+            .Where(c => c.UsuarioId == userId)
+            .Select(c => c.Id)
+            .ToListAsync();
+
+        var userActividadesIds = await _context.Actividades
+            .Where(a => a.UsuarioId == userId)
+            .Select(a => a.Id)
+            .ToListAsync();
+
+        var horarios = await _context.Horarios
+            .Include(h => h.Clase)
+            .Include(h => h.Actividad)
+            .Where(h => (h.ClaseId.HasValue && userClasesIds.Contains(h.ClaseId.Value)) ||
+                       (h.ActividadId.HasValue && userActividadesIds.Contains(h.ActividadId.Value)))
+            .ToListAsync();
+
+        if (!userClasesIds.Any() && !userActividadesIds.Any())
+        {
+            TempData["InfoMessage"] = "Aún no tienes clases ni actividades registradas, por favor registra una para agregarle horarios.";
         }
 
         return View(horarios);
     }
 
-    // ======================== CREAR HORARIO (GET) ========================
     public async Task<IActionResult> Create()
     {
         int userId = GetCurrentUserIdInt();
         if (userId == 0) return Forbid();
 
-        // Filtrar el dropdown para mostrar SOLO las clases del usuario actual
         var userClases = await _context.Clases
             .Where(c => c.UsuarioId == userId)
             .ToListAsync();
 
-        if (!userClases.Any())
+        var userActividades = await _context.Actividades
+            .Where(a => a.UsuarioId == userId)
+            .ToListAsync();
+
+        if (!userClases.Any() && !userActividades.Any())
         {
-            TempData["ErrorMessage"] = "Debes crear una Clase primero para poder asignarle un Horario.";
-            return RedirectToAction(nameof(Index), "Clases"); // Redirigir al listado de Clases
+            TempData["ErrorMessage"] = "Debes crear una Clase o Actividad primero para poder asignarle un Horario.";
+            return RedirectToAction(nameof(Index));
         }
 
         ViewData["ClaseId"] = new SelectList(userClases, "Id", "Nombre");
+        ViewData["ActividadId"] = new SelectList(userActividades, "Id", "Nombre");
         return View();
     }
 
-    // ======================== CREAR HORARIO (POST) ========================
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("ClaseId,DiaSemana,HoraInicio,HoraFin")] HorarioModel horarioModel)
+    public async Task<IActionResult> Create([Bind("ClaseId,ActividadId,DiaSemana,HoraInicio,HoraFin,EsRecurrente")] HorarioModel horarioModel)
     {
         int userId = GetCurrentUserIdInt();
         if (userId == 0) return Forbid();
 
-        // Validar si la ClaseId enviada realmente pertenece al usuario actual (Seguridad)
-        var clase = await _context.Clases.FindAsync(horarioModel.ClaseId);
-        if (clase == null || clase.UsuarioId != userId)
+        if (!horarioModel.ClaseId.HasValue && !horarioModel.ActividadId.HasValue)
         {
-            return Forbid(); // Acceso no autorizado o clase inexistente
+            ModelState.AddModelError("", "Debes seleccionar una Clase o una Actividad.");
+        }
+
+        if (horarioModel.ClaseId.HasValue && horarioModel.ActividadId.HasValue)
+        {
+            ModelState.AddModelError("", "Debes seleccionar solo una Clase o una Actividad, no ambas.");
+        }
+
+        if (horarioModel.ClaseId.HasValue)
+        {
+            var clase = await _context.Clases.FindAsync(horarioModel.ClaseId.Value);
+            if (clase == null || clase.UsuarioId != userId)
+            {
+                return Forbid();
+            }
+        }
+
+        if (horarioModel.ActividadId.HasValue)
+        {
+            var actividad = await _context.Actividades.FindAsync(horarioModel.ActividadId.Value);
+            if (actividad == null || actividad.UsuarioId != userId)
+            {
+                return Forbid();
+            }
+        }
+
+        var hasConflict = await CheckScheduleConflict(
+            userId,
+            horarioModel.DiaSemana,
+            horarioModel.HoraInicio,
+            horarioModel.HoraFin,
+            null
+        );
+
+        if (hasConflict)
+        {
+            ModelState.AddModelError("", "El rango de horas seleccionado ya está ocupado por otra actividad o clase en ese día.");
         }
 
         if (ModelState.IsValid)
@@ -97,73 +164,144 @@ public class HorariosController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        // Recargar el dropdown si hay errores de validación
         var userClases = await _context.Clases
             .Where(c => c.UsuarioId == userId)
             .ToListAsync();
 
+        var userActividades = await _context.Actividades
+            .Where(a => a.UsuarioId == userId)
+            .ToListAsync();
+
         ViewData["ClaseId"] = new SelectList(userClases, "Id", "Nombre", horarioModel.ClaseId);
+        ViewData["ActividadId"] = new SelectList(userActividades, "Id", "Nombre", horarioModel.ActividadId);
         return View(horarioModel);
     }
 
-    // ======================== MODIFICAR HORARIO (GET) ========================
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null) return NotFound();
 
         int userId = GetCurrentUserIdInt();
         if (userId == 0) return Forbid();
-        
+
         var horarioModel = await _context.Horarios
-            .Include(h => h.Clase) // Para filtrar por el ID del usuario
+            .Include(h => h.Clase)
+            .Include(h => h.Actividad)
             .FirstOrDefaultAsync(h => h.Id == id);
 
-        if (horarioModel == null || horarioModel.Clase?.UsuarioId != userId)
+        if (horarioModel == null)
         {
-            return NotFound(); // No existe o no pertenece al usuario
+            return NotFound();
+        }
+
+        var belongsToUser = false;
+        if (horarioModel.ClaseId.HasValue)
+        {
+            belongsToUser = horarioModel.Clase?.UsuarioId == userId;
+        }
+        else if (horarioModel.ActividadId.HasValue)
+        {
+            belongsToUser = horarioModel.Actividad?.UsuarioId == userId;
+        }
+
+        if (!belongsToUser)
+        {
+            return NotFound();
         }
 
         var userClases = await _context.Clases
             .Where(c => c.UsuarioId == userId)
             .ToListAsync();
 
+        var userActividades = await _context.Actividades
+            .Where(a => a.UsuarioId == userId)
+            .ToListAsync();
+
         ViewData["ClaseId"] = new SelectList(userClases, "Id", "Nombre", horarioModel.ClaseId);
+        ViewData["ActividadId"] = new SelectList(userActividades, "Id", "Nombre", horarioModel.ActividadId);
         return View(horarioModel);
     }
 
-    // ======================== MODIFICAR HORARIO (POST) ========================
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, [Bind("Id,ClaseId,DiaSemana,HoraInicio,HoraFin")] HorarioModel horarioModel)
+    public async Task<IActionResult> Edit(int id, [Bind("Id,ClaseId,ActividadId,DiaSemana,HoraInicio,HoraFin,EsRecurrente")] HorarioModel horarioModel)
     {
         if (id != horarioModel.Id) return NotFound();
 
         int userId = GetCurrentUserIdInt();
         if (userId == 0) return Forbid();
 
-        // Validar si el horario a modificar realmente pertenece a una clase del usuario actual
         var existingHorario = await _context.Horarios
             .Include(h => h.Clase)
-            .AsNoTracking() // Importante para que EF no intente trackear dos entidades con el mismo ID
+            .Include(h => h.Actividad)
+            .AsNoTracking()
             .FirstOrDefaultAsync(h => h.Id == id);
 
-        if (existingHorario == null || existingHorario.Clase?.UsuarioId != userId)
+        if (existingHorario == null)
         {
-            return NotFound(); // No existe o no pertenece al usuario
+            return NotFound();
         }
 
-        // Validar que la nueva ClaseId también pertenezca al usuario (evitar mover horarios a clases de otros)
-        var newClase = await _context.Clases.FindAsync(horarioModel.ClaseId);
-        if (newClase == null || newClase.UsuarioId != userId)
+        var belongsToUser = false;
+        if (existingHorario.ClaseId.HasValue)
         {
-            ModelState.AddModelError("ClaseId", "La clase seleccionada no es válida o no te pertenece.");
+            belongsToUser = existingHorario.Clase?.UsuarioId == userId;
         }
-        
+        else if (existingHorario.ActividadId.HasValue)
+        {
+            belongsToUser = existingHorario.Actividad?.UsuarioId == userId;
+        }
+
+        if (!belongsToUser)
+        {
+            return NotFound();
+        }
+
+        if (!horarioModel.ClaseId.HasValue && !horarioModel.ActividadId.HasValue)
+        {
+            ModelState.AddModelError("", "Debes seleccionar una Clase o una Actividad.");
+        }
+
+        if (horarioModel.ClaseId.HasValue && horarioModel.ActividadId.HasValue)
+        {
+            ModelState.AddModelError("", "Debes seleccionar solo una Clase o una Actividad, no ambas.");
+        }
+
+        if (horarioModel.ClaseId.HasValue)
+        {
+            var newClase = await _context.Clases.FindAsync(horarioModel.ClaseId.Value);
+            if (newClase == null || newClase.UsuarioId != userId)
+            {
+                ModelState.AddModelError("ClaseId", "La clase seleccionada no es válida o no te pertenece.");
+            }
+        }
+
+        if (horarioModel.ActividadId.HasValue)
+        {
+            var newActividad = await _context.Actividades.FindAsync(horarioModel.ActividadId.Value);
+            if (newActividad == null || newActividad.UsuarioId != userId)
+            {
+                ModelState.AddModelError("ActividadId", "La actividad seleccionada no es válida o no te pertenece.");
+            }
+        }
+
+        var hasConflict = await CheckScheduleConflict(
+            userId,
+            horarioModel.DiaSemana,
+            horarioModel.HoraInicio,
+            horarioModel.HoraFin,
+            id
+        );
+
+        if (hasConflict)
+        {
+            ModelState.AddModelError("", "El rango de horas seleccionado ya está ocupado por otra actividad o clase en ese día.");
+        }
+
         if (ModelState.IsValid)
         {
             try
             {
-                // Aseguramos que solo se actualicen los campos relevantes
                 _context.Update(horarioModel);
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Horario actualizado exitosamente.";
@@ -182,17 +320,21 @@ public class HorariosController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        // Recargar el dropdown si hay errores de validación
         var userClases = await _context.Clases
             .Where(c => c.UsuarioId == userId)
             .ToListAsync();
+
+        var userActividades = await _context.Actividades
+            .Where(a => a.UsuarioId == userId)
+            .ToListAsync();
+
         ViewData["ClaseId"] = new SelectList(userClases, "Id", "Nombre", horarioModel.ClaseId);
+        ViewData["ActividadId"] = new SelectList(userActividades, "Id", "Nombre", horarioModel.ActividadId);
         return View(horarioModel);
     }
-    
-    // ======================== ELIMINAR HORARIO (GET & POST) ========================
-    // Usaremos un método simple para obtener el horario para eliminar
-    public async Task<IActionResult> Eliminar(int? id)
+
+    // Cambiado de "Eliminar" a "Delete"
+    public async Task<IActionResult> Delete(int? id)
     {
         if (id == null) return NotFound();
 
@@ -201,32 +343,64 @@ public class HorariosController : Controller
 
         var horarioModel = await _context.Horarios
             .Include(h => h.Clase)
+            .Include(h => h.Actividad)
             .FirstOrDefaultAsync(m => m.Id == id);
-            
-        if (horarioModel == null || horarioModel.Clase?.UsuarioId != userId)
+
+        if (horarioModel == null)
         {
-            return NotFound(); // No existe o no pertenece al usuario
+            return NotFound();
+        }
+
+        var belongsToUser = false;
+        if (horarioModel.ClaseId.HasValue)
+        {
+            belongsToUser = horarioModel.Clase?.UsuarioId == userId;
+        }
+        else if (horarioModel.ActividadId.HasValue)
+        {
+            belongsToUser = horarioModel.Actividad?.UsuarioId == userId;
+        }
+
+        if (!belongsToUser)
+        {
+            return NotFound();
         }
 
         return View(horarioModel);
     }
-    
-    [HttpPost, ActionName("Eliminar")]
+
+    [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> EliminarConfirmado(int id)
+    public async Task<IActionResult> DeleteConfirmed(int id)
     {
         int userId = GetCurrentUserIdInt();
         if (userId == 0) return Forbid();
-        
+
         var horarioModel = await _context.Horarios
             .Include(h => h.Clase)
+            .Include(h => h.Actividad)
             .FirstOrDefaultAsync(m => m.Id == id);
 
-        // Doble chequeo de seguridad
-        if (horarioModel == null || horarioModel.Clase?.UsuarioId != userId)
+        if (horarioModel == null)
         {
-             TempData["ErrorMessage"] = "No se pudo encontrar o no tienes permiso para eliminar este Horario.";
-             return RedirectToAction(nameof(Index));
+            TempData["ErrorMessage"] = "No se pudo encontrar este Horario.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        var belongsToUser = false;
+        if (horarioModel.ClaseId.HasValue)
+        {
+            belongsToUser = horarioModel.Clase?.UsuarioId == userId;
+        }
+        else if (horarioModel.ActividadId.HasValue)
+        {
+            belongsToUser = horarioModel.Actividad?.UsuarioId == userId;
+        }
+
+        if (!belongsToUser)
+        {
+            TempData["ErrorMessage"] = "No tienes permiso para eliminar este Horario.";
+            return RedirectToAction(nameof(Index));
         }
 
         _context.Horarios.Remove(horarioModel);
@@ -235,15 +409,11 @@ public class HorariosController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-
-    // El resto de métodos no son estrictamente necesarios para el CRUD, pero los dejamos como base
     private bool HorarioModelExists(int id)
     {
         return _context.Horarios.Any(e => e.Id == id);
     }
 
-    // Mantener o eliminar el método Details según si lo usas
-    // Lo simplificaré para que también aplique la seguridad
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null) return NotFound();
@@ -253,9 +423,25 @@ public class HorariosController : Controller
 
         var horarioModel = await _context.Horarios
             .Include(h => h.Clase)
+            .Include(h => h.Actividad)
             .FirstOrDefaultAsync(m => m.Id == id);
 
-        if (horarioModel == null || horarioModel.Clase?.UsuarioId != userId)
+        if (horarioModel == null)
+        {
+            return NotFound();
+        }
+
+        var belongsToUser = false;
+        if (horarioModel.ClaseId.HasValue)
+        {
+            belongsToUser = horarioModel.Clase?.UsuarioId == userId;
+        }
+        else if (horarioModel.ActividadId.HasValue)
+        {
+            belongsToUser = horarioModel.Actividad?.UsuarioId == userId;
+        }
+
+        if (!belongsToUser)
         {
             return NotFound();
         }

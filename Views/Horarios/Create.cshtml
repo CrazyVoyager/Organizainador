@@ -1,5 +1,5 @@
 ﻿@model Organizainador.Models.HorarioModel
-@using Microsoft.AspNetCore.Mvc.Rendering
+
 @{
     ViewData["Title"] = "Crear Horario";
 }
@@ -15,16 +15,31 @@
                 </div>
                 <div class="card-body">
                     <form asp-action="Create" method="post">
-                        @Html.AntiForgeryToken()
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                         <div class="mb-3">
+                            <label class="form-label">Tipo de Asignación</label>
+                            <select id="tipoAsignacion" class="form-select" onchange="toggleAsignacion()">
+                                <option value="">-- Selecciona el tipo --</option>
+                                <option value="clase">Clase</option>
+                                <option value="actividad">Actividad</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3" id="claseGroup" style="display:none;">
                             <label asp-for="ClaseId" class="form-label">Clase Asignada</label>
-                            <select asp-for="ClaseId" class="form-control"
-                                    asp-items="ViewBag.ClaseId as SelectList" required>
+                            <select asp-for="ClaseId" class="form-control" asp-items="@((SelectList)ViewData["ClaseId"])">
                                 <option value="">Selecciona una Clase</option>
                             </select>
                             <span asp-validation-for="ClaseId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3" id="actividadGroup" style="display:none;">
+                            <label asp-for="ActividadId" class="form-label">Actividad Asignada</label>
+                            <select asp-for="ActividadId" class="form-control" asp-items="@((SelectList)ViewData["ActividadId"])">
+                                <option value="">Selecciona una Actividad</option>
+                            </select>
+                            <span asp-validation-for="ActividadId" class="text-danger small"></span>
                         </div>
 
                         <div class="row">
@@ -41,6 +56,14 @@
                                     <option value="Domingo">Domingo</option>
                                 </select>
                                 <span asp-validation-for="DiaSemana" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="EsRecurrente" class="form-label">Tipo de Evento</label>
+                                <select asp-for="EsRecurrente" class="form-select" required>
+                                    <option value="true">Recurrente (se repite todas las semanas)</option>
+                                    <option value="false">Único (solo una vez)</option>
+                                </select>
+                                <span asp-validation-for="EsRecurrente" class="text-danger small"></span>
                             </div>
                         </div>
 
@@ -76,4 +99,32 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        function toggleAsignacion() {
+            var tipo = document.getElementById('tipoAsignacion').value;
+            var claseGroup = document.getElementById('claseGroup');
+            var actividadGroup = document.getElementById('actividadGroup');
+            var claseSelect = document.getElementById('ClaseId');
+            var actividadSelect = document.getElementById('ActividadId');
+
+            if (tipo === 'clase') {
+                claseGroup.style.display = 'block';
+                actividadGroup.style.display = 'none';
+                actividadSelect.value = '';
+            } else if (tipo === 'actividad') {
+                claseGroup.style.display = 'none';
+                actividadGroup.style.display = 'block';
+                claseSelect.value = '';
+            } else {
+                claseGroup.style.display = 'none';
+                actividadGroup.style.display = 'none';
+                claseSelect.value = '';
+                actividadSelect.value = '';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleAsignacion();
+        });
+    </script>
 }

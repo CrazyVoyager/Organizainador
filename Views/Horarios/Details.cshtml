@@ -1,42 +1,81 @@
 ﻿@model Organizainador.Models.HorarioModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalles del Horario";
 }
 
-<h1>Details</h1>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-xl-6 col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-info-circle me-1"></i> Detalles del Horario
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">Clase/Actividad:</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.Clase != null)
+                            {
+                                <span class="badge bg-primary">@Model.Clase.Nombre</span>
+                            }
+                            else if (Model.Actividad != null)
+                            {
+                                <span class="badge bg-success">@Model.Actividad.Nombre</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Sin asignar</span>
+                            }
+                        </dd>
 
-<div>
-    <h4>HorarioModel</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DiaSemana)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DiaSemana)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HoraInicio)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HoraInicio)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HoraFin)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HoraFin)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Clase)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Clase.Nombre)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+                        <dt class="col-sm-4">Día de la Semana:</dt>
+                        <dd class="col-sm-8">@Model.DiaSemana</dd>
+
+                        <dt class="col-sm-4">Hora de Inicio:</dt>
+                        <dd class="col-sm-8">@Model.HoraInicio.ToString(@"hh\:mm")</dd>
+
+                        <dt class="col-sm-4">Hora de Fin:</dt>
+                        <dd class="col-sm-8">@Model.HoraFin.ToString(@"hh\:mm")</dd>
+
+                        <dt class="col-sm-4">Duración:</dt>
+                        <dd class="col-sm-8">
+                            @{
+                                var duracion = Model.HoraFin - Model.HoraInicio;
+                            }
+                            <span class="badge bg-secondary">@duracion.TotalHours.ToString("F2") Hrs</span>
+                        </dd>
+
+                        <dt class="col-sm-4">Tipo de Evento:</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.EsRecurrente)
+                            {
+                                <span class="badge bg-info"><i class="fas fa-sync-alt"></i> Recurrente (se repite todas las semanas)</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning"><i class="fas fa-calendar-day"></i> Único (solo una vez)</span>
+                            }
+                        </dd>
+                    </dl>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Volver al Listado
+                        </a>
+                        <div>
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                                <i class="fas fa-edit me-1"></i> Editar
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                                <i class="fas fa-trash me-1"></i> Eliminar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

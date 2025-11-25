@@ -1,5 +1,4 @@
 ﻿@model List<Organizainador.Models.HorarioModel>
-@using System.Globalization;
 
 @{
     ViewData["Title"] = "Gestión de Horarios";
@@ -45,20 +44,35 @@
                     <table class="table table-bordered table-hover" width="100%" cellspacing="0">
                         <thead class="table-light">
                             <tr>
-                                <th>Clase</th>
+                                <th>Clase/Actividad</th>
                                 <th>Día</th>
                                 <th>Hora Inicio</th>
                                 <th>Hora Fin</th>
                                 <th>Duración</th>
+                                <th>Tipo</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var horario in Model.OrderBy(h => h.DiaSemana).ThenBy(h => h.HoraInicio))
+                            @{
+                                var horariosOrdenados = Model.OrderBy(h => h.DiaSemana).ThenBy(h => h.HoraInicio).ToList();
+                            }
+                            @foreach (var horario in horariosOrdenados)
                             {
                                 <tr>
                                     <td>
-                                        <span class="badge bg-primary">@horario.Clase?.Nombre</span>
+                                        @if (horario.Clase != null)
+                                        {
+                                            <span class="badge bg-primary">@horario.Clase.Nombre</span>
+                                        }
+                                        else if (horario.Actividad != null)
+                                        {
+                                            <span class="badge bg-success">@horario.Actividad.Nombre</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Sin asignar</span>
+                                        }
                                     </td>
                                     <td>@horario.DiaSemana</td>
                                     <td>@horario.HoraInicio.ToString(@"hh\:mm")</td>
@@ -66,7 +80,17 @@
                                     <td>
                                         @{
                                             var duracion = horario.HoraFin - horario.HoraInicio;
-                                            <span class="badge bg-secondary">@duracion.TotalHours:00 Hrs</span>
+                                        }
+                                        <span class="badge bg-secondary">@duracion.TotalHours.ToString("F2") Hrs</span>
+                                    </td>
+                                    <td>
+                                        @if (horario.EsRecurrente)
+                                        {
+                                            <span class="badge bg-info"><i class="fas fa-sync-alt"></i> Recurrente</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning"><i class="fas fa-calendar-day"></i> Único</span>
                                         }
                                     </td>
                                     <td>
@@ -79,7 +103,7 @@
                                                class="btn btn-warning btn-sm">
                                                 <i class="fas fa-edit"></i> Editar
                                             </a>
-                                            <a asp-action="Eliminar" asp-route-id="@horario.Id"
+                                            <a asp-action="Delete" asp-route-id="@horario.Id"
                                                class="btn btn-danger btn-sm">
                                                 <i class="fas fa-trash"></i> Eliminar
                                             </a>
