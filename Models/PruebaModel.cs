@@ -1,11 +1,11 @@
-using Microsoft.AspNetCore.Mvc.RazorPages;
-
 namespace Organizainador.Models
 {
-    public class PruebaModel : PageModel
+    /// <summary>
+    /// Modelo de prueba - Sin implementación actualmente
+    /// </summary>
+    public class PruebaModel
     {
-        public void OnGet()
-        {
-        }
+        public int Id { get; set; }
+        public string? Nombre { get; set; }
     }
 }

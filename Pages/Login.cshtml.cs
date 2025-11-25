@@ -43,8 +43,7 @@ namespace Organizainador.Pages
         }
 
         // POST /Login?handler=Auth
-        // 🔑 CLAVE 1: AÑADIR [ValidateAntiForgeryToken] para que el middleware valide el token
-        [ValidateAntiForgeryToken]
+        // NOTA: En Razor Pages, ValidateAntiForgeryToken se aplica a nivel de página, no de handler
         public async Task<IActionResult> OnPostAuth([FromBody] LoginInputModel? data)
         {
             // 1. Verificar si el Model Binding falló (si data es null)

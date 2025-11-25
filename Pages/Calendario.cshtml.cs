@@ -15,17 +15,17 @@ namespace Organizainador.Pages
     public class AppEvent
     {
         public int Id { get; set; }
-        public string Title { get; set; }
+        public string Title { get; set; } = string.Empty;
         public DateTime Start { get; set; }
         public DateTime? End { get; set; }
-        public string Color { get; set; }
-        public string Description { get; set; } // Añadido para la barra lateral
-        public string EventType { get; set; }   // 'Clase' o 'Actividad'
+        public string Color { get; set; } = "#0d6efd";
+        public string? Description { get; set; }
+        public string EventType { get; set; } = "Evento";
     }
 
     public class CalendarioModel : PageModel
     {
-        // Asegúrate de que 'AppDbContext' coincida con el nombre real de tu contexto
+        // Asegï¿½rate de que 'AppDbContext' coincida con el nombre real de tu contexto
         private readonly AppDbContext _dbContext;
 
         public CalendarioModel(AppDbContext dbContext)
@@ -33,17 +33,17 @@ namespace Organizainador.Pages
             _dbContext = dbContext;
         }
 
-        // Propiedad para cargar la lista de eventos del día en la barra lateral (Vista Razor)
+        // Propiedad para cargar la lista de eventos del dÃ­a en la barra lateral (Vista Razor)
         public List<AppEvent> DailyEvents { get; set; } = new List<AppEvent>();
 
-        // --- 1. OnGet: Carga Inicial de la Página ---
+        // --- 1. OnGet: Carga Inicial de la PÃ¡gina ---
         public async Task OnGetAsync()
         {
-            // Al entrar a la página, cargamos los eventos de HOY para la barra lateral
+            // Al entrar a la pÃ¡gina, cargamos los eventos de HOY para la barra lateral
             await LoadDailyEvents(DateTime.Today);
         }
 
-        // --- 2. Método Auxiliar: Cargar eventos de un día específico en DailyEvents ---
+        // --- 2. MÃ©todo Auxiliar: Cargar eventos de un dÃ­a especÃ­fico en DailyEvents ---
         private async Task LoadDailyEvents(DateTime date)
         {
             int userId = GetCurrentUserId();
@@ -54,7 +54,7 @@ namespace Organizainador.Pages
                 .ToList();
         }
 
-        // --- 3. Método Auxiliar: Obtener ID del usuario actual ---
+        // --- 3. MÃ©todo Auxiliar: Obtener ID del usuario actual ---
         private int GetCurrentUserId()
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -65,7 +65,7 @@ namespace Organizainador.Pages
             return 0;
         }
 
-        // --- 4. Lógica Principal: Obtener TODAS las actividades y clases (incluyendo recurrencia) ---
+        // --- 4. LÃ³gica Principal: Obtener TODAS las actividades y clases (incluyendo recurrencia) ---
         private async Task<List<AppEvent>> GetEventsForUser(int userId)
         {
             if (userId == 0) return new List<AppEvent>();
@@ -94,28 +94,30 @@ namespace Organizainador.Pages
             // B. Obtener Horarios de Clases
             var horarios = await _dbContext.Horarios
                 .Include(h => h.Clase)
-                .Where(h => h.Clase.UsuarioId == userId)
+                .Where(h => h.Clase != null && h.Clase.UsuarioId == userId)
                 .ToListAsync();
 
             var dayMap = new Dictionary<string, DayOfWeek>
             {
                 { "Lunes", DayOfWeek.Monday },
                 { "Martes", DayOfWeek.Tuesday },
-                { "Miércoles", DayOfWeek.Wednesday },
+                { "MiÃ©rcoles", DayOfWeek.Wednesday },
                 { "Jueves", DayOfWeek.Thursday },
                 { "Viernes", DayOfWeek.Friday },
-                { "Sábado", DayOfWeek.Saturday },
+                { "SÃ¡bado", DayOfWeek.Saturday },
                 { "Domingo", DayOfWeek.Sunday }
             };
 
-            // Proyectamos horarios recurrentes (30 días atrás, 1 año adelante)
+            // Proyectamos horarios recurrentes (30 dÃ­as atrÃ¡s, 1 aÃ±o adelante)
             for (int i = -30; i <= 365; i++)
             {
                 DateTime day = DateTime.Today.AddDays(i);
 
                 foreach (var h in horarios)
                 {
-                    if (dayMap.TryGetValue(h.DiaSemana, out DayOfWeek targetDayOfWeek) && day.DayOfWeek == targetDayOfWeek)
+                    if (!string.IsNullOrEmpty(h.DiaSemana) && 
+                        dayMap.TryGetValue(h.DiaSemana, out DayOfWeek targetDayOfWeek) && 
+                        day.DayOfWeek == targetDayOfWeek)
                     {
                         DateTime start = day.Date.Add(h.HoraInicio);
                         DateTime end = day.Date.Add(h.HoraFin);
@@ -125,11 +127,11 @@ namespace Organizainador.Pages
                         events.Add(new AppEvent
                         {
                             Id = h.Id,
-                            Title = h.Clase.Nombre + " (" + h.DiaSemana + ")",
+                            Title = (h.Clase?.Nombre ?? "Sin nombre") + " (" + h.DiaSemana + ")",
                             Start = start,
                             End = end,
                             Color = "#0d6efd", // Azul
-                            Description = h.Clase.Descripcion,
+                            Description = h.Clase?.Descripcion,
                             EventType = "Clase"
                         });
                     }
@@ -170,13 +172,13 @@ namespace Organizainador.Pages
         {
             if (!DateTime.TryParse(date, out DateTime selectedDate))
             {
-                return new JsonResult(new { success = false, message = "Formato de fecha inválido." });
+                return new JsonResult(new { success = false, message = "Formato de fecha invÃ¡lido." });
             }
 
             int userId = GetCurrentUserId();
             if (userId == 0) return new JsonResult(new { success = false, message = "Usuario no autenticado." });
 
-            // Obtenemos todos y filtramos en memoria (se podría optimizar, pero reutiliza tu lógica actual)
+            // Obtenemos todos y filtramos en memoria (se podrÃ­a optimizar, pero reutiliza tu lÃ³gica actual)
             var allEvents = await GetEventsForUser(userId);
 
             var dailyEvents = allEvents

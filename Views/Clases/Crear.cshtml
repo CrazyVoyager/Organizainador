@@ -53,16 +53,4 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-    
-    <script>
-        // Debug script
-        console.log("Vista de Crear Clase cargada correctamente");
-        
-        document.querySelector('form').addEventListener('submit', function(e) {
-            console.log('Formulario enviado');
-            console.log('UsuarioId:', document.getElementById('UsuarioId').value);
-            console.log('Nombre:', document.getElementById('Nombre').value);
-            console.log('CantidadHorasDia:', document.getElementById('CantidadHorasDia').value);
-        });
-    </script>
 }

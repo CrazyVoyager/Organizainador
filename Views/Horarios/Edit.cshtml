@@ -42,7 +42,7 @@
 
                         <div class="mb-3" id="claseGroup" style="display:none;">
                             <label asp-for="ClaseId" class="form-label">Clase Asignada</label>
-                            <select asp-for="ClaseId" class="form-control" asp-items="@((SelectList)ViewData["ClaseId"])">
+                            <select asp-for="ClaseId" class="form-control" asp-items="@(ViewData["ClaseId"] as SelectList)">
                                 <option value="">Selecciona una Clase</option>
                             </select>
                             <span asp-validation-for="ClaseId" class="text-danger small"></span>
@@ -50,7 +50,7 @@
 
                         <div class="mb-3" id="actividadGroup" style="display:none;">
                             <label asp-for="ActividadId" class="form-label">Actividad Asignada</label>
-                            <select asp-for="ActividadId" class="form-control" asp-items="@((SelectList)ViewData["ActividadId"])">
+                            <select asp-for="ActividadId" class="form-control" asp-items="@(ViewData["ActividadId"] as SelectList)">
                                 <option value="">Selecciona una Actividad</option>
                             </select>
                             <span asp-validation-for="ActividadId" class="text-danger small"></span>
