@@ -10,26 +10,51 @@
 
 <div class="calendar-page-container">
 
-    <!-- Barra lateral mejorada -->
+    <!-- Barra lateral profesional -->
     <div class="calendar-sidebar">
 
         <!-- Header con fecha y hora en tiempo real -->
         <div class="date-time-header">
+            <div class="date-header-icon">📅</div>
             <h3>@DateTime.Now.ToString("dddd, dd 'de' MMMM", new System.Globalization.CultureInfo("es-ES"))</h3>
-            <div class="current-time">@DateTime.Now.ToString("HH:mm:ss")</div>
+            <div class="current-time" id="live-clock">@DateTime.Now.ToString("HH:mm:ss")</div>
+            <div class="current-week">Semana @System.Globalization.CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now, System.Globalization.CalendarWeekRule.FirstDay, DayOfWeek.Monday)</div>
+        </div>
+
+        <!-- Filtros rápidos -->
+        <div class="quick-filters">
+            <h4>🔍 Filtros</h4>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">
+                    <span class="filter-icon">📋</span> Todos
+                </button>
+                <button class="filter-btn" data-filter="Clase">
+                    <span class="filter-icon">📚</span> Clases
+                </button>
+                <button class="filter-btn" data-filter="Actividad">
+                    <span class="filter-icon">✏️</span> Actividades
+                </button>
+            </div>
         </div>
 
         <!-- Lista de eventos del día -->
         <div class="events-container">
-            <h4>Eventos de Hoy</h4>
-            <div class="event-list">
+            <div class="events-header">
+                <h4>Eventos de Hoy</h4>
+                <span class="events-count" id="events-count">@(Model.DailyEvents?.Count() ?? 0)</span>
+            </div>
+            <div class="event-list" id="daily-events-list">
                 @if (Model.DailyEvents != null && Model.DailyEvents.Any())
                 {
                     @foreach (var evento in Model.DailyEvents.OrderBy(e => e.Start))
                     {
-                        <div class="event-item" style="border-left-color: @evento.Color;">
-                            <strong>@evento.Title</strong>
+                        <div class="event-item" style="border-left-color: @evento.Color;" data-event-type="@evento.EventType">
+                            <div class="event-item-header">
+                                <strong>@evento.Title</strong>
+                                <span class="event-type-badge">@evento.EventType</span>
+                            </div>
                             <div class="event-time">
+                                <i class="fas fa-clock"></i>
                                 @evento.Start.ToString("HH:mm")
                                 @if (evento.End.HasValue)
                                 {
@@ -38,7 +63,7 @@
                             </div>
                             @if (!string.IsNullOrEmpty(evento.Description))
                             {
-                                <p>@evento.Description</p>
+                                <p class="event-description">@evento.Description</p>
                             }
                         </div>
                     }
@@ -46,6 +71,7 @@
                 else
                 {
                     <div class="no-events">
+                        <div class="no-events-icon">📭</div>
                         <strong>No hay eventos</strong>
                         <p>No tienes actividades programadas para hoy.</p>
                     </div>
@@ -53,17 +79,72 @@
             </div>
         </div>
 
-        <!-- Botones de acción -->
+        <!-- Estadísticas rápidas -->
+        <div class="stats-container">
+            <h4>📊 Estadísticas</h4>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-today">@(Model.DailyEvents?.Count() ?? 0)</div>
+                    <div class="stat-label">Hoy</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-week">-</div>
+                    <div class="stat-label">Esta semana</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-month">-</div>
+                    <div class="stat-label">Este mes</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de acción mejorados -->
         <div class="action-buttons">
-            <button class="add-event-btn" title="Crear nuevo evento">➕ Nuevo Evento</button>
-            <button class="ver-mas-btn" onclick="window.location.href='/Horarios'">📋 Ver Horarios</button>
+            <button class="add-event-btn primary-btn" title="Crear nuevo evento">
+                <i class="fas fa-plus"></i> Nuevo Evento
+            </button>
+            <button class="ver-mas-btn secondary-btn" onclick="window.location.href='/Horarios'">
+                <i class="fas fa-list"></i> Ver Horarios
+            </button>
+            <button class="export-btn secondary-btn" id="export-btn" title="Exportar calendario">
+                <i class="fas fa-download"></i> Exportar
+            </button>
+        </div>
+
+        <!-- Atajos de teclado -->
+        <div class="keyboard-shortcuts">
+            <details>
+                <summary>⌨️ Atajos de teclado</summary>
+                <ul>
+                    <li><kbd>N</kbd> Nuevo evento</li>
+                    <li><kbd>T</kbd> Ir a hoy</li>
+                    <li><kbd>←</kbd><kbd>→</kbd> Navegar</li>
+                    <li><kbd>M</kbd> Vista mes</li>
+                    <li><kbd>W</kbd> Vista semana</li>
+                    <li><kbd>D</kbd> Vista día</li>
+                </ul>
+            </details>
         </div>
 
     </div>
 
-    <!-- Calendario principal -->
+    <!-- Calendario principal mejorado -->
     <div class="calendar-main">
-        <div id="calendar"></div>
+        <!-- Mini calendario de navegación -->
+        <div class="mini-calendar-container" id="mini-calendar"></div>
+        
+        <!-- Calendario principal -->
+        <div id="calendar" class="professional-calendar"></div>
+        
+        <!-- Leyenda de colores -->
+        <div class="calendar-legend">
+            <span class="legend-item">
+                <span class="legend-color" style="background: #0d6efd;"></span> Clases
+            </span>
+            <span class="legend-item">
+                <span class="legend-color" style="background: #dc3545;"></span> Actividades
+            </span>
+        </div>
     </div>
 
 </div>
@@ -72,7 +153,15 @@
 
 
 @section Scripts {
+    <!-- FullCalendar Core -->
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
+    
+    <!-- FullCalendar Locales -->
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/locales/es.global.min.js'></script>
+    
+    <!-- Momento.js for better date handling -->
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/locale/es.js"></script>
+    
     <script src="~/js/Calendario.js"></script>
 }

@@ -538,4 +538,222 @@
         }
     `;
     document.head.appendChild(style);
+
+    // ==================== CARACTERÍSTICAS PROFESIONALES AÑADIDAS ====================
+
+    // Variables globales para filtros y estadísticas
+    let allEvents = [];
+    let currentFilter = 'all';
+
+    // --- FILTROS DE EVENTOS ---
+    function setupFilters() {
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Actualizar clase activa
+                filterButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                // Aplicar filtro
+                currentFilter = this.dataset.filter;
+                filterEvents(currentFilter);
+            });
+        });
+    }
+
+    function filterEvents(filterType) {
+        const events = calendar.getEvents();
+        
+        events.forEach(event => {
+            if (filterType === 'all') {
+                event.setProp('display', 'auto');
+            } else {
+                const eventType = event.extendedProps.eventType;
+                if (eventType === filterType) {
+                    event.setProp('display', 'auto');
+                } else {
+                    event.setProp('display', 'none');
+                }
+            }
+        });
+    }
+
+    // --- ESTADÍSTICAS ---
+    function updateStatistics() {
+        const events = calendar.getEvents();
+        const today = new Date();
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(today.getDate() - today.getDay());
+        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+        // Eventos de hoy
+        const todayEvents = events.filter(e => {
+            const eventDate = e.start;
+            return eventDate && eventDate.toDateString() === today.toDateString();
+        });
+
+        // Eventos de esta semana
+        const weekEvents = events.filter(e => {
+            const eventDate = e.start;
+            return eventDate && eventDate >= startOfWeek && eventDate <= today;
+        });
+
+        // Eventos de este mes
+        const monthEvents = events.filter(e => {
+            const eventDate = e.start;
+            return eventDate && eventDate >= startOfMonth;
+        });
+
+        document.getElementById('stat-today').textContent = todayEvents.length;
+        document.getElementById('stat-week').textContent = weekEvents.length;
+        document.getElementById('stat-month').textContent = monthEvents.length;
+    }
+
+    // --- ATAJOS DE TECLADO ---
+    function setupKeyboardShortcuts() {
+        document.addEventListener('keydown', function(e) {
+            // Ignorar si está escribiendo en un input
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                return;
+            }
+
+            switch(e.key.toLowerCase()) {
+                case 'n':
+                    // Nuevo evento
+                    e.preventDefault();
+                    const now = new Date();
+                    calendar.select(now);
+                    break;
+                case 't':
+                    // Ir a hoy
+                    e.preventDefault();
+                    calendar.today();
+                    showNotification('📅 Vista de hoy', 'info');
+                    break;
+                case 'm':
+                    // Vista mes
+                    e.preventDefault();
+                    calendar.changeView('dayGridMonth');
+                    showNotification('📅 Vista mensual', 'info');
+                    break;
+                case 'w':
+                    // Vista semana
+                    e.preventDefault();
+                    calendar.changeView('timeGridWeek');
+                    showNotification('📅 Vista semanal', 'info');
+                    break;
+                case 'd':
+                    // Vista día
+                    e.preventDefault();
+                    calendar.changeView('timeGridDay');
+                    showNotification('📅 Vista diaria', 'info');
+                    break;
+                case 'arrowleft':
+                    // Navegar atrás
+                    e.preventDefault();
+                    calendar.prev();
+                    break;
+                case 'arrowright':
+                    // Navegar adelante
+                    e.preventDefault();
+                    calendar.next();
+                    break;
+            }
+        });
+    }
+
+    // --- EXPORTAR CALENDARIO ---
+    function setupExportButton() {
+        const exportBtn = document.getElementById('export-btn');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', function() {
+                exportCalendar();
+            });
+        }
+    }
+
+    function exportCalendar() {
+        const events = calendar.getEvents();
+        let icsContent = 'BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Organizainador//ES\n';
+
+        events.forEach(event => {
+            if (event.start) {
+                icsContent += 'BEGIN:VEVENT\n';
+                icsContent += `UID:${event.id}@organizainador.com\n`;
+                icsContent += `DTSTAMP:${formatDateToICS(new Date())}\n`;
+                icsContent += `DTSTART:${formatDateToICS(event.start)}\n`;
+                if (event.end) {
+                    icsContent += `DTEND:${formatDateToICS(event.end)}\n`;
+                }
+                icsContent += `SUMMARY:${event.title}\n`;
+                if (event.extendedProps.description) {
+                    icsContent += `DESCRIPTION:${event.extendedProps.description}\n`;
+                }
+                icsContent += 'END:VEVENT\n';
+            }
+        });
+
+        icsContent += 'END:VCALENDAR';
+
+        // Descargar archivo
+        const blob = new Blob([icsContent], { type: 'text/calendar' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `calendario_${new Date().getTime()}.ics`;
+        link.click();
+        URL.revokeObjectURL(url);
+
+        showNotification('✅ Calendario exportado', 'success');
+    }
+
+    function formatDateToICS(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+        return `${year}${month}${day}T${hours}${minutes}${seconds}`;
+    }
+
+    // --- ACTUALIZAR CONTADOR DE EVENTOS ---
+    function updateEventsCount() {
+        const today = new Date().toDateString();
+        const events = calendar.getEvents();
+        const todayEvents = events.filter(e => 
+            e.start && e.start.toDateString() === today
+        );
+        
+        const countElement = document.getElementById('events-count');
+        if (countElement) {
+            countElement.textContent = todayEvents.length;
+        }
+    }
+
+    // --- ACTUALIZAR AL CAMBIAR LA VISTA ---
+    calendar.on('datesSet', function() {
+        updateStatistics();
+        updateEventsCount();
+    });
+
+    calendar.on('eventsSet', function() {
+        updateStatistics();
+        updateEventsCount();
+    });
+
+    // Inicializar características profesionales
+    setupFilters();
+    setupKeyboardShortcuts();
+    setupExportButton();
+    updateStatistics();
+    updateEventsCount();
+
+    // Actualizar estadísticas cada minuto
+    setInterval(function() {
+        updateStatistics();
+        updateEventsCount();
+    }, 60000);
+
+    console.log('✅ Calendario profesional inicializado correctamente');
 });
