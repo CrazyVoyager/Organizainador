@@ -6,7 +6,7 @@ using System.Collections.Generic; // Para usar ICollection si es necesario, aunq
 namespace Organizainador.Models
 {
     [Table("tab_hor")]
-    public class HorarioModel
+    public class HorarioModel : IValidatableObject
     {
         [Key]
         [Column("tho_id_hor")]
@@ -42,5 +42,17 @@ namespace Organizainador.Models
         // Permite cargar el objeto ActividadModel asociado sin hacer JOIN manual
         [ForeignKey("ActividadId")]
         public ActividadModel? Actividad { get; set; }
+
+        // ⭐ VALIDACIÓN PERSONALIZADA
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (HoraFin <= HoraInicio)
+            {
+                yield return new ValidationResult(
+                    "La hora de fin debe ser posterior a la hora de inicio.",
+                    new[] { nameof(HoraFin) }
+                );
+            }
+        }
     }
 }

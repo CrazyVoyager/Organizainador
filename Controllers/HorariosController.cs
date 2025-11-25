@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿        using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Organizainador.Data;
 using Organizainador.Models;
@@ -20,38 +20,6 @@ public class HorariosController : Controller
     {
         var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
         return int.TryParse(userIdString, out int userId) ? userId : 0;
-    }
-
-    private async Task<bool> CheckScheduleConflict(int userId, string diaSemana, TimeSpan horaInicio, TimeSpan horaFin, int? excludeHorarioId)
-    {
-        var userClasesIds = await _context.Clases
-            .Where(c => c.UsuarioId == userId)
-            .Select(c => c.Id)
-            .ToListAsync();
-
-        var userActividadesIds = await _context.Actividades
-            .Where(a => a.UsuarioId == userId)
-            .Select(a => a.Id)
-            .ToListAsync();
-
-        var conflictingHorarios = await _context.Horarios
-            .Where(h => h.DiaSemana == diaSemana &&
-                       (excludeHorarioId == null || h.Id != excludeHorarioId) &&
-                       ((h.ClaseId.HasValue && userClasesIds.Contains(h.ClaseId.Value)) ||
-                        (h.ActividadId.HasValue && userActividadesIds.Contains(h.ActividadId.Value))))
-            .ToListAsync();
-
-        foreach (var horario in conflictingHorarios)
-        {
-            if ((horaInicio >= horario.HoraInicio && horaInicio < horario.HoraFin) ||
-                (horaFin > horario.HoraInicio && horaFin <= horario.HoraFin) ||
-                (horaInicio <= horario.HoraInicio && horaFin >= horario.HoraFin))
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public async Task<IActionResult> Index()
@@ -125,6 +93,12 @@ public class HorariosController : Controller
             ModelState.AddModelError("", "Debes seleccionar solo una Clase o una Actividad, no ambas.");
         }
 
+        // ⭐ VALIDACIÓN IMPORTANTE: La hora de fin debe ser posterior a la hora de inicio
+        if (horarioModel.HoraFin <= horarioModel.HoraInicio)
+        {
+            ModelState.AddModelError("HoraFin", "La hora de fin debe ser posterior a la hora de inicio.");
+        }
+
         if (horarioModel.ClaseId.HasValue)
         {
             var clase = await _context.Clases.FindAsync(horarioModel.ClaseId.Value);
@@ -141,19 +115,6 @@ public class HorariosController : Controller
             {
                 return Forbid();
             }
-        }
-
-        var hasConflict = await CheckScheduleConflict(
-            userId,
-            horarioModel.DiaSemana,
-            horarioModel.HoraInicio,
-            horarioModel.HoraFin,
-            null
-        );
-
-        if (hasConflict)
-        {
-            ModelState.AddModelError("", "El rango de horas seleccionado ya está ocupado por otra actividad o clase en ese día.");
         }
 
         if (ModelState.IsValid)
@@ -267,6 +228,12 @@ public class HorariosController : Controller
             ModelState.AddModelError("", "Debes seleccionar solo una Clase o una Actividad, no ambas.");
         }
 
+        // ⭐ VALIDACIÓN IMPORTANTE: La hora de fin debe ser posterior a la hora de inicio
+        if (horarioModel.HoraFin <= horarioModel.HoraInicio)
+        {
+            ModelState.AddModelError("HoraFin", "La hora de fin debe ser posterior a la hora de inicio.");
+        }
+
         if (horarioModel.ClaseId.HasValue)
         {
             var newClase = await _context.Clases.FindAsync(horarioModel.ClaseId.Value);
@@ -283,19 +250,6 @@ public class HorariosController : Controller
             {
                 ModelState.AddModelError("ActividadId", "La actividad seleccionada no es válida o no te pertenece.");
             }
-        }
-
-        var hasConflict = await CheckScheduleConflict(
-            userId,
-            horarioModel.DiaSemana,
-            horarioModel.HoraInicio,
-            horarioModel.HoraFin,
-            id
-        );
-
-        if (hasConflict)
-        {
-            ModelState.AddModelError("", "El rango de horas seleccionado ya está ocupado por otra actividad o clase en ese día.");
         }
 
         if (ModelState.IsValid)
