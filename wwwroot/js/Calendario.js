@@ -99,7 +99,8 @@
 
                         // Actualizar lista de eventos del día si es hoy
                         if (isToday(selectionInfo.start)) {
-                            updateDailyEvents();
+                            const dateStr = new Date(selectionInfo.start).toISOString().split('T')[0];
+                            updateDailyEvents(dateStr);
                         }
                     } else {
                         showNotification('❌ Error: ' + (result.message || 'No se pudo crear el evento'), 'error');
@@ -459,7 +460,8 @@
                 calendar.refetchEvents();
 
                 if (isToday(event.start)) {
-                    updateDailyEvents();
+                    const dateStr = new Date(event.start).toISOString().split('T')[0];
+                    updateDailyEvents(dateStr);
                 }
             } else {
                 showNotification('❌ Error al eliminar', 'error');
