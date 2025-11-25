@@ -1,98 +1,305 @@
 ﻿@page
 @model Organizainador.Pages.PaginaPrincipalModel
 @{
-    ViewData["Title"] = "Panel Principal";
+    ViewData["Title"] = "Panel de Control - Área Limítrofe";
 }
 
+<style>
+    /* --- ESTILOS GENERALES --- */
+    :root {
+        --accent-color: #6c5ce7;
+        --accent-light: #a29bfe;
+        --bg-color: #f8f9fa;
+        --text-dark: #2d3436;
+        --radius: 20px;
+    }
+
+    body {
+        background-color: var(--bg-color);
+    }
+
+    /* --- HERO --- */
+    .hero-section {
+        background: white;
+        border-radius: var(--radius);
+        padding: 35px;
+        margin-bottom: 30px;
+        border-bottom: 4px solid var(--accent-color);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+    }
+
+    .hero-title {
+        font-weight: 800;
+        color: var(--text-dark);
+        margin-bottom: 5px;
+    }
+
+    /* --- BOTONES DE ACCIÓN --- */
+    .action-btn {
+        display: flex;
+        align-items: center;
+        background: white;
+        padding: 25px;
+        border-radius: var(--radius);
+        margin-bottom: 20px;
+        transition: transform 0.2s, box-shadow 0.2s;
+        text-decoration: none;
+        color: var(--text-dark);
+        border: 1px solid rgba(0,0,0,0.05);
+        height: 100%;
+    }
+
+        .action-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(108, 92, 231, 0.15);
+            text-decoration: none;
+            border-color: var(--accent-light);
+            color: var(--accent-color);
+        }
+
+    .icon-wrapper {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        background-color: #f0f0ff;
+        color: var(--accent-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-right: 20px;
+        flex-shrink: 0;
+    }
+
+    /* --- WIDGET CLIMA --- */
+    .weather-card {
+        background: linear-gradient(135deg, #0984e3 0%, #74b9ff 100%);
+        border-radius: var(--radius);
+        padding: 30px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(9, 132, 227, 0.25);
+        min-height: 200px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .weather-temp {
+        font-size: 3.5rem;
+        font-weight: 800;
+        line-height: 1;
+    }
+
+    /* Animación Clima */
+    @@keyframes float {
+        0% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-8px);
+        }
+
+        100% {
+            transform: translateY(0px);
+        }
+    }
+
+    .floating-icon {
+        animation: float 4s ease-in-out infinite;
+    }
+
+    /* --- TARJETA DOOFENSHMIRTZ (Con imagen) --- */
+    .doof-card {
+        background: white;
+        border-radius: var(--radius);
+        padding: 25px 25px 25px 30px; /* Un poco más de padding a la izq */
+        margin-top: 40px; /* Espacio para la cabeza flotante */
+        border-left: 5px solid var(--accent-color);
+        position: relative;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+    }
+
+    /* La foto flotante del Doctor */
+    .doof-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        position: absolute;
+        top: -40px; /* Esto hace que sobresalga hacia arriba */
+        right: 20px;
+        border: 4px solid white;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        background-color: #eee;
+    }
+
+    .quote-text {
+        font-style: italic;
+        color: #555;
+        font-size: 1rem;
+        margin-bottom: 10px;
+        margin-top: 10px;
+    }
+
+    .quote-author {
+        font-weight: bold;
+        color: var(--accent-color);
+        text-align: right;
+        font-size: 0.9rem;
+    }
+
+</style>
+
 <div class="container-fluid">
-    <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Panel Principal</h1>
-    </div>
 
-    <!-- Content Row -->
     <div class="row">
-        <!-- Usuarios Card -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Total Usuarios
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalUsuarios">0</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-users fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
+        <div class="col-12">
+            <div class="hero-section d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="hero-title">¡Ah, @Model.Usuario!</h1>
+                    <p class="text-muted mb-0">Has llegado justo a tiempo para ver mi nuevo invento.</p>
                 </div>
-            </div>
-        </div>
-
-        <!-- Clases Card -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Total Clases
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalClases">0</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-book fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
+                <div class="d-none d-md-block text-right">
+                    <h4 class="font-weight-bold text-dark mb-0">Hoy</h4>
+                    <span class="text-muted">@DateTime.Now.ToString("dd MMMM yyyy")</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Quick Actions -->
     <div class="row">
-        <div class="col-lg-6 mb-4">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Acciones Rápidas</h6>
+
+        <div class="col-lg-7 mb-4">
+            <h5 class="mb-3 font-weight-bold text-secondary" style="padding-left: 10px;">Planes Malvados (Tareas)</h5>
+
+            <div class="row">
+                <div class="col-12 mb-3">
+                    <a href="/Clases/Crear" class="action-btn">
+                        <div class="icon-wrapper"><i class="fas fa-book"></i></div>
+                        <div>
+                            <h5 class="font-weight-bold mb-1">Nueva Asignatura</h5>
+                            <p class="mb-0 text-muted small">Registra una materia para dominar el semestre.</p>
+                        </div>
+                    </a>
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <a href="/Usuarios/Crear" class="btn btn-primary btn-block">
-                                <i class="fas fa-user-plus me-1"></i> Nuevo Usuario
-                            </a>
+                <div class="col-12 mb-3">
+                    <a href="/Usuarios/Crear" class="action-btn">
+                        <div class="icon-wrapper" style="background-color: #ffeaa7; color: #fdcb6e;">
+                            <i class="fas fa-sticky-note"></i>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <a href="/Clases/Crear" class="btn btn-success btn-block">
-                                <i class="fas fa-plus me-1"></i> Nueva Clase
-                            </a>
+                        <div>
+                            <h5 class="font-weight-bold mb-1">Agendar Actividad Trampa</h5>
+                            <p class="mb-0 text-muted small">Anota exámenes o entregas pendientes.</p>
                         </div>
-                    </div>
+                    </a>
+                </div>
+                <div class="col-12">
+                    <a href="/Calendario" class="action-btn">
+                        <div class="icon-wrapper" style="background-color: #dff9fb; color: #00cec9;">
+                            <i class="far fa-calendar-alt"></i>
+                        </div>
+                        <div>
+                            <h5 class="font-weight-bold mb-1">Ver Calendario Completo</h5>
+                            <p class="mb-0 text-muted small">Visualiza cuándo ejecutaremos el plan.</p>
+                        </div>
+                    </a>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-6 mb-4">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Información del Sistema</h6>
+        <div class="col-lg-5 mb-4">
+
+            <div class="weather-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="weather-location"><i class="fas fa-map-marker-alt me-2"></i> Los Ángeles</div>
+                        <small style="opacity: 0.9;" id="weatherDesc">Escaneando atmósfera...</small>
+                    </div>
+                    <div class="floating-icon">
+                        <i id="weatherIcon" class="fas fa-sun fa-3x"></i>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <p>Bienvenido al sistema <strong>Organizainador</strong></p>
-                    <p class="mb-0">Usuario: <strong>@Model.Usuario</strong></p>
+
+                <div class="weather-temp mt-4">
+                    <span id="tempValue">--</span><span style="font-size: 2rem; vertical-align: top;">°C</span>
                 </div>
             </div>
+
+            <div class="doof-card">
+                <img src="/img/dk16bgv-df9e3422-cf49-4c86-857d-de7c864bbe2e.png" alt="Dr Doof" class="doof-avatar" onerror="this.style.display='none'">
+
+                <i class="fas fa-quote-left text-muted mb-2 opacity-25 fa-2x"></i>
+                <p class="quote-text" id="doofQuote">"Cargando maldad..."</p>
+                <div class="quote-author">- Dr. Heinz Doofenshmirtz</div>
+            </div>
+
         </div>
+
     </div>
 </div>
 
 @section Scripts {
     <script>
-        // Aquí puedes agregar llamadas AJAX para obtener estadísticas reales
-        document.getElementById('totalUsuarios').textContent = '5'; // Ejemplo
-        document.getElementById('totalClases').textContent = '3'; // Ejemplo
+        // --- 1. CLIMA EN LOS ÁNGELES, CHILE ---
+        async function cargarClima() {
+            try {
+                const lat = -37.4697;
+                const lon = -72.3537;
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`;
+
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.current_weather) {
+                    const temp = Math.round(data.current_weather.temperature);
+                    const code = data.current_weather.weathercode;
+
+                    document.getElementById('tempValue').textContent = temp;
+
+                    let desc = "Despejado";
+                    let iconClass = "fas fa-sun";
+
+                    if (code > 1 && code < 4) { desc = "Nublado"; iconClass = "fas fa-cloud"; }
+                    if (code >= 45 && code < 50) { desc = "Niebla"; iconClass = "fas fa-smog"; }
+                    if (code >= 51 && code < 60) { desc = "Llovizna"; iconClass = "fas fa-cloud-rain"; }
+                    if (code >= 61 && code < 80) { desc = "Lluvia"; iconClass = "fas fa-cloud-showers-heavy"; }
+                    if (code >= 95) { desc = "Tormenta"; iconClass = "fas fa-bolt"; }
+
+                    document.getElementById('weatherDesc').textContent = desc;
+                    document.getElementById('weatherIcon').className = iconClass + " fa-3x";
+                }
+            } catch (error) {
+                console.error("Error clima:", error);
+            }
+        }
+
+        // --- 2. FRASES DESDE JSON ---
+        async function cargarFraseDoof() {
+            try {
+                // Buscamos el archivo JSON en la carpeta data
+                const response = await fetch('/data/frases.json');
+
+                if (!response.ok) throw new Error("No se encontró el archivo JSON");
+
+                const frases = await response.json();
+
+                // Elegir frase aleatoria
+                const random = Math.floor(Math.random() * frases.length);
+                document.getElementById('doofQuote').textContent = '"' + frases[random] + '"';
+
+            } catch (error) {
+                console.error("Error cargando frases:", error);
+                // Fallback por si falla el JSON
+                document.getElementById('doofQuote').textContent = '"¡Maldita seas, error de carga!"';
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            cargarClima();
+            cargarFraseDoof();
+        });
     </script>
 }
