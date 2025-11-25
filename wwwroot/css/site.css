@@ -1,31 +1,241 @@
-html {
-  font-size: 14px;
-}
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+:root {
+    --primary-purple: #6c5ce7;
+    --dark-purple: #2d1b4e;
+    --light-purple: #a29bfe;
+    --bg-dark: #0f0c29;
+    --bg-gradient: linear-gradient(to right, #24243e, #302b63, #0f0c29);
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-white: #ffffff;
+    --text-gray: #b2bec3;
 }
 
 body {
-  margin-bottom: 60px;
+    background: var(--bg-gradient);
+    color: var(--text-white);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+/* Navbar personalizada */
+.navbar {
+    background-color: rgba(15, 12, 41, 0.8) !important;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--glass-border);
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+.navbar-brand, .nav-link {
+    color: var(--text-white) !important;
+    font-weight: 500;
 }
+
+    .nav-link:hover {
+        color: var(--primary-purple) !important;
+        text-shadow: 0 0 10px rgba(108, 92, 231, 0.5);
+    }
+
+/* Hero Section (Sección Principal) */
+.hero-section {
+    padding: 100px 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Círculos decorativos de fondo */
+.hero-bg-circle {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: -1;
+    opacity: 0.4;
+}
+
+.circle-1 {
+    width: 300px;
+    height: 300px;
+    background: var(--primary-purple);
+    top: -50px;
+    left: -50px;
+}
+
+.circle-2 {
+    width: 400px;
+    height: 400px;
+    background: #e056fd;
+    bottom: -100px;
+    right: -100px;
+}
+
+.display-4 {
+    font-weight: 700;
+    background: -webkit-linear-gradient(45deg, #fff, var(--light-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 20px;
+}
+
+.lead {
+    color: var(--text-gray);
+    font-size: 1.25rem;
+    max-width: 700px;
+    margin: 0 auto 40px auto;
+}
+
+/* Botones estilo Neón */
+.btn-pro {
+    background: linear-gradient(45deg, var(--primary-purple), #8e44ad);
+    border: none;
+    color: white;
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
+    text-decoration: none;
+    display: inline-block;
+}
+
+    .btn-pro:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(108, 92, 231, 0.6);
+        color: white;
+    }
+
+.btn-outline-pro {
+    background: transparent;
+    border: 2px solid var(--primary-purple);
+    color: white;
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    margin-left: 15px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+    .btn-outline-pro:hover {
+        background: rgba(108, 92, 231, 0.1);
+        color: var(--light-purple);
+        border-color: var(--light-purple);
+    }
+
+/* Tarjetas con efecto Glassmorphism */
+.feature-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px;
+    margin-top: 30px;
+    transition: transform 0.3s ease;
+    height: 100%;
+}
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        background: rgba(255, 255, 255, 0.08);
+        border-color: var(--primary-purple);
+    }
+
+.feature-icon {
+    font-size: 2.5rem;
+    color: var(--light-purple);
+    margin-bottom: 20px;
+}
+
+.feature-title {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.feature-text {
+    color: var(--text-gray);
+}
+/* --- AGREGAR AL FINAL DE wwwroot/css/site.css --- */
+
+/* Títulos del Dashboard */
+.page-heading {
+    color: var(--text-white);
+    font-weight: 700;
+    margin-bottom: 30px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+/* Tarjetas de Estadísticas (Dashboard) */
+.dashboard-card {
+    background: rgba(15, 12, 41, 0.6); /* Fondo semi-transparente oscuro */
+    border: 1px solid rgba(162, 155, 254, 0.1); /* Borde sutil morado */
+    border-radius: 20px;
+    backdrop-filter: blur(12px); /* Efecto vidrio */
+    padding: 25px;
+    height: 100%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+}
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--primary-purple);
+        box-shadow: 0 15px 40px rgba(108, 92, 231, 0.3);
+        background: rgba(15, 12, 41, 0.8);
+    }
+
+/* Bordes laterales de acento (reemplaza border-left-primary) */
+.accent-purple {
+    border-left: 4px solid var(--primary-purple);
+}
+
+.accent-pink {
+    border-left: 4px solid #e056fd;
+}
+
+/* Textos y Números */
+.text-label {
+    color: var(--light-purple);
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.stat-number {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+    text-shadow: 0 0 15px rgba(108, 92, 231, 0.5);
+}
+
+/* Iconos brillantes */
+.icon-glow {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 2.5rem;
+    filter: drop-shadow(0 0 8px rgba(162, 155, 254, 0.6));
+}
+
+/* Encabezados de tarjetas internas */
+.card-header-pro {
+    background: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 15px 20px;
+}
+
+    .card-header-pro h6 {
+        color: var(--light-purple);
+        font-weight: 700;
+        margin: 0;
+    }
+
+/* Texto general en tarjetas */
+.card-text-content {
+    color: var(--text-gray);
+}
+
+    .card-text-content strong {
+        color: white;
+    }

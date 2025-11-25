@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System;
-using System.Collections.Generic; // Para usar ICollection si es necesario, aunque no lo es aquí
+using System.Collections.Generic;
 
 namespace Organizainador.Models
 {
@@ -18,9 +18,9 @@ namespace Organizainador.Models
         [Column("tac_id_act")]
         public int? ActividadId { get; set; }
 
-        [Required(ErrorMessage = "El día de la semana es obligatorio")]
+        // CAMBIO: Removemos [Required] porque no siempre es obligatorio
         [Column("tho_d_sem")]
-        public string DiaSemana { get; set; }
+        public string? DiaSemana { get; set; }
 
         [Required(ErrorMessage = "La hora de inicio es obligatoria")]
         [Column("tho_h_ini")]
@@ -32,25 +32,71 @@ namespace Organizainador.Models
 
         [Column("tho_recurrente")]
         [Display(Name = "Es recurrente")]
-        public bool EsRecurrente { get; set; } = true; // Por defecto es recurrente (todas las semanas)
+        public bool EsRecurrente { get; set; } = true;
 
-        // Propiedades de navegación
-        // Permite cargar el objeto ClaseModel asociado sin hacer JOIN manual
+        [Column("tho_fecha_especifica")]
+        [Display(Name = "Fecha específica")]
+        public DateTime? FechaEspecifica { get; set; }
+
         [ForeignKey("ClaseId")]
         public ClaseModel? Clase { get; set; }
 
-        // Permite cargar el objeto ActividadModel asociado sin hacer JOIN manual
         [ForeignKey("ActividadId")]
         public ActividadModel? Actividad { get; set; }
 
         // ⭐ VALIDACIÓN PERSONALIZADA
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
+            // Validación: HoraFin debe ser posterior a HoraInicio
             if (HoraFin <= HoraInicio)
             {
                 yield return new ValidationResult(
                     "La hora de fin debe ser posterior a la hora de inicio.",
                     new[] { nameof(HoraFin) }
+                );
+            }
+
+            // Validación: Si es recurrente, DiaSemana es obligatorio
+            if (EsRecurrente && string.IsNullOrWhiteSpace(DiaSemana))
+            {
+                yield return new ValidationResult(
+                    "El día de la semana es obligatorio para eventos recurrentes.",
+                    new[] { nameof(DiaSemana) }
+                );
+            }
+
+            // Validación: Si NO es recurrente, FechaEspecifica es obligatoria
+            if (!EsRecurrente && !FechaEspecifica.HasValue)
+            {
+                yield return new ValidationResult(
+                    "Debes seleccionar una fecha específica para eventos no recurrentes.",
+                    new[] { nameof(FechaEspecifica) }
+                );
+            }
+
+            // Validación: La fecha específica no puede ser en el pasado
+            if (!EsRecurrente && FechaEspecifica.HasValue && FechaEspecifica.Value.Date < DateTime.Now.Date)
+            {
+                yield return new ValidationResult(
+                    "La fecha específica no puede ser anterior a hoy.",
+                    new[] { nameof(FechaEspecifica) }
+                );
+            }
+
+            // Validación: Debe tener ClaseId O ActividadId (no ambos, no ninguno)
+            if (!ClaseId.HasValue && !ActividadId.HasValue)
+            {
+                yield return new ValidationResult(
+                    "Debes asignar el horario a una Clase o una Actividad.",
+                    new[] { nameof(ClaseId), nameof(ActividadId) }
+                );
+            }
+
+            if (ClaseId.HasValue && ActividadId.HasValue)
+            {
+                yield return new ValidationResult(
+                    "No puedes asignar el horario a una Clase y una Actividad al mismo tiempo.",
+                    new[] { nameof(ClaseId), nameof(ActividadId) }
                 );
             }
         }
