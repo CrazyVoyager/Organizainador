@@ -196,5 +196,99 @@ namespace Organizainador.Pages
 
             return new JsonResult(new { success = true, events = dailyEvents });
         }
+
+        // --- 7. Handler AJAX: OnPostCreateEvent (Crear nuevo evento) ---
+        public async Task<JsonResult> OnPostCreateEvent(string title, DateTime start, DateTime? end, string? description)
+        {
+            int userId = GetCurrentUserId();
+            if (userId == 0) 
+                return new JsonResult(new { success = false, message = "Usuario no autenticado." });
+
+            if (string.IsNullOrWhiteSpace(title))
+                return new JsonResult(new { success = false, message = "El título es obligatorio." });
+
+            try
+            {
+                // Crear una nueva actividad
+                var actividad = new ActividadModel
+                {
+                    UsuarioId = userId,
+                    Nombre = title,
+                    Descripcion = description,
+                    Etiqueta = "Calendario",
+                    CreatedAt = DateTime.SpecifyKind(start, DateTimeKind.Utc)
+                };
+
+                _dbContext.Actividades.Add(actividad);
+                await _dbContext.SaveChangesAsync();
+
+                return new JsonResult(new { success = true, message = "Evento creado exitosamente." });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new { success = false, message = "Error al crear el evento: " + ex.Message });
+            }
+        }
+
+        // --- 8. Handler AJAX: OnPostUpdateEvent (Actualizar evento existente) ---
+        public async Task<JsonResult> OnPostUpdateEvent(int id, string title, DateTime start, DateTime? end)
+        {
+            int userId = GetCurrentUserId();
+            if (userId == 0) 
+                return new JsonResult(new { success = false, message = "Usuario no autenticado." });
+
+            if (string.IsNullOrWhiteSpace(title))
+                return new JsonResult(new { success = false, message = "El título es obligatorio." });
+
+            try
+            {
+                // Buscar la actividad
+                var actividad = await _dbContext.Actividades
+                    .FirstOrDefaultAsync(a => a.Id == id && a.UsuarioId == userId);
+
+                if (actividad == null)
+                    return new JsonResult(new { success = false, message = "Evento no encontrado o sin permisos." });
+
+                // Actualizar la actividad
+                actividad.Nombre = title;
+                actividad.CreatedAt = DateTime.SpecifyKind(start, DateTimeKind.Utc);
+
+                _dbContext.Actividades.Update(actividad);
+                await _dbContext.SaveChangesAsync();
+
+                return new JsonResult(new { success = true, message = "Evento actualizado exitosamente." });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new { success = false, message = "Error al actualizar el evento: " + ex.Message });
+            }
+        }
+
+        // --- 9. Handler AJAX: OnPostDeleteEvent (Eliminar evento) ---
+        public async Task<JsonResult> OnPostDeleteEvent(int id)
+        {
+            int userId = GetCurrentUserId();
+            if (userId == 0) 
+                return new JsonResult(new { success = false, message = "Usuario no autenticado." });
+
+            try
+            {
+                // Buscar la actividad
+                var actividad = await _dbContext.Actividades
+                    .FirstOrDefaultAsync(a => a.Id == id && a.UsuarioId == userId);
+
+                if (actividad == null)
+                    return new JsonResult(new { success = false, message = "Evento no encontrado o sin permisos." });
+
+                _dbContext.Actividades.Remove(actividad);
+                await _dbContext.SaveChangesAsync();
+
+                return new JsonResult(new { success = true, message = "Evento eliminado exitosamente." });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new { success = false, message = "Error al eliminar el evento: " + ex.Message });
+            }
+        }
     }
 }

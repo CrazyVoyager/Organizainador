@@ -33,22 +33,25 @@
                             @Html.DisplayNameFor(model => model.Etiqueta)
                         </dt>
                         <dd class="col-sm-9">
-                            @Html.DisplayFor(model => model.Etiqueta)
+                            @if (!string.IsNullOrEmpty(Model.Etiqueta))
+                            {
+                                <span class="badge bg-info">@Model.Etiqueta</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Sin etiqueta</span>
+                            }
                         </dd>
 
-                        <dt class="col-sm-3">
-                            @Html.DisplayNameFor(model => model.UsuarioId)
-                        </dt>
-                        <dd class="col-sm-9">
-                            @Html.DisplayFor(model => model.UsuarioId)
-                        </dd>
-
-                        <dt class="col-sm-3">
-                            @Html.DisplayNameFor(model => model.CreatedAt)
-                        </dt>
-                        <dd class="col-sm-9">
-                            @Html.DisplayFor(model => model.CreatedAt)
-                        </dd>
+                        @if (Model.CreatedAt.HasValue)
+                        {
+                            <dt class="col-sm-3">
+                                @Html.DisplayNameFor(model => model.CreatedAt)
+                            </dt>
+                            <dd class="col-sm-9">
+                                @Model.CreatedAt.Value.ToString("dd/MM/yyyy HH:mm")
+                            </dd>
+                        }
                     </dl>
                 </div>
                 <div class="card-footer d-flex justify-content-between">

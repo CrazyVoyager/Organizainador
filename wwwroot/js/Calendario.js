@@ -410,8 +410,7 @@
     function handleModalAction(action, event) {
         switch (action) {
             case 'edit':
-                // Aquí se integraría la lógica para abrir un formulario de edición real
-                showNotification('🏗️ Función de Editar en desarrollo...', 'info');
+                editEvent(event);
                 break;
             case 'delete':
                 deleteEvent(event);
@@ -419,6 +418,21 @@
             case 'details':
                 showActivityDetails(event);
                 break;
+        }
+    }
+
+    // --- Función para editar un evento ---
+    function editEvent(event) {
+        const eventType = event.extendedProps.eventType;
+        
+        if (eventType === 'Actividad') {
+            // Redirigir a la página de edición de actividades
+            window.location.href = `/Actividades/Edit/${event.id}`;
+        } else if (eventType === 'Clase') {
+            // Redirigir a la página de edición de horarios (para clases)
+            window.location.href = `/Horarios/Edit/${event.id}`;
+        } else {
+            showNotification('⚠️ No se puede editar este tipo de evento', 'error');
         }
     }
 

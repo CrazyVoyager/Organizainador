@@ -33,9 +33,6 @@
                                     @Html.DisplayNameFor(model => model.Etiqueta)
                                 </th>
                                 <th>
-                                    @Html.DisplayNameFor(model => model.UsuarioId)
-                                </th>
-                                <th>
                                     @Html.DisplayNameFor(model => model.CreatedAt)
                                 </th>
                                 <th>Acciones</th>
@@ -49,16 +46,34 @@
                                         @Html.DisplayFor(modelItem => item.Nombre)
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.Descripcion)
+                                        @if (!string.IsNullOrEmpty(item.Descripcion))
+                                        {
+                                            @item.Descripcion
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted fst-italic">Sin descripción</span>
+                                        }
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.Etiqueta)
+                                        @if (!string.IsNullOrEmpty(item.Etiqueta))
+                                        {
+                                            <span class="badge bg-info">@item.Etiqueta</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.UsuarioId)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.CreatedAt)
+                                        @if (item.CreatedAt.HasValue)
+                                        {
+                                            @item.CreatedAt.Value.ToString("dd/MM/yyyy HH:mm")
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
                                     </td>
                                     <td>
                                         <div class="btn-group" role="group">

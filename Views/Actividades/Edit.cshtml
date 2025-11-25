@@ -38,11 +38,14 @@
                             <span asp-validation-for="Etiqueta" class="text-danger small"></span>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="CreatedAt" class="form-label">Fecha de Creación</label>
-                            <input asp-for="CreatedAt" type="datetime-local" class="form-control" required>
-                            <span asp-validation-for="CreatedAt" class="text-danger small"></span>
-                        </div>
+                        @if (Model.CreatedAt.HasValue)
+                        {
+                            <div class="mb-3">
+                                <label class="form-label">Fecha de Creación</label>
+                                <input type="text" class="form-control" value="@Model.CreatedAt.Value.ToString("dd/MM/yyyy HH:mm")" readonly disabled>
+                                <small class="text-muted">Esta fecha se asignó automáticamente al crear la actividad</small>
+                            </div>
+                        }
 
                         <div class="d-flex justify-content-between">
                             <a asp-action="Index" class="btn btn-secondary">
