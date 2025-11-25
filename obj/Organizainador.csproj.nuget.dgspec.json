@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\benja\\source\\repos\\Organizainador\\Organizainador.csproj": {}
+    "C:\\Users\\Voyager\\Source\\Repos\\Organizainador\\Organizainador.csproj": {}
   },
   "projects": {
-    "C:\\Users\\benja\\source\\repos\\Organizainador\\Organizainador.csproj": {
+    "C:\\Users\\Voyager\\Source\\Repos\\Organizainador\\Organizainador.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\benja\\source\\repos\\Organizainador\\Organizainador.csproj",
+        "projectUniqueName": "C:\\Users\\Voyager\\Source\\Repos\\Organizainador\\Organizainador.csproj",
         "projectName": "Organizainador",
-        "projectPath": "C:\\Users\\benja\\source\\repos\\Organizainador\\Organizainador.csproj",
-        "packagesPath": "C:\\Users\\benja\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\benja\\source\\repos\\Organizainador\\obj\\",
+        "projectPath": "C:\\Users\\Voyager\\Source\\Repos\\Organizainador\\Organizainador.csproj",
+        "packagesPath": "C:\\Users\\Voyager\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Voyager\\Source\\Repos\\Organizainador\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\benja\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Voyager\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -67,6 +67,16 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[9.0.10, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
+              "target": "Package",
+              "version": "[9.0.0, )"
             },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",

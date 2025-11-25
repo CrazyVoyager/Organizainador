@@ -1,165 +1,246 @@
-﻿document.addEventListener('DOMContentLoaded', function () {
-    var calendarEl = document.getElementById('calendar');
+﻿/**
+ * CALENDARIO PROFESIONAL - MODO CLARO
+ * Sistema de gestión de horarios y actividades
+ */
 
-    // Token de seguridad para peticiones POST
-    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+document.addEventListener('DOMContentLoaded', function () {
+    // ==================== INICIALIZACIÓN ====================
+    const calendarEl = document.getElementById('calendar');
+    const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
 
-    // Actualizar reloj en tiempo real
-    updateClock();
-    setInterval(updateClock, 1000);
+    if (!calendarEl) {
+        console.error('Elemento de calendario no encontrado');
+        return;
+    }
 
-    var calendar = new FullCalendar.Calendar(calendarEl, {
+    // Iniciar reloj en tiempo real
+    initClock();
+
+    // ==================== CONFIGURACIÓN DEL CALENDARIO ====================
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        // Configuración inicial
         initialView: 'dayGridMonth',
+        locale: 'es',
+        timeZone: 'America/Santiago',
+        firstDay: 1, // Lunes como primer día
+
+        // Toolbar
         headerToolbar: {
             left: 'prev,next today',
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
         },
-        locale: 'es',
+
         buttonText: {
             today: 'Hoy',
             month: 'Mes',
             week: 'Semana',
             day: 'Día',
-            list: 'Lista'
+            list: 'Agenda'
         },
 
-        // Mejoras de UX
+        // Configuración de visualización
         height: 'auto',
         expandRows: true,
         slotMinTime: '06:00:00',
         slotMaxTime: '23:00:00',
+        slotDuration: '00:30:00',
         allDaySlot: true,
-        nowIndicator: true, // Línea que muestra la hora actual
-        slotDuration: '00:30:00', // Intervalos de 30 minutos
+        nowIndicator: true,
+        navLinks: true,
+        weekNumbers: false,
+        dayMaxEvents: 3,
 
-        // Navegación mejorada
-        navLinks: true, // Permite hacer clic en los días para ir a la vista de día
-
-        // Deshabilitar selección de celdas para evitar creación de eventos genéricos.
-        // La creación de horarios se realiza exclusivamente a través de /Horarios/Create
-        // para garantizar la integridad de datos y validación adecuada del modelo de negocio.
+        // Interactividad
         selectable: false,
-
-        // Permitir arrastrar y soltar eventos
         editable: true,
+        droppable: false,
 
-        // Función cuando se mueve un evento
-        eventDrop: async function (info) {
-            if (!confirm(`¿Mover "${info.event.title}" a ${formatDate(info.event.start)}?`)) {
-                info.revert();
-                return;
-            }
+        // Callbacks principales
+        events: fetchEvents,
+        eventDidMount: handleEventMount,
+        eventClick: handleEventClick,
+        eventDrop: handleEventDrop,
+        eventResize: handleEventResize,
+        datesSet: handleDatesSet,
 
-            await updateEvent(info.event);
+        // Mensajes
+        moreLinkText: function(num) {
+            return `+${num} más`;
         },
 
-        // Función cuando se redimensiona un evento
-        eventResize: async function (info) {
-            await updateEvent(info.event);
-        },
-
-        // Cargar eventos desde el servidor
-        events: '/Calendario?handler=Events',
-
-        // Función al cargar eventos exitosamente
-        eventSourceSuccess: function (content, xhr) {
-            console.log('Eventos cargados:', content.length);
-        },
-
-        // Función al cargar eventos con error
-        eventSourceFailure: function (error) {
-            console.error('Error al cargar eventos:', error);
-            showNotification('❌ Error al cargar eventos', 'error');
-        },
-
-        // Función al hacer clic en un evento
-        eventClick: function (info) {
-            // Detenemos la propagación para evitar que FullCalendar maneje el click si es en el botón de 3 puntos
-            if (info.jsEvent.target.classList.contains('event-menu-btn')) {
-                info.jsEvent.stopPropagation();
-                showEventOptionsMenu(info.event);
+        // Configuración de loading
+        loading: function(isLoading) {
+            if (isLoading) {
+                showLoadingState();
             } else {
-                // Si se hace clic en cualquier otra parte del evento, mostramos el modal de opciones
-                showEventOptionsMenu(info.event);
+                hideLoadingState();
             }
-        },
-
-        // Cambiar color y añadir botón de menú
-        eventDidMount: function (info) {
-            // Agregar tooltip
-            info.el.title = info.event.extendedProps.description || info.event.title;
-
-            // Ajuste de colores (basado en el Calendario.cshtml.cs)
-            if (info.event.extendedProps.eventType === 'Clase') {
-                info.el.style.backgroundColor = '#0d6efd'; // Azul
-            } else if (info.event.extendedProps.eventType === 'Actividad') {
-                info.el.style.backgroundColor = '#dc3545'; // Rojo
-            }
-
-            // Añadir botón de menú de 3 puntos
-            const menuButton = document.createElement('span');
-            menuButton.innerHTML = '⋮'; // Símbolo de tres puntos vertical
-            menuButton.className = 'event-menu-btn';
-
-            // Estilos básicos para el botón
-            menuButton.style.cssText = `
-                position: absolute;
-                top: 0;
-                right: 5px;
-                font-weight: bold;
-                cursor: pointer;
-                color: white;
-                font-size: 1.2em;
-            `;
-
-            info.el.appendChild(menuButton);
-        },
-
-        // Función cuando cambia la vista
-        datesSet: function (dateInfo) {
-            console.log('Vista cambiada:', dateInfo.view.type);
         }
     });
 
     calendar.render();
 
-    // Funciones auxiliares
+    // ==================== DEFINICIÓN DE COLORES ====================
+    const eventColors = {
+        'Clase': {
+            background: '#EFF6FF',
+            text: '#1E40AF',
+            border: '#2563EB',
+            icon: '📚'
+        },
+        'Actividad': {
+            background: '#D1FAE5',
+            text: '#065F46',
+            border: '#10B981',
+            icon: '✅'
+        },
+        'Tarea': {
+            background: '#FEF3C7',
+            text: '#92400E',
+            border: '#F59E0B',
+            icon: '📝'
+        },
+        'default': {
+            background: '#F3F4F6',
+            text: '#374151',
+            border: '#9CA3AF',
+            icon: '📌'
+        }
+    };
 
-    function updateClock() {
-        const clockElement = document.querySelector('.current-time');
-        if (clockElement) {
-            const now = new Date();
-            clockElement.textContent = now.toLocaleTimeString('es-ES', {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            });
+    // ==================== FUNCIONES DE EVENTOS ====================
+
+    /**
+     * Cargar eventos desde el servidor
+     */
+    async function fetchEvents(fetchInfo, successCallback, failureCallback) {
+        try {
+            const response = await fetch('/Calendario?handler=Events');
+            
+            if (!response.ok) {
+                throw new Error('Error al cargar eventos');
+            }
+
+            const events = await response.json();
+            successCallback(events);
+            
+            // Actualizar lista de eventos del día
+            updateDailyEvents();
+            
+        } catch (error) {
+            console.error('Error fetching events:', error);
+            showNotification('❌ Error al cargar eventos', 'error');
+            failureCallback(error);
         }
     }
 
-    function isToday(date) {
-        const today = new Date();
-        const checkDate = new Date(date);
-        return today.toDateString() === checkDate.toDateString();
+    /**
+     * Obtener colores según tipo de evento
+     */
+    function getEventColors(eventType) {
+        return eventColors[eventType] || eventColors['default'];
     }
 
-    function formatDate(date) {
-        return new Date(date).toLocaleDateString('es-ES', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
+    /**
+     * Configurar evento al montarse
+     */
+    function handleEventMount(info) {
+        // Tooltip
+        const tooltip = info.event.extendedProps.description || info.event.title;
+        info.el.title = tooltip;
+
+        // Obtener tipo de evento
+        const eventType = info.event.extendedProps.eventType || 'default';
+        const colors = getEventColors(eventType);
+        
+        // Añadir atributo data-type para CSS
+        info.el.setAttribute('data-type', eventType.toLowerCase());
+        
+        // Aplicar colores personalizados
+        info.el.style.background = colors.background;
+        info.el.style.color = colors.text;
+        info.el.style.borderLeft = `4px solid ${colors.border}`;
+        info.el.style.borderRadius = '0.375rem';
+        info.el.style.padding = '4px 8px';
+        info.el.style.fontWeight = '600';
+        
+        // Añadir icono al título
+        const titleElement = info.el.querySelector('.fc-event-title');
+        if (titleElement && !titleElement.textContent.startsWith(colors.icon)) {
+            titleElement.textContent = `${colors.icon} ${titleElement.textContent}`;
+        }
+
+        // Añadir botón de menú
+        addEventMenuButton(info.el);
     }
 
-    async function updateEvent(event) {
+    /**
+     * Añadir botón de menú a evento
+     */
+    function addEventMenuButton(element) {
+        const menuButton = document.createElement('span');
+        menuButton.innerHTML = '⋮';
+        menuButton.className = 'event-menu-btn';
+        menuButton.onclick = function(e) {
+            e.stopPropagation();
+        };
+        element.style.position = 'relative';
+        element.appendChild(menuButton);
+    }
+
+    /**
+     * Manejar click en evento
+     */
+    function handleEventClick(info) {
+        info.jsEvent.preventDefault();
+        showEventModal(info.event);
+    }
+
+    /**
+     * Manejar arrastre de evento
+     */
+    async function handleEventDrop(info) {
+        if (!confirm(`¿Mover "${info.event.title}" a ${formatDateTime(info.event.start)}?`)) {
+            info.revert();
+            return;
+        }
+
+        const success = await updateEventOnServer(info.event);
+        if (!success) {
+            info.revert();
+        }
+    }
+
+    /**
+     * Manejar redimensión de evento
+     */
+    async function handleEventResize(info) {
+        const success = await updateEventOnServer(info.event);
+        if (!success) {
+            info.revert();
+        }
+    }
+
+    /**
+     * Manejar cambio de fechas
+     */
+    function handleDatesSet(dateInfo) {
+        console.log('Vista cambiada a:', dateInfo.view.type);
+        updateDailyEvents();
+    }
+
+    // ==================== ACTUALIZACIÓN DE EVENTOS ====================
+
+    /**
+     * Actualizar evento en el servidor
+     */
+    async function updateEventOnServer(event) {
         const formData = new FormData();
         formData.append('id', event.id);
         formData.append('title', event.title);
         formData.append('start', event.start.toISOString());
+        
         if (event.end) {
             formData.append('end', event.end.toISOString());
         }
@@ -176,150 +257,25 @@
             const result = await response.json();
 
             if (result.success) {
-                showNotification('✅ Evento actualizado', 'success');
+                showNotification('✅ Evento actualizado correctamente', 'success');
+                updateDailyEvents();
+                return true;
             } else {
-                showNotification('❌ Error al actualizar', 'error');
-                calendar.refetchEvents();
+                showNotification('❌ Error al actualizar evento', 'error');
+                return false;
             }
         } catch (error) {
             console.error('Error:', error);
             showNotification('❌ Error de conexión', 'error');
-            calendar.refetchEvents();
+            return false;
         }
     }
 
-    async function updateDailyEvents() {
-        try {
-            // Se asume que el handler DailyEvents devuelve eventos de HOY si no se pasa fecha.
-            // Si el handler requiere la fecha, habría que modificar esta llamada:
-            // const today = new Date().toISOString().split('T')[0];
-            // const response = await fetch('/Calendario?handler=DailyEvents&date=' + today);
-
-            const response = await fetch('/Calendario?handler=DailyEvents');
-            const result = await response.json();
-            const events = result.events || []; // Usar result.events para el handler OnGetDailyEvents
-
-            const eventList = document.querySelector('.event-list');
-            if (eventList) {
-                if (events.length > 0) {
-                    eventList.innerHTML = events.map(event => `
-                        <div class="event-item" style="border-left-color: ${event.color || '#ccc'};">
-                            <strong>${event.title}</strong>
-                            <div class="event-time">
-                                ${event.time}
-                            </div>
-                            ${event.description ? `<p>${event.description}</p>` : ''}
-                        </div>
-                    `).join('');
-                } else {
-                    eventList.innerHTML = `
-                        <div class="no-events">
-                            <strong>No hay eventos</strong>
-                            <p>No tienes actividades programadas para hoy.</p>
-                        </div>
-                    `;
-                }
-            }
-        } catch (error) {
-            console.error('Error al actualizar eventos del día:', error);
-        }
-    }
-
-    // --- Lógica del Modal de Opciones (Manipula el HTML de _Modal.cshtml) ---
-    function showEventOptionsMenu(event) {
-        const modal = document.getElementById('eventOptionsModal');
-        // Asegúrate que los IDs de los elementos internos del modal coincidan con tu _Modal.cshtml
-        const modalTitle = document.getElementById('modalEventTitle');
-        const modalTime = document.getElementById('modalEventTime');
-        const btnDetails = document.getElementById('btnDetails');
-        const btnDelete = document.getElementById('btnDelete');
-        const modalCloseButton = document.getElementById('modalCloseButton');
-
-        // 1. Llenar el contenido del modal
-        modalTitle.textContent = event.title;
-        modalTime.textContent = `${formatDate(event.start)}${event.end ? ' - ' + formatDate(event.end) : ''}`;
-
-        const isActivity = event.extendedProps.eventType === 'Actividad';
-
-        // 2. Controlar la visibilidad de "Ver Detalles" (solo para Actividades)
-        // El botón debe tener display:none por defecto en el HTML.
-        if (isActivity) {
-            btnDetails.style.display = 'block';
-        } else {
-            btnDetails.style.display = 'none';
-        }
-
-        // 3. Mostrar el modal con transición
-        modal.classList.add('show');
-        modal.style.display = 'flex';
-
-        // 4. Limpiar Event Listeners anteriores (Delegación o Clone Node)
-        // Usaremos 'Clone Node' en los botones importantes para garantizar que no haya múltiples listeners
-        const cleanAndAttachListeners = (button, action) => {
-            const newButton = button.cloneNode(true);
-            button.parentNode.replaceChild(newButton, button);
-
-            newButton.onclick = function () {
-                closeModal();
-                handleModalAction(action, event);
-            };
-            return newButton;
-        };
-
-        cleanAndAttachListeners(document.getElementById('btnEdit'), 'edit');
-        cleanAndAttachListeners(btnDelete, 'delete');
-        cleanAndAttachListeners(btnDetails, 'details');
-
-        // Función para cerrar el modal
-        const closeModal = () => {
-            modal.classList.remove('show');
-            setTimeout(() => { modal.style.display = 'none'; }, 300); // Esperar la transición
-        };
-
-        // Manejadores de eventos de cierre
-        // Al hacer clic en el fondo
-        modal.onclick = function (e) {
-            if (e.target.id === 'eventOptionsModal') { // Usa el ID del div de fondo
-                closeModal();
-            }
-        };
-
-        // Al hacer clic en el botón de cerrar
-        modalCloseButton.onclick = closeModal;
-    }
-
-    // Función para manejar las acciones del modal
-    function handleModalAction(action, event) {
-        switch (action) {
-            case 'edit':
-                // Aquí se integraría la lógica para abrir un formulario de edición real
-                showNotification('🏗️ Función de Editar en desarrollo...', 'info');
-                break;
-            case 'delete':
-                deleteEvent(event);
-                break;
-            case 'details':
-                showActivityDetails(event);
-                break;
-        }
-    }
-
-    // --- Función para mostrar detalles de una Actividad ---
-    function showActivityDetails(event) {
-        const details = `
-        **Detalles de la Actividad**
-        ---
-        📌 **Título**: ${event.title}
-        ${event.extendedProps.description ? '📄 **Descripción**: ' + event.extendedProps.description : '📄 **Descripción**: N/A'}
-        ⏰ **Inicio**: ${formatDate(event.start)}
-        ${event.end ? '⏰ **Fin**: ' + formatDate(event.end) : ''}
-        `;
-
-        alert(details); // Usamos un simple `alert` para mostrar los detalles
-    }
-
+    /**
+     * Eliminar evento
+     */
     async function deleteEvent(event) {
-        if (!confirm(`¿Estás seguro de eliminar "${event.title}"?`)) {
+        if (!confirm(`¿Estás seguro de eliminar "${event.title}"?\n\nEsta acción no se puede deshacer.`)) {
             return;
         }
 
@@ -338,14 +294,11 @@
             const result = await response.json();
 
             if (result.success) {
-                showNotification('🗑️ Evento eliminado', 'success');
+                showNotification('🗑️ Evento eliminado correctamente', 'success');
                 calendar.refetchEvents();
-
-                if (isToday(event.start)) {
-                    updateDailyEvents();
-                }
+                updateDailyEvents();
             } else {
-                showNotification('❌ Error al eliminar', 'error');
+                showNotification('❌ Error al eliminar evento', 'error');
             }
         } catch (error) {
             console.error('Error:', error);
@@ -353,39 +306,331 @@
         }
     }
 
+    // ==================== ACTUALIZAR EVENTOS DEL DÍA ====================
+
+    /**
+     * Actualizar lista de eventos del día
+     */
+    async function updateDailyEvents() {
+        try {
+            const today = new Date().toISOString().split('T')[0];
+            const response = await fetch(`/Calendario?handler=DailyEvents&date=${today}`);
+            
+            if (!response.ok) throw new Error('Error al cargar eventos del día');
+
+            const data = await response.json();
+            const events = data.events || data || [];
+
+            renderDailyEvents(events);
+        } catch (error) {
+            console.error('Error al actualizar eventos del día:', error);
+        }
+    }
+
+    /**
+     * Renderizar eventos del día
+     */
+    function renderDailyEvents(events) {
+        const eventList = document.querySelector('.event-list');
+        if (!eventList) return;
+
+        if (events.length === 0) {
+            eventList.innerHTML = `
+                <div class="no-events">
+                    <strong>No hay eventos</strong>
+                    <p>No tienes actividades programadas para hoy.</p>
+                </div>
+            `;
+            return;
+        }
+
+        eventList.innerHTML = events.map(event => {
+            // Determinar el tipo de evento basado en el color o propiedades
+            let eventType = 'default';
+            if (event.color === '#2563EB' || event.eventType === 'Clase') {
+                eventType = 'Clase';
+            } else if (event.color === '#10B981' || event.eventType === 'Actividad') {
+                eventType = 'Actividad';
+            } else if (event.color === '#F59E0B' || event.eventType === 'Tarea') {
+                eventType = 'Tarea';
+            }
+
+            const colors = getEventColors(eventType);
+            
+            return `
+                <div class="event-item event-item-${eventType.toLowerCase()}" 
+                     style="border-left-color: ${colors.border}; background: ${colors.background};">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.375rem;">
+                        <span style="font-size: 1rem;">${colors.icon}</span>
+                        <strong style="color: ${colors.text};">${escapeHtml(event.title)}</strong>
+                    </div>
+                    <div class="event-time" style="color: ${colors.text}; opacity: 0.8;">${event.time}</div>
+                    ${event.description ? `<p style="color: ${colors.text}; opacity: 0.7;">${escapeHtml(event.description)}</p>` : ''}
+                </div>
+            `;
+        }).join('');
+    }
+
+    // ==================== MODAL DE EVENTO ====================
+
+    /**
+     * Mostrar modal de opciones
+     */
+    function showEventModal(event) {
+        const modal = document.getElementById('eventOptionsModal');
+        if (!modal) return;
+
+        // Actualizar contenido
+        updateModalContent(event);
+
+        // Configurar botones
+        setupModalButtons(event);
+
+        // Mostrar modal
+        modal.classList.add('show');
+        modal.style.display = 'flex';
+
+        // Configurar cierre
+        setupModalClose(modal);
+    }
+
+    /**
+     * Actualizar contenido del modal
+     */
+    function updateModalContent(event) {
+        const modalTitle = document.getElementById('modalEventTitle');
+        const modalTime = document.getElementById('modalEventTime');
+        const btnDetails = document.getElementById('btnDetails');
+
+        const eventType = event.extendedProps.eventType || 'default';
+        const colors = getEventColors(eventType);
+
+        if (modalTitle) {
+            modalTitle.innerHTML = `${colors.icon} ${escapeHtml(event.title)}`;
+            modalTitle.style.color = colors.text;
+        }
+
+        if (modalTime) {
+            const timeText = formatDateTime(event.start);
+            const endText = event.end ? ` - ${formatDateTime(event.end)}` : '';
+            modalTime.textContent = timeText + endText;
+        }
+
+        // Mostrar/ocultar botón de detalles
+        if (btnDetails) {
+            const isActivity = event.extendedProps.eventType === 'Actividad';
+            btnDetails.style.display = isActivity ? 'block' : 'none';
+        }
+    }
+
+    /**
+     * Configurar botones del modal
+     */
+    function setupModalButtons(event) {
+        setupButton('btnEdit', () => handleEditEvent(event));
+        setupButton('btnDelete', () => deleteEvent(event));
+        setupButton('btnDetails', () => showActivityDetails(event));
+    }
+
+    /**
+     * Configurar un botón individual
+     */
+    function setupButton(buttonId, action) {
+        const button = document.getElementById(buttonId);
+        if (!button) return;
+
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+
+        newButton.onclick = function() {
+            closeModal();
+            action();
+        };
+    }
+
+    /**
+     * Configurar cierre del modal
+     */
+    function setupModalClose(modal) {
+        const closeButton = document.getElementById('modalCloseButton');
+        
+        if (closeButton) {
+            closeButton.onclick = closeModal;
+        }
+
+        modal.onclick = function(e) {
+            if (e.target.id === 'eventOptionsModal') {
+                closeModal();
+            }
+        };
+    }
+
+    /**
+     * Cerrar modal
+     */
+    function closeModal() {
+        const modal = document.getElementById('eventOptionsModal');
+        if (!modal) return;
+
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 300);
+    }
+
+    // ==================== ACCIONES DE EVENTO ====================
+
+    /**
+     * Editar evento
+     */
+    function handleEditEvent(event) {
+        showNotification('🔧 Función de edición en desarrollo...', 'info');
+        // TODO: Implementar edición
+    }
+
+    /**
+     * Mostrar detalles de actividad
+     */
+    function showActivityDetails(event) {
+        const eventType = event.extendedProps.eventType || 'default';
+        const colors = getEventColors(eventType);
+        
+        const details = `
+${colors.icon} Detalles del Evento
+━━━━━━━━━━━━━━━━━━━━━
+
+📌 Título: ${event.title}
+🏷️ Tipo: ${eventType}
+
+${event.extendedProps.description ? `📄 Descripción: ${event.extendedProps.description}` : '📄 Sin descripción'}
+
+⏰ Inicio: ${formatDateTime(event.start)}
+${event.end ? `⏰ Fin: ${formatDateTime(event.end)}` : ''}
+        `;
+
+        alert(details.trim());
+    }
+
+    // ==================== UTILIDADES ====================
+
+    /**
+     * Inicializar reloj en tiempo real
+     */
+    function initClock() {
+        updateClock();
+        setInterval(updateClock, 1000);
+    }
+
+    /**
+     * Actualizar reloj
+     */
+    function updateClock() {
+        const clockElement = document.querySelector('.current-time');
+        if (!clockElement) return;
+
+        const now = new Date();
+        clockElement.textContent = now.toLocaleTimeString('es-CL', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        });
+    }
+
+    /**
+     * Formatear fecha y hora
+     */
+    function formatDateTime(date) {
+        if (!date) return '';
+        
+        return new Date(date).toLocaleString('es-CL', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    /**
+     * Escapar HTML
+     */
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    /**
+     * Mostrar estado de carga
+     */
+    function showLoadingState() {
+        const calendar = document.getElementById('calendar');
+        if (calendar) {
+            calendar.style.opacity = '0.6';
+            calendar.style.pointerEvents = 'none';
+        }
+    }
+
+    /**
+     * Ocultar estado de carga
+     */
+    function hideLoadingState() {
+        const calendar = document.getElementById('calendar');
+        if (calendar) {
+            calendar.style.opacity = '1';
+            calendar.style.pointerEvents = 'auto';
+        }
+    }
+
+    /**
+     * Mostrar notificación profesional
+     */
     function showNotification(message, type = 'info') {
-        // Crear elemento de notificación
         const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
+        notification.className = `app-notification notification-${type}`;
         notification.textContent = message;
+        
+        const colors = {
+            success: '#10B981',
+            error: '#EF4444',
+            info: '#2563EB',
+            warning: '#F59E0B'
+        };
+
         notification.style.cssText = `
             position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            background: ${type === 'success' ? '#38ef7d' : type === 'error' ? '#ff6b6b' : '#667eea'};
+            top: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background: ${colors[type] || colors.info};
             color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             z-index: 10000;
             font-weight: 600;
-            animation: slideIn 0.3s ease-out;
+            font-size: 0.875rem;
+            animation: slideInRight 0.3s ease-out;
+            max-width: 400px;
         `;
 
         document.body.appendChild(notification);
 
         setTimeout(() => {
-            notification.style.animation = 'slideOut 0.3s ease-out';
+            notification.style.animation = 'slideOutRight 0.3s ease-out';
             setTimeout(() => notification.remove(), 300);
-        }, 3000);
+        }, 4000);
     }
 
-    // Agregar animaciones CSS para la notificación
+    // ==================== ESTILOS DINÁMICOS ====================
+    
     const style = document.createElement('style');
     style.textContent = `
-        @keyframes slideIn {
+        @keyframes slideInRight {
             from {
-                transform: translateX(400px);
+                transform: translateX(100%);
                 opacity: 0;
             }
             to {
@@ -393,15 +638,37 @@
                 opacity: 1;
             }
         }
-        @keyframes slideOut {
+        
+        @keyframes slideOutRight {
             from {
                 transform: translateX(0);
                 opacity: 1;
             }
             to {
-                transform: translateX(400px);
+                transform: translateX(100%);
                 opacity: 0;
             }
+        }
+
+        /* Estilos para items de eventos en la lista lateral */
+        .event-item-clase {
+            border-left-width: 4px !important;
+            transition: all 0.2s ease;
+        }
+
+        .event-item-actividad {
+            border-left-width: 4px !important;
+            transition: all 0.2s ease;
+        }
+
+        .event-item-tarea {
+            border-left-width: 4px !important;
+            transition: all 0.2s ease;
+        }
+
+        .event-item:hover {
+            transform: translateX(4px) !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
         }
     `;
     document.head.appendChild(style);

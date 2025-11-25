@@ -1,25 +1,28 @@
 ﻿@page
 @model Organizainador.Pages.CalendarioModel
 @{
-    ViewData["Title"] = "Mi Calendario Inteligente";
+    ViewData["Title"] = "Calendario Inteligente";
 }
 
 <link rel="stylesheet" href="~/css/Calendario.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 @Html.AntiForgeryToken()
 
 <div class="calendar-page-container">
-
-    <!-- Barra lateral mejorada -->
+                                                                                                            
+    <!-- ==================== BARRA LATERAL ==================== -->
     <div class="calendar-sidebar">
 
-        <!-- Header con fecha y hora en tiempo real -->
+        <!-- Header con fecha y hora -->
         <div class="date-time-header">
-            <h3>@DateTime.Now.ToString("dddd, dd 'de' MMMM", new System.Globalization.CultureInfo("es-ES"))</h3>
+            <h3>@DateTime.Now.ToString("dddd, d 'de' MMMM", new System.Globalization.CultureInfo("es-CL"))</h3>
             <div class="current-time">@DateTime.Now.ToString("HH:mm:ss")</div>
         </div>
 
-        <!-- Lista de eventos del día -->
+        <!-- Eventos del día -->
         <div class="events-container">
             <h4>Eventos de Hoy</h4>
             <div class="event-list">
@@ -55,24 +58,30 @@
 
         <!-- Botones de acción -->
         <div class="action-buttons">
-            <a href="/Horarios/Create" class="add-schedule-btn" title="Agregar nuevo horario">📅 Agregar Nuevo Horario</a>
-            <button class="ver-mas-btn" onclick="window.location.href='/Horarios'">📋 Ver Horarios</button>
+            <a href="/Horarios/Create" class="add-schedule-btn">
+                📅 Nuevo Horario
+            </a>
+            <button class="ver-mas-btn" onclick="window.location.href='/Horarios'">
+                📋 Ver Todos
+            </button>
         </div>
 
     </div>
 
-    <!-- Calendario principal -->
+    <!-- ==================== CALENDARIO PRINCIPAL ==================== -->
     <div class="calendar-main">
         <div id="calendar"></div>
     </div>
 
 </div>
 
-<!-- Floating Action Button for mobile -->
-<a href="/Horarios/Create" class="fab-add-schedule" title="Agregar nuevo horario">📅</a>
+<!-- FAB para móviles -->
+<a href="/Horarios/Create" class="fab-add-schedule" title="Agregar nuevo horario" aria-label="Agregar nuevo horario">
+    📅
+</a>
 
+<!-- Modal de opciones -->
 <partial name="_Modal" />
-
 
 @section Scripts {
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
