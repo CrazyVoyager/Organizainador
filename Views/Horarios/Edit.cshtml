@@ -58,6 +58,15 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
+                                <label asp-for="EsRecurrente" class="form-label">Tipo de Evento</label>
+                                <select asp-for="EsRecurrente" id="esRecurrente" class="form-select" onchange="toggleFechaSelector()" required>
+                                    <option value="true">Recurrente (se repite todas las semanas)</option>
+                                    <option value="false">Único (solo una vez)</option>
+                                </select>
+                                <span asp-validation-for="EsRecurrente" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3" id="diaSemanaGroup">
                                 <label asp-for="DiaSemana" class="form-label">Día de la Semana</label>
                                 <select asp-for="DiaSemana" class="form-select" required>
                                     <option value="">Selecciona el Día</option>
@@ -71,13 +80,12 @@
                                 </select>
                                 <span asp-validation-for="DiaSemana" class="text-danger small"></span>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="EsRecurrente" class="form-label">Tipo de Evento</label>
-                                <select asp-for="EsRecurrente" class="form-select" required>
-                                    <option value="true">Recurrente (se repite todas las semanas)</option>
-                                    <option value="false">Único (solo una vez)</option>
-                                </select>
-                                <span asp-validation-for="EsRecurrente" class="text-danger small"></span>
+
+                            <div class="col-md-6 mb-3" id="fechaEspecificaGroup" style="display:none;">
+                                <label asp-for="FechaEspecifica" class="form-label">Fecha Específica</label>
+                                <input asp-for="FechaEspecifica" type="date" class="form-control" min="@DateTime.Now.ToString("yyyy-MM-dd")">
+                                <span asp-validation-for="FechaEspecifica" class="text-danger small"></span>
+                                <small class="text-muted">Selecciona la fecha exacta del evento</small>
                             </div>
                         </div>
 
@@ -137,8 +145,33 @@
             }
         }
 
+        function toggleFechaSelector() {
+            var esRecurrente = document.getElementById('esRecurrente').value === 'true';
+            var diaSemanaGroup = document.getElementById('diaSemanaGroup');
+            var fechaEspecificaGroup = document.getElementById('fechaEspecificaGroup');
+            var diaSemanaSelect = document.querySelector('#DiaSemana');
+            var fechaInput = document.querySelector('#FechaEspecifica');
+
+            if (esRecurrente) {
+                // Mostrar selector de día de la semana
+                diaSemanaGroup.style.display = 'block';
+                fechaEspecificaGroup.style.display = 'none';
+                diaSemanaSelect.required = true;
+                fechaInput.required = false;
+                fechaInput.value = '';
+            } else {
+                // Mostrar selector de fecha específica
+                diaSemanaGroup.style.display = 'none';
+                fechaEspecificaGroup.style.display = 'block';
+                diaSemanaSelect.required = false;
+                fechaInput.required = true;
+                diaSemanaSelect.value = '';
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             toggleAsignacion();
+            toggleFechaSelector();
         });
     </script>
 }
