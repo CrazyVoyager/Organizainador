@@ -1,12 +1,27 @@
 ﻿document.addEventListener('DOMContentLoaded', function () {
     var calendarEl = document.getElementById('calendar');
 
+    // Verificar que el calendario existe
+    if (!calendarEl) {
+        console.error('No se encontró el elemento #calendar');
+        return;
+    }
+
     // Token de seguridad para peticiones POST
-    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+    const tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
+    if (!tokenElement) {
+        console.error('No se encontró el token anti-forgery');
+        return;
+    }
+    const token = tokenElement.value;
 
     // Actualizar reloj en tiempo real
     updateClock();
     setInterval(updateClock, 1000);
+
+    // Cargar eventos del día actual al iniciar
+    const today = new Date().toISOString().split('T')[0];
+    updateDailyEvents(today);
 
     var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
@@ -35,6 +50,13 @@
 
         // Navegación mejorada
         navLinks: true, // Permite hacer clic en los días para ir a la vista de día
+        
+        // Cuando se hace clic en una fecha
+        dateClick: function(info) {
+            // Actualizar eventos del día en la barra lateral
+            const clickedDate = info.dateStr;
+            updateDailyEvents(clickedDate);
+        },
 
         // Selección de rangos de tiempo
         selectable: true,
@@ -64,6 +86,10 @@
                         body: formData
                     });
 
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
                     const result = await response.json();
 
                     if (result.success) {
@@ -76,12 +102,12 @@
                             updateDailyEvents();
                         }
                     } else {
-                        showNotification('❌ Error: ' + result.message, 'error');
+                        showNotification('❌ Error: ' + (result.message || 'No se pudo crear el evento'), 'error');
                     }
 
                 } catch (error) {
-                    console.error('Error en fetch:', error);
-                    showNotification('❌ Error de conexión', 'error');
+                    console.error('Error al crear evento:', error);
+                    showNotification('❌ Error de conexión: ' + error.message, 'error');
                 }
             }
 
@@ -107,17 +133,23 @@
         },
 
         // Cargar eventos desde el servidor
-        events: '/Calendario?handler=Events',
-
-        // Función al cargar eventos exitosamente
-        eventSourceSuccess: function (content, xhr) {
-            console.log('Eventos cargados:', content.length);
-        },
-
-        // Función al cargar eventos con error
-        eventSourceFailure: function (error) {
-            console.error('Error al cargar eventos:', error);
-            showNotification('❌ Error al cargar eventos', 'error');
+        events: function(info, successCallback, failureCallback) {
+            fetch('/Calendario?handler=Events')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Eventos cargados:', data.length);
+                    successCallback(data);
+                })
+                .catch(error => {
+                    console.error('Error al cargar eventos:', error);
+                    showNotification('❌ Error al cargar eventos: ' + error.message, 'error');
+                    failureCallback(error);
+                });
         },
 
         // Función al hacer clic en un evento
@@ -244,27 +276,35 @@
         }
     }
 
-    async function updateDailyEvents() {
+    async function updateDailyEvents(date) {
         try {
-            // Se asume que el handler DailyEvents devuelve eventos de HOY si no se pasa fecha.
-            // Si el handler requiere la fecha, habría que modificar esta llamada:
-            // const today = new Date().toISOString().split('T')[0];
-            // const response = await fetch('/Calendario?handler=DailyEvents&date=' + today);
+            // Si no se proporciona fecha, usar hoy
+            const targetDate = date || new Date().toISOString().split('T')[0];
+            const response = await fetch('/Calendario?handler=DailyEvents&date=' + targetDate);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
 
-            const response = await fetch('/Calendario?handler=DailyEvents');
             const result = await response.json();
-            const events = result.events || []; // Usar result.events para el handler OnGetDailyEvents
+            
+            if (!result.success) {
+                console.error('Error en el servidor:', result.message);
+                return;
+            }
+
+            const events = result.events || [];
 
             const eventList = document.querySelector('.event-list');
             if (eventList) {
                 if (events.length > 0) {
                     eventList.innerHTML = events.map(event => `
                         <div class="event-item" style="border-left-color: ${event.color || '#ccc'};">
-                            <strong>${event.title}</strong>
+                            <strong>${escapeHtml(event.title)}</strong>
                             <div class="event-time">
-                                ${event.time}
+                                ${escapeHtml(event.time)}
                             </div>
-                            ${event.description ? `<p>${event.description}</p>` : ''}
+                            ${event.description ? `<p>${escapeHtml(event.description)}</p>` : ''}
                         </div>
                     `).join('');
                 } else {
@@ -278,18 +318,36 @@
             }
         } catch (error) {
             console.error('Error al actualizar eventos del día:', error);
+            showNotification('❌ Error al actualizar eventos del día', 'error');
         }
+    }
+
+    // Función auxiliar para escapar HTML y prevenir XSS
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 
     // --- Lógica del Modal de Opciones (Manipula el HTML de _Modal.cshtml) ---
     function showEventOptionsMenu(event) {
         const modal = document.getElementById('eventOptionsModal');
+        if (!modal) {
+            console.error('No se encontró el modal #eventOptionsModal');
+            return;
+        }
+
         // Asegúrate que los IDs de los elementos internos del modal coincidan con tu _Modal.cshtml
         const modalTitle = document.getElementById('modalEventTitle');
         const modalTime = document.getElementById('modalEventTime');
         const btnDetails = document.getElementById('btnDetails');
         const btnDelete = document.getElementById('btnDelete');
         const modalCloseButton = document.getElementById('modalCloseButton');
+
+        if (!modalTitle || !modalTime || !btnDetails || !btnDelete || !modalCloseButton) {
+            console.error('Faltan elementos del modal');
+            return;
+        }
 
         // 1. Llenar el contenido del modal
         modalTitle.textContent = event.title;
@@ -322,7 +380,10 @@
             return newButton;
         };
 
-        cleanAndAttachListeners(document.getElementById('btnEdit'), 'edit');
+        const btnEdit = document.getElementById('btnEdit');
+        if (btnEdit) {
+            cleanAndAttachListeners(btnEdit, 'edit');
+        }
         cleanAndAttachListeners(btnDelete, 'delete');
         cleanAndAttachListeners(btnDetails, 'details');
 
