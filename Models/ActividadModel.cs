@@ -21,7 +21,7 @@ namespace Organizainador.Models
         [Column("tac_nom_act")]
         [Display(Name = "Nombre de la Actividad")]
         [StringLength(500)]
-        public string Nombre { get; set; }
+        public string Nombre { get; set; } = string.Empty;
 
         [Column("tac_desc")]
         [Display(Name = "Descripción")]

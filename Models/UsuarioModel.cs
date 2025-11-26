@@ -14,13 +14,13 @@ namespace Organizainador.Models
         [Required(ErrorMessage = "El nombre es obligatorio")]
         [Column("tus_nom")]
         [Display(Name = "Nombre")]
-        public string Nombre { get; set; }
+        public string Nombre { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "El email es obligatorio")]
         [EmailAddress(ErrorMessage = "El formato del email no es válido")]
         [Column("tus_mail")]
         [Display(Name = "Email")]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [Column("tus_c_est")]
         [Display(Name = "Casa de estudios")]

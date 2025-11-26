@@ -15,12 +15,12 @@ namespace Organizainador.Pages
     public class AppEvent
     {
         public int Id { get; set; }
-        public string Title { get; set; }
+        public required string Title { get; set; }
         public DateTime Start { get; set; }
         public DateTime? End { get; set; }
-        public string Color { get; set; }
-        public string Description { get; set; }
-        public string EventType { get; set; }
+        public required string Color { get; set; }
+        public required string Description { get; set; }
+        public required string EventType { get; set; }
     }
 
     public class CalendarioModel : PageModel
@@ -115,14 +115,14 @@ namespace Organizainador.Pages
                             if (h.Clase != null)
                             {
                                 titulo = $"{h.Clase.Nombre} ({h.DiaSemana})";
-                                descripcion = h.Clase.Descripcion;
+                                descripcion = h.Clase.Descripcion ?? string.Empty;
                                 color = "#2563EB"; // Azul para Clases
                                 tipo = "Clase";
                             }
                             else if (h.Actividad != null)
                             {
                                 titulo = $"{h.Actividad.Nombre} ({h.DiaSemana})";
-                                descripcion = h.Actividad.Descripcion;
+                                descripcion = h.Actividad.Descripcion ?? string.Empty;
                                 color = "#10B981"; // Verde para Actividades
                                 tipo = "Actividad";
                             }
@@ -158,14 +158,14 @@ namespace Organizainador.Pages
                     if (h.Clase != null)
                     {
                         titulo = $"{h.Clase.Nombre} ({fechaEvento:dd/MM})";
-                        descripcion = h.Clase.Descripcion;
+                        descripcion = h.Clase.Descripcion ?? string.Empty;
                         color = "#2563EB"; // Azul para Clases
                         tipo = "Clase";
                     }
                     else if (h.Actividad != null)
                     {
                         titulo = $"{h.Actividad.Nombre} ({fechaEvento:dd/MM})";
-                        descripcion = h.Actividad.Descripcion;
+                        descripcion = h.Actividad.Descripcion ?? string.Empty;
                         color = "#10B981"; // Verde para Actividades
                         tipo = "Actividad";
                     }

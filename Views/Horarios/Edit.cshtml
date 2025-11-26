@@ -70,7 +70,7 @@
                                 <label asp-for="ClaseId" class="form-label fw-bold">
                                     Clase <span class="text-danger">*</span>
                                 </label>
-                                <select asp-for="ClaseId" class="form-select" asp-items="@((SelectList)ViewData["ClaseId"])">
+                                <select asp-for="ClaseId" class="form-select" asp-items="@((SelectList?)ViewData["ClaseId"] ?? new SelectList(Enumerable.Empty<object>()))">
                                     <option value="">-- Selecciona una Clase --</option>
                                 </select>
                                 <span asp-validation-for="ClaseId" class="text-danger small"></span>
@@ -80,7 +80,7 @@
                                 <label asp-for="ActividadId" class="form-label fw-bold">
                                     Actividad <span class="text-danger">*</span>
                                 </label>
-                                <select asp-for="ActividadId" class="form-select" asp-items="@((SelectList)ViewData["ActividadId"])">
+                                <select asp-for="ActividadId" class="form-select" asp-items="@((SelectList?)ViewData["ActividadId"] ?? new SelectList(Enumerable.Empty<object>()))">
                                     <option value="">-- Selecciona una Actividad --</option>
                                 </select>
                                 <span asp-validation-for="ActividadId" class="text-danger small"></span>

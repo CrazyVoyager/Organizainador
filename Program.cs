@@ -56,7 +56,19 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+
+// Configurar archivos estáticos con UTF-8 para archivos JSON
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        if (ctx.File.Name.EndsWith(".json"))
+        {
+            ctx.Context.Response.Headers.Append("Content-Type", "application/json; charset=utf-8");
+        }
+    }
+});
+
 app.UseRouting();
 
 // CRUCIAL: UseAuthentication debe ir antes de UseAuthorization
@@ -76,17 +88,5 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapRazorPages();
-
-// Configurar archivos estáticos con UTF-8
-app.UseStaticFiles(new StaticFileOptions
-{
-    OnPrepareResponse = ctx =>
-    {
-        if (ctx.File.Name.EndsWith(".json"))
-        {
-            ctx.Context.Response.Headers.Append("Content-Type", "application/json; charset=utf-8");
-        }
-    }
-});
 
 app.Run();
