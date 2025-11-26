@@ -2,15 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Organizainador.Utilities // O el namespace de tu modelo/página
+namespace Organizainador.Utilities
 {
+    /// <summary>
+    /// Clase auxiliar para operaciones relacionadas con horarios y gestión de tiempo.
+    /// </summary>
     public static class HorarioHelper
     {
         /// <summary>
         /// Genera una lista de objetos TimeSpan en intervalos de 15 minutos, 
         /// comenzando desde el siguiente intervalo de 15 minutos de la hora actual.
         /// </summary>
-        /// <returns>Una lista de TimeSpans (HH:mm:00) para el ComboBox.</returns>
+        /// <returns>Una lista de TimeSpans (HH:mm:00) para selección en formularios.</returns>
         public static List<TimeSpan> GenerarHorasEnIntervalos()
         {
             var horaActual = DateTime.Now.TimeOfDay;

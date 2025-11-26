@@ -1,9 +1,18 @@
-﻿document.addEventListener('DOMContentLoaded', () => {
+﻿/**
+ * @module Clima
+ * @description Módulo para cargar y mostrar información del clima de Los Ángeles, Chile
+ */
+
+document.addEventListener('DOMContentLoaded', () => {
     cargarClimaLosAngeles();
     configurarBotonToggle();
 });
 
-// 1. Lógica para cargar datos de la API
+/**
+ * Carga los datos del clima desde la API de Open-Meteo
+ * @async
+ * @returns {Promise<void>}
+ */
 async function cargarClimaLosAngeles() {
     const lat = -37.4697;
     const lon = -72.3537;
@@ -53,7 +62,9 @@ async function cargarClimaLosAngeles() {
     }
 }
 
-// 2. Lógica para el botón de abrir/cerrar
+/**
+ * Configura el botón de toggle para mostrar/ocultar el widget del clima
+ */
 function configurarBotonToggle() {
     const btn = document.getElementById('weather-toggle');
     const card = document.getElementById('weather-card');

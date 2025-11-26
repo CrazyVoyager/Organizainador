@@ -62,6 +62,9 @@ namespace Organizainador.Data
                     .HasDefaultValue(1)
                     .IsRequired();
 
+                // Índice para mejorar búsquedas por usuario
+                entity.HasIndex(e => e.UsuarioId);
+
                 // Relación con Usuario
                 entity.HasOne<UsuarioModel>()
                     .WithMany()
@@ -83,6 +86,12 @@ namespace Organizainador.Data
                 entity.Property(e => e.EsRecurrente).HasColumnName("tho_recurrente");
                 entity.Property(e => e.FechaEspecifica).HasColumnName("tho_fecha_especifica");
 
+                // Índices para mejorar rendimiento de consultas
+                entity.HasIndex(e => e.ClaseId);
+                entity.HasIndex(e => e.ActividadId);
+                entity.HasIndex(e => e.EsRecurrente);
+                entity.HasIndex(e => e.FechaEspecifica);
+
                 // Relación con Clase
                 entity.HasOne(h => h.Clase)
                     .WithMany(c => c.Horarios)
@@ -99,11 +108,19 @@ namespace Organizainador.Data
             });
 
             // Configuración de ActividadModel
-            modelBuilder.Entity<ActividadModel>()
-                .HasOne<UsuarioModel>()
-                .WithMany()
-                .HasForeignKey(a => a.UsuarioId)
-                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ActividadModel>(entity =>
+            {
+                // Índice para mejorar búsquedas por usuario
+                entity.HasIndex(e => e.UsuarioId);
+                
+                // Índice para búsquedas por etiqueta
+                entity.HasIndex(e => e.Etiqueta);
+
+                entity.HasOne<UsuarioModel>()
+                    .WithMany()
+                    .HasForeignKey(a => a.UsuarioId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
         }
     }
 }

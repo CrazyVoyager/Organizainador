@@ -1,6 +1,9 @@
 ﻿/**
  * Login Handler para enviar el formulario de inicio de sesión
  * de forma asíncrona (AJAX) a la Page Handler 'Auth'.
+ * 
+ * @module login
+ * @description Maneja la autenticación de usuarios mediante AJAX
  */
 
 // 1. LISTENER DE INICIALIZACIÓN: Espera a que el DOM esté listo
@@ -17,7 +20,10 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-// 2. FUNCIÓN PRINCIPAL DE ENVÍO ASÍNCRONO
+/**
+ * Función principal de envío asíncrono del formulario de login
+ * @param {Event} e - Evento del formulario
+ */
 async function handleLoginSubmit(e) {
     // CLAVE: Detiene el envío tradicional del formulario (previene la recarga de la página)
     e.preventDefault();

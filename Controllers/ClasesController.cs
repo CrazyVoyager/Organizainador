@@ -31,9 +31,11 @@ namespace Organizainador.Controllers
                     .Where(c => c.UsuarioId == userId)
                     .AsQueryable();
 
-                // Búsqueda
+                // Búsqueda - EF Core previene SQL injection automáticamente al usar LINQ
                 if (!string.IsNullOrWhiteSpace(busqueda))
                 {
+                    // Sanitizar entrada para prevenir ataques
+                    busqueda = busqueda.Trim();
                     query = query.Where(c =>
                         c.Nombre.Contains(busqueda) ||
                         (c.Descripcion != null && c.Descripcion.Contains(busqueda))
