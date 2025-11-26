@@ -30,21 +30,17 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // 🔑 CLAVE: CONFIGURACIÓN DE DAPPER
 // ==========================================================
 
-// 3. Registrar la cadena de conexión como un string para inyección en servicios.
-// El UserService lo recibirá para crear su NpgsqlConnection con Dapper.
-builder.Services.AddSingleton<string>(provider =>
+// 3. Registrar el UserService con factory method para inyectar conexión y logger
+builder.Services.AddScoped<UserService>(provider =>
 {
-    // Obtiene la cadena de conexión configurada
     var connectionString = provider.GetRequiredService<IConfiguration>().GetConnectionString("DefaultConnection");
     if (string.IsNullOrEmpty(connectionString))
     {
         throw new InvalidOperationException("La cadena de conexión 'DefaultConnection' no fue encontrada en appsettings.");
     }
-    return connectionString;
+    var logger = provider.GetRequiredService<ILogger<UserService>>();
+    return new UserService(connectionString, logger);
 });
-
-// 4. Registrar el UserService, que ahora recibirá el string de la cadena de conexión
-builder.Services.AddScoped<UserService>();
 
 var app = builder.Build();
 

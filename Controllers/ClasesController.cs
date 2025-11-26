@@ -6,7 +6,7 @@ using System.Security.Claims;
 
 namespace Organizainador.Controllers
 {
-    public class ClasesController : Controller
+    public class ClasesController : BaseController
     {
         private readonly AppDbContext _context;
         private readonly ILogger<ClasesController> _logger;
@@ -16,10 +16,6 @@ namespace Organizainador.Controllers
             _context = context;
             _logger = logger;
         }
-
-        // ======================== MÉTODOS AUXILIARES ========================
-        private string GetCurrentUserIdString() => User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
-        private int GetCurrentUserIdInt() => int.TryParse(GetCurrentUserIdString(), out int id) ? id : 0;
 
         // ======================== LISTADO PRINCIPAL ========================
         [HttpGet]
@@ -135,7 +131,7 @@ namespace Organizainador.Controllers
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation("Clase creada: {Nombre} por usuario {UserId}", clase.Nombre, userId);
-                TempData["SuccessMessage"] = $"Clase '{clase.Nombre}' creada exitosamente.";
+                SetSuccessMessage($"Clase '{clase.Nombre}' creada exitosamente.");
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateException dbEx)
@@ -217,7 +213,7 @@ namespace Organizainador.Controllers
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation("Clase actualizada: {Id} - {Nombre}", clase.Id, clase.Nombre);
-                TempData["SuccessMessage"] = $"Clase '{clase.Nombre}' actualizada exitosamente.";
+                SetSuccessMessage($"Clase '{clase.Nombre}' actualizada exitosamente.");
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateConcurrencyException)
@@ -301,7 +297,7 @@ namespace Organizainador.Controllers
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation("Clase eliminada: {Id} - {Nombre}", clase.Id, clase.Nombre);
-                TempData["SuccessMessage"] = $"Clase '{clase.Nombre}' eliminada exitosamente.";
+                SetSuccessMessage($"Clase '{clase.Nombre}' eliminada exitosamente.");
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

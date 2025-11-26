@@ -8,7 +8,7 @@ using System.Security.Claims;
 
 namespace Organizainador.Controllers
 {
-    public class HorariosController : Controller
+    public class HorariosController : BaseController
     {
         private readonly AppDbContext _context;
         private readonly ILogger<HorariosController> _logger;
@@ -18,10 +18,6 @@ namespace Organizainador.Controllers
             _context = context;
             _logger = logger;
         }
-
-        // ======================== MÉTODOS AUXILIARES ========================
-        private string GetCurrentUserIdString() => User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
-        private int GetCurrentUserIdInt() => int.TryParse(GetCurrentUserIdString(), out int id) ? id : 0;
 
         // ======================== LISTADO PRINCIPAL ========================
         [HttpGet]
@@ -200,7 +196,7 @@ namespace Organizainador.Controllers
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation("Horario creado: {Id} por usuario {UserId}", horario.Id, userId);
-                TempData["SuccessMessage"] = "Horario creado exitosamente.";
+                SetSuccessMessage("Horario creado exitosamente.");
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateException dbEx)
@@ -339,7 +335,7 @@ namespace Organizainador.Controllers
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation("Horario actualizado: {Id}", horario.Id);
-                TempData["SuccessMessage"] = "Horario actualizado exitosamente.";
+                SetSuccessMessage("Horario actualizado exitosamente.");
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateConcurrencyException)
@@ -428,7 +424,7 @@ namespace Organizainador.Controllers
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation("Horario eliminado: {Id}", horario.Id);
-                TempData["SuccessMessage"] = "Horario eliminado exitosamente.";
+                SetSuccessMessage("Horario eliminado exitosamente.");
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

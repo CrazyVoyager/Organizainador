@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.Extensions.Logging;
 using Npgsql;
 using System.Data;
 
@@ -11,11 +12,19 @@ namespace Organizainador.Services
     /// </summary>
     public class LoginResultDto
     {
-        // Mapea u.tus_id_usr::TEXT AS "UserId"
+        /// <summary>
+        /// ID del usuario convertido a texto. Mapea u.tus_id_usr::TEXT AS "UserId"
+        /// </summary>
         public string UserId { get; set; } = string.Empty;
-        // Mapea u.tus_mail::TEXT AS "Email"
+        
+        /// <summary>
+        /// Correo electrónico del usuario. Mapea u.tus_mail::TEXT AS "Email"
+        /// </summary>
         public string Email { get; set; } = string.Empty;
-        // Mapea u.tus_rol::TEXT AS "Role"
+        
+        /// <summary>
+        /// Rol del usuario en el sistema. Mapea u.tus_rol::TEXT AS "Role"
+        /// </summary>
         public string Role { get; set; } = string.Empty;
     }
 
@@ -25,15 +34,19 @@ namespace Organizainador.Services
     public class UserService
     {
         private readonly string _connectionString;
+        private readonly ILogger<UserService> _logger;
 
-        public UserService(string connectionString)
+        public UserService(string connectionString, ILogger<UserService> logger)
         {
             _connectionString = connectionString;
+            _logger = logger;
         }
 
         /// <summary>
-        /// Llama al Stored Procedure de PostgreSQL para validar credenciales y obtener datos.
+        /// Llama al Stored Procedure de PostgreSQL para validar credenciales y obtener datos del usuario.
         /// </summary>
+        /// <param name="email">Correo electrónico del usuario a validar.</param>
+        /// <param name="contrasena">Contraseña del usuario a validar.</param>
         /// <returns>El objeto LoginResultDto si la autenticación es exitosa, o null si falla.</returns>
         public async Task<LoginResultDto?> ValidateCredentialsAsync(string email, string contrasena)
         {
@@ -61,7 +74,7 @@ namespace Organizainador.Services
             catch (Exception ex)
             {
                 // Se registra el error y se devuelve null (falla de login)
-                Console.WriteLine($"Error al validar credenciales con SP (Dapper): {ex.Message}");
+                _logger.LogError(ex, "Error al validar credenciales con SP (Dapper) para email: {Email}", email);
                 return null;
             }
         }

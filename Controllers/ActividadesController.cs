@@ -6,7 +6,7 @@ using System.Security.Claims;
 
 namespace Organizainador.Controllers
 {
-    public class ActividadesController : Controller
+    public class ActividadesController : BaseController
     {
         private readonly AppDbContext _context;
         private readonly ILogger<ActividadesController> _logger;
@@ -16,10 +16,6 @@ namespace Organizainador.Controllers
             _context = context;
             _logger = logger;
         }
-
-        // ======================== MÉTODOS AUXILIARES ========================
-        private string GetCurrentUserIdString() => User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
-        private int GetCurrentUserIdInt() => int.TryParse(GetCurrentUserIdString(), out int id) ? id : 0;
 
         // ======================== LISTADO PRINCIPAL ========================
         [HttpGet]
@@ -141,7 +137,7 @@ namespace Organizainador.Controllers
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation("Actividad creada: {Nombre} por usuario {UserId}", actividad.Nombre, userId);
-                TempData["SuccessMessage"] = $"Actividad '{actividad.Nombre}' creada exitosamente.";
+                SetSuccessMessage($"Actividad '{actividad.Nombre}' creada exitosamente.");
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -218,7 +214,7 @@ namespace Organizainador.Controllers
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation("Actividad actualizada: {Id} - {Nombre}", actividad.Id, actividad.Nombre);
-                TempData["SuccessMessage"] = $"Actividad '{actividad.Nombre}' actualizada exitosamente.";
+                SetSuccessMessage($"Actividad '{actividad.Nombre}' actualizada exitosamente.");
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateConcurrencyException)
@@ -302,7 +298,7 @@ namespace Organizainador.Controllers
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation("Actividad eliminada: {Id} - {Nombre}", actividad.Id, actividad.Nombre);
-                TempData["SuccessMessage"] = $"Actividad '{actividad.Nombre}' eliminada exitosamente.";
+                SetSuccessMessage($"Actividad '{actividad.Nombre}' eliminada exitosamente.");
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

@@ -8,8 +8,8 @@ using Microsoft.Extensions.Logging;
 namespace Organizainador.Controllers
 {
     [Authorize(Roles = "Admin")]
-    public class UsuariosController : Controller
-    {                                                                               
+    public class UsuariosController : BaseController
+    {
         private readonly AppDbContext _context;
         private readonly ILogger<UsuariosController> _logger;
 
@@ -123,7 +123,7 @@ namespace Organizainador.Controllers
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation("Usuario creado: {Email}", usuario.Email);
-                TempData["SuccessMessage"] = $"Usuario '{usuario.Nombre}' creado exitosamente.";
+                SetSuccessMessage($"Usuario '{usuario.Nombre}' creado exitosamente.");
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -182,7 +182,7 @@ namespace Organizainador.Controllers
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation("Usuario actualizado: {Id} - {Email}", usuario.Id, usuario.Email);
-                TempData["SuccessMessage"] = $"Usuario '{usuario.Nombre}' actualizado exitosamente.";
+                SetSuccessMessage($"Usuario '{usuario.Nombre}' actualizado exitosamente.");
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateConcurrencyException)
@@ -261,7 +261,7 @@ namespace Organizainador.Controllers
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation("Usuario eliminado: {Id} - {Email}", usuario.Id, usuario.Email);
-                TempData["SuccessMessage"] = $"Usuario '{usuario.Nombre}' eliminado exitosamente.";
+                SetSuccessMessage($"Usuario '{usuario.Nombre}' eliminado exitosamente.");
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
