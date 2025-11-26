@@ -1181,8 +1181,6 @@ C:/Users/Voyager/Source/Repos/Organizainador/obj/Debug/net9.0/compressed/vak2ew0
 /home/runner/work/Organizainador/Organizainador/obj/Debug/net9.0/compressed/jq5nrp7838-{0}-4y70oq68oy-4y70oq68oy.gz
 /home/runner/work/Organizainador/Organizainador/obj/Debug/net9.0/compressed/54xpudlk6g-{0}-61n19gt1b8-61n19gt1b8.gz
 /home/runner/work/Organizainador/Organizainador/obj/Debug/net9.0/compressed/259fb75fxz-{0}-izmdzt4qc9-izmdzt4qc9.gz
-/home/runner/work/Organizainador/Organizainador/obj/Debug/net9.0/compressed/au1ijgk92j-{0}-o5sov7zcez-o5sov7zcez.gz
-/home/runner/work/Organizainador/Organizainador/obj/Debug/net9.0/compressed/26qo1v54rm-{0}-5m5rw0a2ua-5m5rw0a2ua.gz
 /home/runner/work/Organizainador/Organizainador/obj/Debug/net9.0/compressed/mheqths0eq-{0}-fr7q2aak1r-fr7q2aak1r.gz
 /home/runner/work/Organizainador/Organizainador/obj/Debug/net9.0/compressed/inbtlo07pj-{0}-bqjiyaj88i-bqjiyaj88i.gz
 /home/runner/work/Organizainador/Organizainador/obj/Debug/net9.0/compressed/2phpdkhyo4-{0}-c2jlpeoesf-c2jlpeoesf.gz
@@ -1256,3 +1254,5 @@ C:/Users/Voyager/Source/Repos/Organizainador/obj/Debug/net9.0/compressed/vak2ew0
 /home/runner/work/Organizainador/Organizainador/obj/Debug/net9.0/Organizainador.pdb
 /home/runner/work/Organizainador/Organizainador/obj/Debug/net9.0/Organizainador.genruntimeconfig.cache
 /home/runner/work/Organizainador/Organizainador/obj/Debug/net9.0/ref/Organizainador.dll
+/home/runner/work/Organizainador/Organizainador/obj/Debug/net9.0/compressed/au1ijgk92j-{0}-3zqh8l7fh3-3zqh8l7fh3.gz
+/home/runner/work/Organizainador/Organizainador/obj/Debug/net9.0/compressed/26qo1v54rm-{0}-040asx1byq-040asx1byq.gz
