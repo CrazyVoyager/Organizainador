@@ -306,38 +306,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /**
-     * Eliminar evento
+     * ⭐ MODIFICADO: Eliminar evento - Redirigir a la página de confirmación
      */
     async function deleteEvent(event) {
-        if (!confirm(`¿Estás seguro de eliminar "${event.title}"?\n\nEsta acción no se puede deshacer.`)) {
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('id', event.id);
-
-        try {
-            const response = await fetch('/Calendario?handler=DeleteEvent', {
-                method: 'POST',
-                headers: {
-                    'RequestVerificationToken': token
-                },
-                body: formData
-            });
-
-            const result = await response.json();
-
-            if (result.success) {
-                showNotification('🗑️ Evento eliminado correctamente', 'success');
-                calendar.refetchEvents();
-                updateDailyEvents();
-            } else {
-                showNotification('❌ Error al eliminar evento', 'error');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            showNotification('❌ Error de conexión', 'error');
-        }
+        // Redirigir a la página de confirmación de eliminación en HorariosController
+        window.location.href = `/Horarios/Delete/${event.id}`;
     }
 
     // ==================== ACTUALIZAR EVENTOS DEL DÍA ====================
@@ -450,20 +423,19 @@ document.addEventListener('DOMContentLoaded', function () {
             modalTime.textContent = `⏰ ${timeRange}`;
         }
 
-        // Mostrar/ocultar botón de detalles
+        // Ocultar botón de detalles (ya no es necesario para este flujo)
         if (btnDetails) {
-            const isActivity = event.extendedProps.eventType === 'Actividad';
-            btnDetails.style.display = isActivity ? 'block' : 'none';
+            btnDetails.style.display = 'none';
         }
     }
 
     /**
-     * Configurar botones del modal
+     * ⭐ MODIFICADO: Configurar botones del modal
      */
     function setupModalButtons(event) {
         setupButton('btnEdit', () => handleEditEvent(event));
         setupButton('btnDelete', () => deleteEvent(event));
-        setupButton('btnDetails', () => showActivityDetails(event));
+        // Ya no necesitamos el botón de detalles para horarios
     }
 
     /**
@@ -515,15 +487,15 @@ document.addEventListener('DOMContentLoaded', function () {
     // ==================== ACCIONES DE EVENTO ====================
 
     /**
-     * Editar evento
+     * ⭐ MODIFICADO: Editar evento - Redirigir al formulario de edición de horarios
      */
     function handleEditEvent(event) {
-        showNotification('🔧 Función de edición en desarrollo...', 'info');
-        // TODO: Implementar edición
+        // Redirigir a la página de edición de horarios con el ID específico
+        window.location.href = `/Horarios/Edit/${event.id}`;
     }
 
     /**
-     * Mostrar detalles de actividad
+     * Mostrar detalles de actividad (mantener por compatibilidad, pero ya no se usa)
      */
     function showActivityDetails(event) {
         const eventType = event.extendedProps.eventType || 'default';
