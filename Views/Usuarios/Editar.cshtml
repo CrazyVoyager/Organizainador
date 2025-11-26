@@ -1,6 +1,6 @@
 ﻿@model Organizainador.Models.UsuarioModel
 @{
-    ViewData["Title"] = "Modificar Usuario";
+    ViewData["Title"] = "Editar Usuario";
 }
 
 <div class="row justify-content-center">
@@ -8,11 +8,11 @@
         <div class="card">
             <div class="card-header py-3">
                 <h6 class="m-0 font-weight-bold text-warning">
-                    <i class="fas fa-edit me-1"></i> Modificar Usuario
+                    <i class="fas fa-edit me-1"></i> Editar Usuario
                 </h6>
             </div>
             <div class="card-body">
-                <form asp-action="Modificar" method="post" class="needs-validation" novalidate>
+                <form asp-action="Editar" method="post" class="needs-validation" novalidate>
                     <input type="hidden" asp-for="Id" />
 
                     <div class="row">
@@ -38,11 +38,20 @@
                             </select>
                             <span asp-validation-for="Est" class="text-danger small"></span>
                         </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Rol" class="form-label">Rol</label>
+                            <select asp-for="Rol" class="form-select" required>
+                                <option value="">Seleccionar rol</option>
+                                <option value="Admin">Administrador</option>
+                                <option value="User">Usuario</option>
+                            </select>
+                            <span asp-validation-for="Rol" class="text-danger small"></span>
+                        </div>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="CEst" class="form-label">Estado Personalizado (Opcional)</label>
-                        <input asp-for="CEst" class="form-control" placeholder="Estado personalizado">
+                        <label asp-for="CEst" class="form-label">Casa de Estudios (Opcional)</label>
+                        <input asp-for="CEst" class="form-control" placeholder="Ingrese la casa de estudios">
                         <span asp-validation-for="CEst" class="text-danger small"></span>
                     </div>
 
